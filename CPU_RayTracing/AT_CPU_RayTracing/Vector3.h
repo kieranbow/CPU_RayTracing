@@ -10,70 +10,97 @@ class Vector3
 
 		~Vector3() = default;
 
-		Vector3 operator+(const Vector3& a)
+		Vector3 operator+(const Vector3& _a)
 		{
 			Vector3 vector;
-			vector.x = this->x + a.x;
-			vector.y = this->y + a.y;
-			vector.z = this->z + a.z;
+			vector.x = this->x + _a.x;
+			vector.y = this->y + _a.y;
+			vector.z = this->z + _a.z;
 			return vector;
 		}
 
-		Vector3 operator-(const Vector3& a)
+		Vector3 operator+(const float& _a)
 		{
 			Vector3 vector;
-			vector.x = this->x - a.x;
-			vector.y = this->y - a.y;
-			vector.z = this->z - a.z;
+			vector.x = this->x + _a;
+			vector.y = this->x + _a;
+			vector.z = this->x + _a;
 			return vector;
 		}
 
-		Vector3 operator*(const Vector3& a)
+		Vector3 operator-(const Vector3& _a)
 		{
 			Vector3 vector;
-			vector.x = this->x * a.x;
-			vector.y = this->y * a.y;
-			vector.z = this->z * a.z;
+			vector.x = this->x - _a.x;
+			vector.y = this->y - _a.y;
+			vector.z = this->z - _a.z;
 			return vector;
 		}
 
-		Vector3 operator/(const Vector3& a)
+		Vector3 operator*(const Vector3& _a)
 		{
 			Vector3 vector;
-			vector.x = this->x / a.x;
-			vector.y = this->y / a.y;
-			vector.z = this->z / a.z;
+			vector.x = this->x * _a.x;
+			vector.y = this->y * _a.y;
+			vector.z = this->z * _a.z;
+			return vector;
+		}
+
+		Vector3 operator/(const Vector3& _a)
+		{
+			Vector3 vector;
+			vector.x = this->x / _a.x;
+			vector.y = this->y / _a.y;
+			vector.z = this->z / _a.z;
 			return vector;
 		}
 
 		// Produces a new vector C using vector A and B
-		static Vector3 cross(const Vector3& a, const Vector3& b)
+		static Vector3 cross(const Vector3& _a, const Vector3& _b)
 		{
-			float x = (a.y * b.z) - (a.z * b.y);
-			float y = (a.z * b.x) - (a.x * b.z);
-			float z = (a.x * b.y) - (a.y * b.x);
+			float x = (_a.y * _b.z) - (_a.z * _b.y);
+			float y = (_a.z * _b.x) - (_a.x * _b.z);
+			float z = (_a.x * _b.y) - (_a.y * _b.x);
 			return Vector3(x, y, z);
 		}
 
 		// Calculates the relationship between two vectors. I.e opposite vectors = -1
-		static float dot(const Vector3& a, const Vector3& b)
+		static float dot(const Vector3& _a, const Vector3& _b)
 		{
-			return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+			return (_a.x * _b.x) + (_a.y * _b.y) + (_a.z * _b.z);
 		}
 
 		// Finds the magnitude from the vectors x,y,z coords
-		static float magnitude(const Vector3& a)
+		static float magnitude(const Vector3& _a)
 		{
-			return sqrt((a.x * a.x) + (a.y * a.y) + (a.z * a.z));
+			return sqrtf((_a.x * _a.x) + (_a.y * _a.y) + (_a.z * _a.z));
 		}
 
 		// Normalizes a vector using it magnitude
-		static Vector3 normalize(const Vector3& a)
+		static Vector3 normalize(const Vector3& _a)
 		{
-			float mag = magnitude(a);
+			float mag = magnitude(_a);
 
 			if (mag < epsilon) return Vector3(0.0f, 0.0f, 0.0f);
-			return Vector3(a.x / mag, a.y / mag, a.z / mag);
+			return Vector3(_a.x / mag, _a.y / mag, _a.z / mag);
+		}
+
+		// Get the x component by reference
+		const float& getXPos() const
+		{
+			return x;
+		}
+
+		// Get the y component by reference
+		const float& getYPos() const
+		{
+			return y;
+		}
+
+		// Get the z component by reference
+		const float& getZPos() const
+		{
+			return z;
 		}
 
 	private:
