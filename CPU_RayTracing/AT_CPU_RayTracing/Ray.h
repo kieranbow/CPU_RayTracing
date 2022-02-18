@@ -11,9 +11,9 @@ class Ray
 		Vector3 position = { 0.0f, 0.0f, 0.0f };
 		Vector3 direction = { 0.0f, 0.0f, 0.0f };
 		
-		void setTvalue(float value)
+		void setTvalue(float _value)
 		{
-			t = value;
+			t = _value;
 		}
 
 		const Vector3& getPoint()
