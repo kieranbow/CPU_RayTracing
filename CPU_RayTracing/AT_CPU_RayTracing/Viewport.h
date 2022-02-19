@@ -2,6 +2,8 @@
 #include <utility>
 #include <vector>
 
+#include "Pixel.h"
+
 class Viewport
 {
 	public:
@@ -14,5 +16,5 @@ class Viewport
 
 	private:
 		std::pair<int, int> size = { 0, 0 };
-		std::vector<int> pixels;
+		// std::vector<Pixel> pixels;
 };

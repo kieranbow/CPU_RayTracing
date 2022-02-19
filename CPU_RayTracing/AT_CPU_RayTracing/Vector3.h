@@ -2,6 +2,7 @@
 
 constexpr float epsilon = 0.000001f;
 
+// Add template to vector
 class Vector3
 {
 	public:
@@ -28,6 +29,14 @@ class Vector3
 			return vector;
 		}
 
+		Vector3 operator+=(const Vector3& _a)
+		{
+			this->x += _a.x;
+			this->y += _a.y;
+			this->z += _a.z;
+			return *this;
+		}
+
 		Vector3 operator-(const Vector3& _a)
 		{
 			Vector3 vector;
@@ -37,6 +46,14 @@ class Vector3
 			return vector;
 		}
 
+		Vector3 operator-=(const Vector3& _a)
+		{
+			this->x -= _a.x;
+			this->y -= _a.y;
+			this->z -= _a.z;
+			return *this;
+		}
+
 		Vector3 operator*(const Vector3& _a)
 		{
 			Vector3 vector;
@@ -44,6 +61,14 @@ class Vector3
 			vector.y = this->y * _a.y;
 			vector.z = this->z * _a.z;
 			return vector;
+		}
+
+		Vector3 operator*=(const Vector3& _a)
+		{
+			this->x *= _a.x;
+			this->y *= _a.y;
+			this->z *= _a.z;
+			return *this;
 		}
 
 		Vector3 operator/(const Vector3& _a)
@@ -85,20 +110,35 @@ class Vector3
 			return Vector3(_a.x / mag, _a.y / mag, _a.z / mag);
 		}
 
+		void setX(float _x)
+		{
+			x = _x;
+		}
+
+		void setY(float _y)
+		{
+			y = _y;
+		}
+
+		void setZ(float _z)
+		{
+			z = _z;
+		}
+
 		// Get the x component by reference
-		const float& getXPos() const
+		const float& getX() const
 		{
 			return x;
 		}
 
 		// Get the y component by reference
-		const float& getYPos() const
+		const float& getY() const
 		{
 			return y;
 		}
 
 		// Get the z component by reference
-		const float& getZPos() const
+		const float& getZ() const
 		{
 			return z;
 		}
