@@ -1,4 +1,7 @@
+#pragma once
 #include <math.h>
+#include <iostream>
+#include <string>
 
 constexpr float epsilon = 0.000001f;
 
@@ -78,6 +81,12 @@ class Vector3
 			vector.y = this->y / _a.y;
 			vector.z = this->z / _a.z;
 			return vector;
+		}
+
+		friend std::ostream& operator<<(std::ostream& os, const Vector3& _a)
+		{
+			os << std::to_string(_a.x) << ", " << std::to_string(_a.y) << ", " << std::to_string(_a.z);
+			return os;
 		}
 
 		// Produces a new vector C using vector A and B
