@@ -119,41 +119,43 @@ class Vector3
 			return Vector3(_a.x / mag, _a.y / mag, _a.z / mag);
 		}
 
-		void setX(float _x)
-		{
-			x = _x;
-		}
+		//void setX(float _x)
+		//{
+		//	x = _x;
+		//}
 
-		void setY(float _y)
-		{
-			y = _y;
-		}
+		//void setY(float _y)
+		//{
+		//	y = _y;
+		//}
 
-		void setZ(float _z)
-		{
-			z = _z;
-		}
+		//void setZ(float _z)
+		//{
+		//	z = _z;
+		//}
 
-		// Get the x component by reference
-		const float& getX() const
-		{
-			return x;
-		}
+		//// Get the x component by reference
+		//const float& getX() const
+		//{
+		//	return x;
+		//}
 
-		// Get the y component by reference
-		const float& getY() const
-		{
-			return y;
-		}
+		//// Get the y component by reference
+		//const float& getY() const
+		//{
+		//	return y;
+		//}
 
-		// Get the z component by reference
-		const float& getZ() const
-		{
-			return z;
-		}
+		//// Get the z component by reference
+		//const float& getZ() const
+		//{
+		//	return z;
+		//}
 
-	private:
 		float x = 0;
 		float y = 0;
 		float z = 0;
+
+	private:
+
 };
