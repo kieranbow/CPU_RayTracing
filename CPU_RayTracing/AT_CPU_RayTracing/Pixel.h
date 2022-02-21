@@ -1,13 +1,9 @@
-#include "Vector3.h"
+#include "Vector2.h"
+#include "Colour.h"
 
-//struct Vector2
-//{
-//	float x = 0;
-//	float y = 0;
-//};
-//
-//struct Pixel
-//{
-//	Vector3 color = { 0.0f, 0.0f, 0.0f };
-//	Vector2 position = { 0.0f, 0.0f };
-//};
+struct Pixel
+{
+	Colour colour;
+	Vector2 position;
+	Vector2 size;
+};

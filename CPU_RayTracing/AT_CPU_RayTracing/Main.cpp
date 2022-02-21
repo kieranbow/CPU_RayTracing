@@ -9,7 +9,9 @@
 #include "Vector2.h"
 
 #include "Ray.h"
+
 #include "Colour.h"
+#include "Pixel.h"
 
 struct Viewport
 {
@@ -23,53 +25,13 @@ struct Viewport
 	}
 };
 
-struct Pixel
-{
-	Colour colour;
-	Vector3 pos;
-};
+// https://stackoverflow.com/questions/695043/how-does-one-convert-world-coordinates-to-camera-coordinates
+// https://en.wikipedia.org/wiki/Rotation_matrix#Basic_rotations
+// https://www.3dgep.com/understanding-the-view-matrix/
+// https://en.wikipedia.org/wiki/Euler_angles#Table_of_matrices
+// https://codereview.stackexchange.com/questions/144381/4x4-matrix-implementation-in-c
+// https://en.wikipedia.org/wiki/Camera_matrix
 
-struct Matrix3x3
-{
-	// https://stackoverflow.com/questions/695043/how-does-one-convert-world-coordinates-to-camera-coordinates
-	// https://en.wikipedia.org/wiki/Rotation_matrix#Basic_rotations
-	// https://www.3dgep.com/understanding-the-view-matrix/
-	// https://en.wikipedia.org/wiki/Euler_angles#Table_of_matrices
-	// https://codereview.stackexchange.com/questions/144381/4x4-matrix-implementation-in-c
-	// https://en.wikipedia.org/wiki/Camera_matrix
-
-	Matrix3x3()
-	{
-		// Sets all elements of matrix to 0
-		std::fill(m_elements.begin(), m_elements.end(), 0);
-
-		// Change elements to create identity matrix
-		this->m_elements[0] = 1; // 1, 0, 0
-		this->m_elements[4] = 1; // 0, 1, 0
-		this->m_elements[8] = 1; // 0, 0, 1
-	}
-
-	Matrix3x3 operator+(const Matrix3x3& _rhs)
-	{
-		for (int i = 0; i < 9; i++)
-		{
-			this->m_elements[i] + _rhs.m_elements[i];
-		}
-		return *this;
-	}
-
-	Matrix3x3 operator+=(const Matrix3x3& _rhs)
-	{
-		for (int i = 0; i < 9; i++)
-		{
-			this->m_elements[i] += _rhs.m_elements[i];
-		}
-		return *this;
-	}
-
-	std::array<int, 9> m_elements;
-
-};
 
 bool intersect(const Vector3 &origin, const Vector3 &dir, float &t)
 {
@@ -127,8 +89,6 @@ int main()
 
 	// Right handed Cartesian coordinate systems
 	// X+, y+, Z-
-
-	Matrix3x3 test;
 
 	// Image size
 	Viewport canvas = { 640, 480 };
@@ -189,13 +149,13 @@ int main()
 			Pixel pixel;
 
 			// Rasterizer space
-			pixel.pos.setX(static_cast<float>(width));
-			pixel.pos.setY(static_cast<float>(height));
+			pixel.position.setX(static_cast<float>(width));
+			pixel.position.setY(static_cast<float>(height));
 
 			// Normalized Device Coords (NDC)
 			Vector2 pixelNDC;
-			pixelNDC.setX((pixel.pos.getX() + 0.5f) / canvas.width);
-			pixelNDC.setY((pixel.pos.getY() + 0.5f) / canvas.height);
+			pixelNDC.setX((pixel.position.getX() + 0.5f) / canvas.width);
+			pixelNDC.setY((pixel.position.getY() + 0.5f) / canvas.height);
 
 			// Screen space
 			Vector2 pixel_screen;
@@ -216,23 +176,22 @@ int main()
 			camera_space.setZ(-1.0f);
 
 			Ray primary_ray;
-			primary_ray.position = camera_position;
-			primary_ray.direction = Vector3::normalize(camera_space - primary_ray.position);
+			primary_ray.origin = camera_position;
+			primary_ray.direction = Vector3::normalize(camera_space - primary_ray.origin);
 
 			float t = std::numeric_limits<float>::max();
 
-			Colour test = Vector3(1.0f, 1.0f, 1.0f);
+			Colour hit_colour;
 
-			Colour hit_colour = (primary_ray.direction + Vector3(1.0f, 1.0f, 1.0f)) * Vector3(0.5f, 0.5f, 0.5f);
-
-			//if (intersect(primary_ray.position, primary_ray.direction, t))
-			//{
-			//	hit_colour = Vector3(0.0f, 0.0f, 0.0f);
-			//}
-			//else
-			//{
-			//	hit_colour = Vector3(1.0f, 0.0f, 0.0f);
-			//}
+			if (intersect(primary_ray.origin, primary_ray.direction, t))
+			{
+				Vector3 output = (primary_ray.direction + Vector3(1.0f, 1.0f, 1.0f))* Vector3(0.5f, 0.5f, 0.5f);
+				hit_colour = { output.getX(), output.getY(), output.getZ() };
+			}
+			else
+			{
+				hit_colour = { 0.0f, 0.0f, 0.0f };
+			}
 
 			// write colour output to framebuffer
 			framebuffer.at(x).colour.setColour(hit_colour);

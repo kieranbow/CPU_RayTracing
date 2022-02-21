@@ -5,6 +5,7 @@
 
 #include "Numbers.h"
 
+// Essentally the same as vector3 but without a z component
 class Vector2
 {
 	public:
