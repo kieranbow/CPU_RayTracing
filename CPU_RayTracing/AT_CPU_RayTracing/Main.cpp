@@ -28,6 +28,15 @@ struct Viewport
 
 struct Colour 
 {
+	Colour()
+	{
+		r = 0.0f;
+		g = 0.0f;
+		b = 0.0f;
+		a = 0.0f;
+	}
+	Colour(float _red, float _green, float _blue, float _alpha) : r(_red), g(_green), b(_blue), a(_alpha) {}
+
 	float r;
 	float g;
 	float b;
@@ -41,6 +50,48 @@ struct Pixel
 };
 
 constexpr float pi = 3.14159265358979323846f;
+
+struct Matrix3x3
+{
+	// https://stackoverflow.com/questions/695043/how-does-one-convert-world-coordinates-to-camera-coordinates
+	// https://en.wikipedia.org/wiki/Rotation_matrix#Basic_rotations
+	// https://www.3dgep.com/understanding-the-view-matrix/
+	// https://en.wikipedia.org/wiki/Euler_angles#Table_of_matrices
+	// https://codereview.stackexchange.com/questions/144381/4x4-matrix-implementation-in-c
+	// https://en.wikipedia.org/wiki/Camera_matrix
+
+	Matrix3x3()
+	{
+		// Sets all elements of matrix to 0
+		std::fill(m_elements.begin(), m_elements.end(), 0);
+
+		// Change elements to create identity matrix
+		this->m_elements[0] = 1; // 1, 0, 0
+		this->m_elements[4] = 1; // 0, 1, 0
+		this->m_elements[8] = 1; // 0, 0, 1
+	}
+
+	Matrix3x3 operator+(const Matrix3x3& _rhs)
+	{
+		for (int i = 0; i < 9; i++)
+		{
+			this->m_elements[i] + _rhs.m_elements[i];
+		}
+		return *this;
+	}
+
+	Matrix3x3 operator+=(const Matrix3x3& _rhs)
+	{
+		for (int i = 0; i < 9; i++)
+		{
+			this->m_elements[i] += _rhs.m_elements[i];
+		}
+		return *this;
+	}
+
+	std::array<int, 9> m_elements;
+
+};
 
 int main()
 {
@@ -64,8 +115,10 @@ int main()
 	// Right handed Cartesian coordinate systems
 	// X+, y+, Z-
 
+	Matrix3x3 test;
+
 	// Image size
-	Viewport canvas = { 1920, 1080 };
+	Viewport canvas = { 640, 480 };
 
 	// Viewport
 	Viewport viewport;
@@ -109,82 +162,78 @@ int main()
 	const float size = camera_horizon_size / camera_aspect_ratio;
 	camera_projection_v *= Vector3(size, size, size);
 
-	// Generate Rays from camera
-	float screen_x = 1.0f;
-	float screen_y = 1.0f;
-
-	//Vector3 screenToWorld = camera_projection_screen_centre + (camera_projection_u * Vector3(screen_x, screen_x, static_cast<float>(i)));
-	//Vector3 screenCoord = screenToWorld + (camera_projection_v * Vector3(screen_y, screen_y, static_cast<float>(j)));
-
-	std::cout << "Centre position: " << camera_projection_screen_centre << std::endl;
-	std::cout << "U position: " << camera_projection_u << std::endl;
-	std::cout << "V position: " << camera_projection_v << std::endl;
-
-
-
-	// Use Ray-sphere intersection to render sphere
-
+	// Create framebuffer and set it to black
 	std::vector<Pixel> framebuffer;
 	framebuffer.resize(static_cast<size_t>(canvas.width * canvas.height));
+	std::fill(framebuffer.begin(), framebuffer.end(), Pixel());
 
-	std::ofstream file ("Image.ppm");
+	int x = 0;
+
+	for (int height = 0; height < static_cast<int>(canvas.height); ++height)
+	{
+		for (int width = 0; width < static_cast<int>(canvas.width); ++width)
+		{
+			Pixel pixel;
+
+			// Rasterizer space
+			pixel.pos.x = static_cast<float>(width);
+			pixel.pos.y = static_cast<float>(height);
+
+			// Normalized Device Coords (NDC)
+			Vector2 pixelNDC;
+			pixelNDC.x = (pixel.pos.x + 0.5f) / canvas.width;
+			pixelNDC.y = (pixel.pos.y + 0.5f) / canvas.height;
+
+			// Screen space
+			Vector2 pixel_screen;
+			pixel_screen.x = 2.0f * pixelNDC.x - 1.0f; // normalizing to [-1, 1]
+			pixel_screen.y = 1.0f - 2.0f * pixelNDC.y; // normalizing to [-1, 1]
+
+			// Deg2rad
+			float deg2rad = tan(camera_fov / 2.0f * pi / 180.0f);
+
+			// Camera space
+			Vector3 pixel_camera;
+			pixel_camera.x = (2.0f - pixel_screen.x - 1.0f) * viewport.aspect_ratio * deg2rad;
+			pixel_camera.y = (1.0f - 2.0f * pixel_screen.y) * deg2rad;
+
+			Vector3 camera_space;
+			camera_space.x = pixel_camera.x;
+			camera_space.y = pixel_camera.y;
+			camera_space.z = -1.0f;
+
+			Ray primary_ray;
+			primary_ray.position = camera_position;
+			primary_ray.direction = Vector3::normalize(camera_space - primary_ray.position);
+
+			Vector3 hit_colour = (primary_ray.direction + Vector3(1.0f, 1.0f, 1.0f)) * Vector3(0.5f, 0.5f, 0.5f);
+
+			// write colour output to framebuffer
+			framebuffer.at(x).colour.r = hit_colour.x;
+			framebuffer.at(x).colour.g = hit_colour.y;
+			framebuffer.at(x).colour.b = hit_colour.z;
+			x++;
+		}
+	}
+
+	// Create a file and write the contents of the framebuffer to the file
+	std::ofstream file("Image.ppm");
 
 	if (file.is_open())
 	{
 		file << "P3\n" << canvas.width << ' ' << canvas.height << "\n255\n";
 
-		for (int height = 0; height < static_cast<int>(canvas.height); ++height) // int height = static_cast<int>(canvas.height - 1.0f); height >= 0; --height
+		for(auto& pixel : framebuffer)
 		{
-			for (int width = 0; width < static_cast<int>(canvas.width); ++width)
-			{
-				Pixel pixel;
+			int ir = static_cast<int>(255.999 * pixel.colour.r);
+			int ig = static_cast<int>(255.999 * pixel.colour.g);
+			int ib = static_cast<int>(255.999 * pixel.colour.b);
 
-				// Rasterizer space
-				pixel.pos.x = static_cast<float>(width);
-				pixel.pos.y = static_cast<float>(height);
-
-				// Normalized Device Coords (NDC)
-				Vector2 pixelNDC;
-				pixelNDC.x = (pixel.pos.x + 0.5f) / canvas.width;
-				pixelNDC.y = (pixel.pos.y + 0.5f) / canvas.height;
-
-				// Screen space
-				Vector2 pixel_screen;
-				pixel_screen.x = 2.0f * pixelNDC.x - 1.0f; // normalizing to [-1, 1]
-				pixel_screen.y = 1.0f - 2.0f * pixelNDC.y; // normalizing to [-1, 1]
-
-				// Deg2rad
-				float deg2rad = tan(camera_fov / 2.0f * pi / 180.0f);
-
-				// Camera space
-				Vector3 pixel_camera;
-				pixel_camera.x = (2.0f - pixel_screen.x - 1.0f) * viewport.aspect_ratio * deg2rad;
-				pixel_camera.y = (1.0f - 2.0f * pixel_screen.y) * deg2rad;
-
-				Vector3 camera_space;
-				camera_space.x = pixel_camera.x;
-				camera_space.y = pixel_camera.y;
-				camera_space.z = -1.0f;
-
-				Ray primary_ray;
-				primary_ray.position = camera_position;
-				primary_ray.direction = Vector3::normalize(camera_space - primary_ray.position);
-
-				Vector3 hit_colour = (primary_ray.direction + Vector3(1.0f, 1.0f, 1.0f)) * Vector3(0.5f, 0.5f, 0.5f);
-
-
-				pixel.colour.r = hit_colour.x; //static_cast<float>(width) / (canvas.width - 1.0f);
-				pixel.colour.g = hit_colour.y; //static_cast<float>(height) / (canvas.height - 1.0f);
-				pixel.colour.b = hit_colour.z; //0.25f;
-
-				int ir = static_cast<int>(255.999 * pixel.colour.r);
-				int ig = static_cast<int>(255.999 * pixel.colour.g);
-				int ib = static_cast<int>(255.999 * pixel.colour.b);
-
-				file << ir << ' ' << ig << ' ' << ib << '\n';
-			}
+			file << ir << ' ' << ig << ' ' << ib << '\n';
 		}
 		file.close();
 	}
+	framebuffer.clear();
+
 	return 0;
 }
