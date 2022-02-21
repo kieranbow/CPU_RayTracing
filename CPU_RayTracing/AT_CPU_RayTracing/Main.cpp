@@ -227,7 +227,9 @@ int main()
 
 			float t = std::numeric_limits<float>::max();
 
-			Vector3 hit_colour = (primary_ray.direction + Vector3(1.0f, 1.0f, 1.0f)) * Vector3(0.5f, 0.5f, 0.5f);
+			Colour test = Vector3(1.0f, 1.0f, 1.0f);
+
+			Colour hit_colour = (primary_ray.direction + Vector3(1.0f, 1.0f, 1.0f)) * Vector3(0.5f, 0.5f, 0.5f);
 
 			//if (intersect(primary_ray.position, primary_ray.direction, t))
 			//{
@@ -239,7 +241,7 @@ int main()
 			//}
 
 			// write colour output to framebuffer
-			framebuffer.at(x).colour.setColour(hit_colour.x, hit_colour.y, hit_colour.z, 1.0f);
+			framebuffer.at(x).colour.setColour(hit_colour);
 			x++;
 		}
 	}
