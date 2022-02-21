@@ -7,6 +7,7 @@
 
 #include "Vector3.h"
 #include "Ray.h"
+#include "Colour.h"
 
 struct Vector2
 {
@@ -24,23 +25,6 @@ struct Viewport
 	{
 		return width * height;
 	}
-};
-
-struct Colour 
-{
-	Colour()
-	{
-		r = 0.0f;
-		g = 0.0f;
-		b = 0.0f;
-		a = 0.0f;
-	}
-	Colour(float _red, float _green, float _blue, float _alpha) : r(_red), g(_green), b(_blue), a(_alpha) {}
-
-	float r;
-	float g;
-	float b;
-	float a;
 };
 
 struct Pixel
@@ -243,21 +227,19 @@ int main()
 
 			float t = std::numeric_limits<float>::max();
 
-			Vector3 hit_colour = Vector3(0.0f, 0.0f, 0.0f); //(primary_ray.direction + Vector3(1.0f, 1.0f, 1.0f)) * Vector3(0.5f, 0.5f, 0.5f);
+			Vector3 hit_colour = (primary_ray.direction + Vector3(1.0f, 1.0f, 1.0f)) * Vector3(0.5f, 0.5f, 0.5f);
 
-			if (intersect(primary_ray.position, primary_ray.direction, t))
-			{
-				hit_colour = Vector3(0.0f, 0.0f, 0.0f);
-			}
-			else
-			{
-				hit_colour = Vector3(1.0f, 0.0f, 0.0f);
-			}
+			//if (intersect(primary_ray.position, primary_ray.direction, t))
+			//{
+			//	hit_colour = Vector3(0.0f, 0.0f, 0.0f);
+			//}
+			//else
+			//{
+			//	hit_colour = Vector3(1.0f, 0.0f, 0.0f);
+			//}
 
 			// write colour output to framebuffer
-			framebuffer.at(x).colour.r = hit_colour.x;
-			framebuffer.at(x).colour.g = hit_colour.y;
-			framebuffer.at(x).colour.b = hit_colour.z;
+			framebuffer.at(x).colour.setColour(hit_colour.x, hit_colour.y, hit_colour.z, 1.0f);
 			x++;
 		}
 	}
@@ -271,9 +253,9 @@ int main()
 
 		for(auto& pixel : framebuffer)
 		{
-			int ir = static_cast<int>(255.999 * pixel.colour.r);
-			int ig = static_cast<int>(255.999 * pixel.colour.g);
-			int ib = static_cast<int>(255.999 * pixel.colour.b);
+			int ir = static_cast<int>(255.999 * pixel.colour.getRed());
+			int ig = static_cast<int>(255.999 * pixel.colour.getGreen());
+			int ib = static_cast<int>(255.999 * pixel.colour.getBlue());
 
 			file << ir << ' ' << ig << ' ' << ib << '\n';
 		}
