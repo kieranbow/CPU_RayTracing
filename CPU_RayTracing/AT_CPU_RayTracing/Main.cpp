@@ -93,6 +93,42 @@ struct Matrix3x3
 
 };
 
+bool intersect(const Vector3 &origin, const Vector3 &dir, float &t)
+{
+	float t0 = 0.0f;
+	float t1 = 0.0f;
+	Vector3 centre = { 0.0f, 0.0f, -15.0f };
+	float radius = 15.0f;
+	float radius2 = radius * radius;
+
+	Vector3 length = centre - origin;
+	float tca = Vector3::dot(length, dir);
+
+	if (tca < 0.0f) return false;
+
+	float d2 = Vector3::dot(length, length) - tca * tca;
+
+	if (d2 < radius2) return false;
+
+	float thc = sqrtf(radius2 - d2);
+
+	t0 = tca - thc;
+	t1 = tca + thc;
+
+	if (t0 > t1) std::swap(t0, t1);
+
+	if (t0 < 0.0f)
+	{
+		t0 = t1;
+
+		if (t0 < 0.0f) return false;
+	}
+
+	t = t0;
+
+	return true;
+}
+
 int main()
 {
 	// https://github.com/iweinbau/Ray-Tracing/blob/master/Ray%20tracing/Utils/Camera.cpp
@@ -104,7 +140,6 @@ int main()
 	// https://solarianprogrammer.com/2019/06/10/c-programming-reading-writing-images-stb_image-libraries/
 
 	// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays
-	// https://www.scratchapixel.com/code.php?id=7&origin=/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays
 	// https://codeclimber.net.nz/archive/2019/06/10/the-ray-tracer-challenge-drawing-to-a-canvas-and-saving-the-image-to-a-file/
 	// http://www.realtimerendering.com/raytracing.html
 	// https://link.springer.com/book/10.1007/978-1-4842-4427-2
@@ -206,7 +241,18 @@ int main()
 			primary_ray.position = camera_position;
 			primary_ray.direction = Vector3::normalize(camera_space - primary_ray.position);
 
-			Vector3 hit_colour = (primary_ray.direction + Vector3(1.0f, 1.0f, 1.0f)) * Vector3(0.5f, 0.5f, 0.5f);
+			float t = std::numeric_limits<float>::max();
+
+			Vector3 hit_colour = Vector3(0.0f, 0.0f, 0.0f); //(primary_ray.direction + Vector3(1.0f, 1.0f, 1.0f)) * Vector3(0.5f, 0.5f, 0.5f);
+
+			if (intersect(primary_ray.position, primary_ray.direction, t))
+			{
+				hit_colour = Vector3(0.0f, 0.0f, 0.0f);
+			}
+			else
+			{
+				hit_colour = Vector3(1.0f, 0.0f, 0.0f);
+			}
 
 			// write colour output to framebuffer
 			framebuffer.at(x).colour.r = hit_colour.x;
