@@ -19,16 +19,31 @@
     <Filter Include="Source Files\Utilities">
       <UniqueIdentifier>{0f8db9a0-294f-437e-a023-1ff7889e868c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Utilities\Maths">
+      <UniqueIdentifier>{745acc42-9cfc-40f9-b041-47ac6925c66a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utilities\Graphics">
+      <UniqueIdentifier>{287846d5-be17-4401-87bb-2498d05ce320}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utilities\Maths">
+      <UniqueIdentifier>{f0a6346d-8126-4518-bfe0-89087245b7fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utilities\Graphics">
+      <UniqueIdentifier>{454919df-9210-4580-a8e1-683aaba2ddbc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Colour.cpp">
-      <Filter>Source Files\Utilities</Filter>
+    <ClCompile Include="Vector2.cpp">
+      <Filter>Source Files\Utilities\Maths</Filter>
     </ClCompile>
     <ClCompile Include="Vector3.cpp">
-      <Filter>Source Files\Utilities</Filter>
+      <Filter>Source Files\Utilities\Maths</Filter>
+    </ClCompile>
+    <ClCompile Include="Colour.cpp">
+      <Filter>Source Files\Utilities\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -41,11 +56,17 @@
     <ClInclude Include="Pixel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>Header Files\Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="Colour.h">
-      <Filter>Header Files\Utilities</Filter>
+      <Filter>Header Files\Utilities\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>Header Files\Utilities\Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Header Files\Utilities\Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="Numbers.h">
+      <Filter>Header Files\Utilities\Maths</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

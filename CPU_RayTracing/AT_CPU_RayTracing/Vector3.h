@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-constexpr float epsilon = 0.000001f;
+#include "Numbers.h"
 
 // Add template to vector
 class Vector3
@@ -52,10 +52,8 @@ class Vector3
 		const float& getY() const { return y; }
 		const float& getZ() const { return z; }
 
+	private:
 		float x = 0;
 		float y = 0;
 		float z = 0;
-
-	private:
-
 };

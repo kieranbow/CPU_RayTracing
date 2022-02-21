@@ -6,14 +6,10 @@
 #include <fstream>
 
 #include "Vector3.h"
+#include "Vector2.h"
+
 #include "Ray.h"
 #include "Colour.h"
-
-struct Vector2
-{
-	float x;
-	float y;
-};
 
 struct Viewport
 {
@@ -32,8 +28,6 @@ struct Pixel
 	Colour colour;
 	Vector3 pos;
 };
-
-constexpr float pi = 3.14159265358979323846f;
 
 struct Matrix3x3
 {
@@ -195,31 +189,31 @@ int main()
 			Pixel pixel;
 
 			// Rasterizer space
-			pixel.pos.x = static_cast<float>(width);
-			pixel.pos.y = static_cast<float>(height);
+			pixel.pos.setX(static_cast<float>(width));
+			pixel.pos.setY(static_cast<float>(height));
 
 			// Normalized Device Coords (NDC)
 			Vector2 pixelNDC;
-			pixelNDC.x = (pixel.pos.x + 0.5f) / canvas.width;
-			pixelNDC.y = (pixel.pos.y + 0.5f) / canvas.height;
+			pixelNDC.setX((pixel.pos.getX() + 0.5f) / canvas.width);
+			pixelNDC.setY((pixel.pos.getY() + 0.5f) / canvas.height);
 
 			// Screen space
 			Vector2 pixel_screen;
-			pixel_screen.x = 2.0f * pixelNDC.x - 1.0f; // normalizing to [-1, 1]
-			pixel_screen.y = 1.0f - 2.0f * pixelNDC.y; // normalizing to [-1, 1]
+			pixel_screen.setX(2.0f * pixelNDC.getX() - 1.0f); // normalizing to [-1, 1]
+			pixel_screen.setY(1.0f - 2.0f * pixelNDC.getY()); // normalizing to [-1, 1]
 
 			// Deg2rad
 			float deg2rad = tan(camera_fov / 2.0f * pi / 180.0f);
 
 			// Camera space
 			Vector3 pixel_camera;
-			pixel_camera.x = (2.0f - pixel_screen.x - 1.0f) * viewport.aspect_ratio * deg2rad;
-			pixel_camera.y = (1.0f - 2.0f * pixel_screen.y) * deg2rad;
+			pixel_camera.setX((2.0f - pixel_screen.getX() - 1.0f) * viewport.aspect_ratio * deg2rad);
+			pixel_camera.setY((1.0f - 2.0f * pixel_screen.getY()) * deg2rad);
 
 			Vector3 camera_space;
-			camera_space.x = pixel_camera.x;
-			camera_space.y = pixel_camera.y;
-			camera_space.z = -1.0f;
+			camera_space.setX(pixel_camera.getX());
+			camera_space.setY(pixel_camera.getY());
+			camera_space.setZ(-1.0f);
 
 			Ray primary_ray;
 			primary_ray.position = camera_position;

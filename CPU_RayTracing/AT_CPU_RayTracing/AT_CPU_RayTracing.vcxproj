@@ -145,12 +145,15 @@
   <ItemGroup>
     <ClCompile Include="Colour.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Colour.h" />
+    <ClInclude Include="Numbers.h" />
     <ClInclude Include="Pixel.h" />
     <ClInclude Include="Ray.h" />
+    <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Viewport.h" />
   </ItemGroup>
