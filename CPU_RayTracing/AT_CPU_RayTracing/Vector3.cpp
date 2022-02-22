@@ -7,13 +7,12 @@ Vector3::Vector3()
 	z = 0.0f;
 }
 
-Vector3 Vector3::operator=(const Vector3& _rhs)
+Vector3& Vector3::operator=(const Vector3& _rhs)
 {
-	Vector3 vector;
-	vector.x = _rhs.x;
-	vector.y = _rhs.y;
-	vector.z = _rhs.z;
-	return vector;
+	this->x = _rhs.x;
+	this->y = _rhs.y;
+	this->z = _rhs.z;
+	return *this;
 }
 
 Vector3 Vector3::operator+(const Vector3& _rhs)

@@ -14,7 +14,7 @@ class Vector3
 
 		~Vector3() = default;
 
-		Vector3 operator=(const Vector3& _rhs);
+		Vector3& operator=(const Vector3& _rhs);
 		Vector3 operator+(const Vector3& _rhs);
 		Vector3 operator+(const float& _rhs);
 		Vector3 operator+=(const Vector3& _rhs);
