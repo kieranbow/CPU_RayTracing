@@ -75,6 +75,14 @@ Vector2 Vector2::operator/(const Vector2& _rhs)
 	return vector;
 }
 
+Vector2 Vector2::operator/(const float& _rhs)
+{
+	Vector2 vector;
+	vector.x = this->x / _rhs;
+	vector.y = this->y / _rhs;
+	return vector;
+}
+
 float Vector2::dot(const Vector2& _lhs, const Vector2& _rhs)
 {
 	return (_lhs.x * _rhs.x) + (_lhs.y * _rhs.y);

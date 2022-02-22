@@ -11,6 +11,8 @@ class Colour
 		// Custom colour
 		Colour(float _red, float _green, float _blue);
 
+		~Colour() = default;
+
 		Colour operator=(const Colour& _rhs);
 
 		Colour operator+(const Colour& _rhs);

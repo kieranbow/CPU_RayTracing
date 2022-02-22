@@ -23,6 +23,7 @@ class Vector2
 		Vector2 operator*(const Vector2& _rhs);
 		Vector2 operator*=(const Vector2& _rhs);
 		Vector2 operator/(const Vector2& _rhs);
+		Vector2 operator/(const float& _rhs);
 
 		friend std::ostream& operator<<(std::ostream& _lhs, const Vector2& _rhs)
 		{

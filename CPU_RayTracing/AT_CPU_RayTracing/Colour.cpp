@@ -12,9 +12,9 @@ Colour::Colour()
 
 Colour::Colour(float _red, float _green, float _blue)
 {
-	this->r = _red;
-	this->g = _green;
-	this->b = _blue;
+	r = _red;
+	g = _green;
+	b = _blue;
 }
 
 Colour Colour::operator=(const Colour& _rhs)

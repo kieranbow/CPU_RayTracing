@@ -145,11 +145,13 @@
   <ItemGroup>
     <ClCompile Include="Colour.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Matrix4x4.cpp" />
     <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Colour.h" />
+    <ClInclude Include="Matrix4x4.h" />
     <ClInclude Include="Numbers.h" />
     <ClInclude Include="Pixel.h" />
     <ClInclude Include="Ray.h" />
