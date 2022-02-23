@@ -25,6 +25,7 @@ class Vector3
 		Vector3 operator*(const Vector3& _rhs);
 		Vector3 operator*=(const Vector3& _rhs);
 		Vector3 operator/(const Vector3& _rhs);
+		bool operator>(Vector3& _rhs);
 		
 		// Mainly used for debugging
 		friend std::ostream& operator<<(std::ostream& _lhs, const Vector3& _rhs)

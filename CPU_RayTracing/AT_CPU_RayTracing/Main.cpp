@@ -56,18 +56,32 @@ struct Viewport
 
 bool intersect(Ray& ray, Vector3 center, float radius)
 {
-	float radius2 = radius * radius;
-	float t0 = 0.0f, t1 = 0.0f;
-	Vector3 l = center - ray.origin;
-	float tca = l.dot(l, ray.direction);
-	if (tca < 0) return false;
-	float d2 = l.dot(l, l) - tca * tca;
-	if (d2 > radius2) return false;
-	float thc = sqrt(radius2 - d2);
-	t0 = tca - thc;
-	t1 = tca + thc;
+	//float radius2 = radius * radius;
+	//
+	//float t0 = 0.0f, t1 = 0.0f;
+	//
+	//Vector3 l = center - ray.origin;
+	//
+	//float tca = l.dot(l, ray.direction);
+	//if (tca < 0) return false;
+	//
+	//float d2 = l.dot(l, l) - tca * tca;
+	//if (d2 > radius2) return false;
+	//
+	//float thc = sqrt(radius2 - d2);
+	//
+	//t0 = tca - thc;
+	//t1 = tca + thc;
 
-	return true;
+	//return true;
+
+	Vector3 oc = ray.origin - center;
+	float a = Vector3::dot(ray.direction, ray.direction);
+	float b = 2.0f * Vector3::dot(oc, ray.direction);
+	float c = Vector3::dot(oc, oc) - radius * radius;
+	float distriminant = b * b - 4 * a * c;
+
+	return (distriminant > 0.0f);
 }
 
 float deg2rad(const float& deg) { return deg * pi / 180.0f; }
@@ -85,15 +99,8 @@ bool trace(Ray ray)
 
 Colour cast_ray(Ray ray)
 {
-	//Vector3 output = (ray.direction + Vector3(1.0f, 1.0f, 1.0f)) * Vector3(0.5f, 0.5f, 0.5f);
-	//return output;
-	float t = 0.0f;
-
-	if (trace(ray))
-	{
-		return Colour(1.0f, 0.0f, 0.0f);
-	}
-	return Colour();
+	Vector3 output = (ray.direction + Vector3(1.0f, 1.0f, 1.0f)) * Vector3(0.5f, 0.5f, 0.5f);
+	return output;
 }
 
 void Render(Vector2 imageSize, float camera_fov, std::vector<Pixel>& buffer, Matrix4x4 camToWorld)
@@ -103,6 +110,10 @@ void Render(Vector2 imageSize, float camera_fov, std::vector<Pixel>& buffer, Mat
 
 	Vector3 origin;
 	camToWorld.multiplyVectorToMatrix4x4(Vector3(0.0f, 0.0f, 0.0f), origin);
+
+	Vector3 top_left_corner = { -2.0f, 1.0f, -1.0f };
+	Vector3 horz = { 4.0f, 0.0f, 0.0f };
+	Vector3 vert = { 0.0f, 2.0f, 0.0f };
 
 	int x = 0;
 
@@ -122,9 +133,18 @@ void Render(Vector2 imageSize, float camera_fov, std::vector<Pixel>& buffer, Mat
 			primary_ray.origin = origin;
 			primary_ray.direction = direction;
 
-			pixel.colour = cast_ray(primary_ray);
+			//pixel.colour = cast_ray(primary_ray);
 
-			buffer.at(x).colour = pixel.colour;
+			if (intersect(primary_ray, Vector3(1.0f, 0.0f, -2.0f), 0.5f))
+			{
+				buffer.at(x).colour = Colour(1.0f, 0.0f, 0.0f);
+			}
+			else
+			{
+				buffer.at(x).colour = Colour(0.5f, 0.5f, 1.0f); //pixel.colour;
+			}
+
+			
 
 			x++;
 		}

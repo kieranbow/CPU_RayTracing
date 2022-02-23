@@ -84,6 +84,13 @@ Vector3 Vector3::operator/(const Vector3& _rhs)
 	return vector;
 }
 
+bool Vector3::operator>(Vector3& _rhs)
+{
+	if (this->x > _rhs.x && this->y > _rhs.y && this->z > _rhs.z) return true;
+
+	return false;
+}
+
 Vector3 Vector3::cross(const Vector3& _lhs, const Vector3& _rhs)
 {
 	float x = (_lhs.y * _rhs.z) - (_lhs.z * _rhs.y);
