@@ -17,13 +17,27 @@ Colour::Colour(float _red, float _green, float _blue)
 	b = _blue;
 }
 
-Colour Colour::operator=(const Colour& _rhs)
+Colour::Colour(Vector3& _rhs)
 {
-	Colour colour;
-	colour.r = _rhs.r;
-	colour.g = _rhs.g;
-	colour.b = _rhs.b;
-	return colour;
+	r = _rhs.getX();
+	g = _rhs.getY();
+	b = _rhs.getZ();
+}
+
+Colour& Colour::operator=(const Colour& _rhs)
+{
+	this->r = _rhs.r;
+	this->g = _rhs.g;
+	this->b = _rhs.b;
+	return *this;
+}
+
+Colour& Colour::operator=(const Vector3& _rhs)
+{
+	this->r = _rhs.getX();
+	this->g = _rhs.getY();
+	this->b = _rhs.getZ();
+	return *this;
 }
 
 Colour Colour::operator+(const Colour& _rhs)
@@ -96,18 +110,4 @@ Colour Colour::operator*=(const Colour& _rhs)
 	colour.g = this->g *= _rhs.g;
 	colour.b = this->b *= _rhs.b;
 	return colour;
-}
-
-void Colour::setColour(float _red, float _green, float _blue)
-{
-	this->r = _red;
-	this->g = _green;
-	this->b = _blue;
-}
-
-void Colour::setColour(Colour colour)
-{
-	this->r = colour.r;
-	this->g = colour.g;
-	this->b = colour.b;
 }

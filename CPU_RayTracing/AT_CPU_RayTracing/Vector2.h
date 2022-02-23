@@ -14,7 +14,10 @@ class Vector2
 
 		~Vector2() = default;
 
-		Vector2 operator=(const Vector2& _rhs);
+		// Copy assigment
+		Vector2& operator=(const Vector2& _rhs);
+
+		// Operator overloads
 		Vector2 operator+(const Vector2& _rhs);
 		Vector2 operator+(const float& _rhs);
 		Vector2 operator+=(const Vector2& _rhs);
@@ -25,6 +28,7 @@ class Vector2
 		Vector2 operator/(const Vector2& _rhs);
 		Vector2 operator/(const float& _rhs);
 
+		// Mainly used for debugging 
 		friend std::ostream& operator<<(std::ostream& _lhs, const Vector2& _rhs)
 		{
 			_lhs << std::to_string(_rhs.x) << ", " << std::to_string(_rhs.y);
@@ -34,7 +38,7 @@ class Vector2
 		// Calculates the relationship between two vectors. I.e opposite vectors = -1
 		static float dot(const Vector2& _lhs, const Vector2& _rhs);
 
-		// Finds the magnitude from the vectors x,y,z coords
+		// Finds the magnitude from the vectors x,y coords
 		static float magnitude(const Vector2& _rhs);
 
 		// Normalizes a vector using it magnitude
@@ -52,4 +56,3 @@ class Vector2
 		float x = 0;
 		float y = 0;
 };
-

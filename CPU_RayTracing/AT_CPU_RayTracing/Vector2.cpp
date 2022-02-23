@@ -6,12 +6,11 @@ Vector2::Vector2()
 	y = 0.0f;
 }
 
-Vector2 Vector2::operator=(const Vector2& _rhs)
+Vector2& Vector2::operator=(const Vector2& _rhs)
 {
-	Vector2 vector;
-	vector.x = _rhs.x;
-	vector.y = _rhs.y;
-	return vector;
+	this->x = _rhs.x;
+	this->y = _rhs.y;
+	return *this;
 }
 
 Vector2 Vector2::operator+(const Vector2& _rhs)

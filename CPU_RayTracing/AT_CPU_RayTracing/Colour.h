@@ -1,7 +1,7 @@
 #pragma once
 class Vector3;
 
-// A class that defines a colour using rgba.
+// A class that defines a colour using rgb.
 class Colour
 {
 	public:
@@ -10,11 +10,15 @@ class Colour
 
 		// Custom colour
 		Colour(float _red, float _green, float _blue);
+		Colour(Vector3& _rhs);
 
 		~Colour() = default;
 
-		Colour operator=(const Colour& _rhs);
+		// Copy assigment
+		Colour& operator=(const Colour& _rhs);
+		Colour& operator=(const Vector3& _rhs);
 
+		// Operator overloads
 		Colour operator+(const Colour& _rhs);
 		Colour operator+=(const Colour& _rhs);
 		Colour operator-(const Colour& _rhs);
@@ -23,10 +27,6 @@ class Colour
 		Colour operator/=(const Colour& _rhs);
 		Colour operator*(const Colour& _rhs);
 		Colour operator*=(const Colour& _rhs);
-
-		// Setters
-		void setColour(float _red, float _green, float _blue);
-		void setColour(Colour colour);
 
 		// Getters
 		const float& getRed() const { return this->r; }
