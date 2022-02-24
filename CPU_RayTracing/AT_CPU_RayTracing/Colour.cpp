@@ -40,6 +40,38 @@ Colour& Colour::operator=(const Vector3& _rhs)
 	return *this;
 }
 
+Colour Colour::operator+=(const Vector3& _rhs)
+{
+	this->r += _rhs.getX();
+	this->g += _rhs.getY();
+	this->b += _rhs.getZ();
+	return *this;
+}
+
+Colour Colour::operator-=(const Vector3& _rhs)
+{
+	this->r -= _rhs.getX();
+	this->g -= _rhs.getY();
+	this->b -= _rhs.getZ();
+	return *this;
+}
+
+Colour Colour::operator/=(const Vector3& _rhs)
+{
+	this->r /= _rhs.getX();
+	this->g /= _rhs.getY();
+	this->b /= _rhs.getZ();
+	return *this;
+}
+
+Colour Colour::operator*=(const Vector3& _rhs)
+{
+	this->r *= _rhs.getX();
+	this->g *= _rhs.getY();
+	this->b *= _rhs.getZ();
+	return *this;
+}
+
 Colour Colour::operator+(const Colour& _rhs)
 {
 	Colour colour;
@@ -101,6 +133,72 @@ Colour Colour::operator*(const Colour& _rhs)
 	colour.g = this->g * _rhs.g;
 	colour.b = this->b * _rhs.b;
 	return colour;
+}
+
+Colour Colour::operator+(const Vector3& _rhs)
+{
+	Colour colour;
+	colour.r = this->r + _rhs.getX();
+	colour.g = this->g + _rhs.getY();
+	colour.b = this->b + _rhs.getZ();
+	return colour;
+}
+
+Colour Colour::operator-(const Vector3& _rhs)
+{
+	Colour colour;
+	colour.r = this->r - _rhs.getX();
+	colour.g = this->g - _rhs.getY();
+	colour.b = this->b - _rhs.getZ();
+	return colour;
+}
+
+Colour Colour::operator/(const Vector3& _rhs)
+{
+	Colour colour;
+	colour.r = this->r / _rhs.getX();
+	colour.g = this->g / _rhs.getY();
+	colour.b = this->b / _rhs.getZ();
+	return colour;
+}
+
+Colour Colour::operator*(const Vector3& _rhs)
+{
+	Colour colour;
+	colour.r = this->r * _rhs.getX();
+	colour.g = this->g * _rhs.getY();
+	colour.b = this->b * _rhs.getZ();
+	return colour;
+}
+
+bool Colour::operator>(const Colour& _rhs)
+{
+	return (this->r > _rhs.r || this->g > _rhs.g || this->b > _rhs.b);
+}
+
+bool Colour::operator<(const Colour& _rhs)
+{
+	return (this->r < _rhs.r || this->g < _rhs.g || this->b < _rhs.b);
+}
+
+bool Colour::operator>=(const Colour& _rhs)
+{
+	return (this->r >= _rhs.r || this->g >= _rhs.g || this->b >= _rhs.b);
+}
+
+bool Colour::operator<=(const Colour& _rhs)
+{
+	return (this->r <= _rhs.r || this->g <= _rhs.g || this->b <= _rhs.b);
+}
+
+bool Colour::operator==(const Colour& _rhs)
+{
+	return (this->r == _rhs.r || this->g ==_rhs.g || this->b == _rhs.b);
+}
+
+bool Colour::operator!=(const Colour& _rhs)
+{
+	return (this->r != _rhs.r || this->g != _rhs.g || this->b != _rhs.b);
 }
 
 Colour Colour::operator*=(const Colour& _rhs)

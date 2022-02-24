@@ -14,19 +14,38 @@ class Colour
 
 		~Colour() = default;
 
-		// Copy assigment
+		// Assignment Operators
 		Colour& operator=(const Colour& _rhs);
-		Colour& operator=(const Vector3& _rhs);
-
-		// Operator overloads
-		Colour operator+(const Colour& _rhs);
 		Colour operator+=(const Colour& _rhs);
-		Colour operator-(const Colour& _rhs);
 		Colour operator-=(const Colour& _rhs);
-		Colour operator/(const Colour& _rhs);
 		Colour operator/=(const Colour& _rhs);
-		Colour operator*(const Colour& _rhs);
 		Colour operator*=(const Colour& _rhs);
+		
+		Colour& operator=(const Vector3& _rhs);
+		Colour operator+=(const Vector3& _rhs);
+		Colour operator-=(const Vector3& _rhs);
+		Colour operator/=(const Vector3& _rhs);
+		Colour operator*=(const Vector3& _rhs);
+
+		// Arithmetic Operators
+		Colour operator+(const Colour& _rhs);
+		Colour operator-(const Colour& _rhs);
+		Colour operator/(const Colour& _rhs);
+		Colour operator*(const Colour& _rhs);
+
+		Colour operator+(const Vector3& _rhs);
+		Colour operator-(const Vector3& _rhs);
+		Colour operator/(const Vector3& _rhs);
+		Colour operator*(const Vector3& _rhs);
+
+		// Relational Operators
+		bool operator>(const Colour& _rhs);
+		bool operator<(const Colour& _rhs);
+		bool operator>=(const Colour& _rhs);
+		bool operator<=(const Colour& _rhs);
+		bool operator==(const Colour& _rhs);
+		bool operator!=(const Colour& _rhs);
+		
 
 		// Getters
 		const float& getRed() const { return this->r; }

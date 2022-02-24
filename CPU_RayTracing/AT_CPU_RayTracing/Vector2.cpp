@@ -82,6 +82,36 @@ Vector2 Vector2::operator/(const float& _rhs)
 	return vector;
 }
 
+bool Vector2::operator>(const Vector2& _rhs)
+{
+	return (this->x > _rhs.x || this->y > _rhs.y);
+}
+
+bool Vector2::operator<(const Vector2& _rhs)
+{
+	return (this->x < _rhs.x || this->y < _rhs.y);
+}
+
+bool Vector2::operator>=(const Vector2& _rhs)
+{
+	return (this->x >= _rhs.x || this->y >= _rhs.y);
+}
+
+bool Vector2::operator<=(const Vector2& _rhs)
+{
+	return (this->x <= _rhs.x || this->y <= _rhs.y);
+}
+
+bool Vector2::operator==(const Vector2& _rhs)
+{
+	return (this->x == _rhs.x || this->y == _rhs.y);
+}
+
+bool Vector2::operator!=(const Vector2& _rhs)
+{
+	return (this->x != _rhs.x || this->y != _rhs.y);
+}
+
 float Vector2::dot(const Vector2& _lhs, const Vector2& _rhs)
 {
 	return (_lhs.x * _rhs.x) + (_lhs.y * _rhs.y);

@@ -14,19 +14,27 @@ class Vector2
 
 		~Vector2() = default;
 
-		// Copy assigment
+		// Assignment Operators
 		Vector2& operator=(const Vector2& _rhs);
+		Vector2 operator+=(const Vector2& _rhs);
+		Vector2 operator-=(const Vector2& _rhs);
+		Vector2 operator*=(const Vector2& _rhs);
 
-		// Operator overloads
+		// Arithmetic Operators
 		Vector2 operator+(const Vector2& _rhs);
 		Vector2 operator+(const float& _rhs);
-		Vector2 operator+=(const Vector2& _rhs);
 		Vector2 operator-(const Vector2& _rhs);
-		Vector2 operator-=(const Vector2& _rhs);
 		Vector2 operator*(const Vector2& _rhs);
-		Vector2 operator*=(const Vector2& _rhs);
 		Vector2 operator/(const Vector2& _rhs);
 		Vector2 operator/(const float& _rhs);
+
+		// Relational Operators
+		bool operator>(const Vector2& _rhs);
+		bool operator<(const Vector2& _rhs);
+		bool operator>=(const Vector2& _rhs);
+		bool operator<=(const Vector2& _rhs);
+		bool operator==(const Vector2& _rhs);
+		bool operator!=(const Vector2& _rhs);
 
 		// Mainly used for debugging 
 		friend std::ostream& operator<<(std::ostream& _lhs, const Vector2& _rhs)
