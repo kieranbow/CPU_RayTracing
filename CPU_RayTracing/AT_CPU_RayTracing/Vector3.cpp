@@ -75,6 +75,14 @@ Vector3 Vector3::operator*=(const Vector3& _rhs)
 	return *this;
 }
 
+Vector3 Vector3::operator/=(const Vector3& _rhs)
+{
+	this->x /= _rhs.x;
+	this->y /= _rhs.y;
+	this->z /= _rhs.z;
+	return *this;
+}
+
 Vector3 Vector3::operator/(const Vector3& _rhs)
 {
 	Vector3 vector;
@@ -84,11 +92,34 @@ Vector3 Vector3::operator/(const Vector3& _rhs)
 	return vector;
 }
 
-bool Vector3::operator>(Vector3& _rhs)
+bool Vector3::operator>(const Vector3& _rhs)
 {
-	if (this->x > _rhs.x && this->y > _rhs.y && this->z > _rhs.z) return true;
+	return (this->x > _rhs.x || this->y > _rhs.y || this->z > _rhs.z);
+}
 
-	return false;
+bool Vector3::operator<(const Vector3& _rhs)
+{
+	return (this->x < _rhs.x || this->y < _rhs.y || this->z < _rhs.z);
+}
+
+bool Vector3::operator>=(const Vector3& _rhs)
+{
+	return (this->x >= _rhs.x || this->y >= _rhs.y || this->z >= _rhs.z);
+}
+
+bool Vector3::operator<=(const Vector3& _rhs)
+{
+	return (this->x <= _rhs.x || this->y <= _rhs.y || this->z <= _rhs.z);
+}
+
+bool Vector3::operator==(const Vector3& _rhs)
+{
+	return (this->x == _rhs.x || this->y == _rhs.y || this->z == _rhs.z);
+}
+
+bool Vector3::operator!=(const Vector3& _rhs)
+{
+	return (this->x != _rhs.x || this->y != _rhs.y || this->z != _rhs.z);
 }
 
 Vector3 Vector3::cross(const Vector3& _lhs, const Vector3& _rhs)

@@ -13,19 +13,28 @@ class Vector3
 		Vector3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
 
 		~Vector3() = default;
-		// Copy assigment
+		
+		// Assignment Operators
 		Vector3& operator=(const Vector3& _rhs);
+		Vector3 operator+=(const Vector3& _rhs);
+		Vector3 operator-=(const Vector3& _rhs);
+		Vector3 operator*=(const Vector3& _rhs);
+		Vector3 operator/=(const Vector3& _rhs);
 
-		// Operator overloads
+		// Arithmetic Operators
 		Vector3 operator+(const Vector3& _rhs);
 		Vector3 operator+(const float& _rhs);
-		Vector3 operator+=(const Vector3& _rhs);
 		Vector3 operator-(const Vector3& _rhs);
-		Vector3 operator-=(const Vector3& _rhs);
 		Vector3 operator*(const Vector3& _rhs);
-		Vector3 operator*=(const Vector3& _rhs);
 		Vector3 operator/(const Vector3& _rhs);
-		bool operator>(Vector3& _rhs);
+
+		// Relational Operators
+		bool operator>(const Vector3& _rhs);
+		bool operator<(const Vector3& _rhs);
+		bool operator>=(const Vector3& _rhs);
+		bool operator<=(const Vector3& _rhs);
+		bool operator==(const Vector3& _rhs);
+		bool operator!=(const Vector3& _rhs);
 		
 		// Mainly used for debugging
 		friend std::ostream& operator<<(std::ostream& _lhs, const Vector3& _rhs)

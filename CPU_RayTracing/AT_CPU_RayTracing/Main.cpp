@@ -111,9 +111,13 @@ void Render(Vector2 imageSize, float camera_fov, std::vector<Pixel>& buffer, Mat
 	Vector3 origin;
 	camToWorld.multiplyVectorToMatrix4x4(Vector3(0.0f, 0.0f, 0.0f), origin);
 
-	Vector3 top_left_corner = { -2.0f, 1.0f, -1.0f };
-	Vector3 horz = { 4.0f, 0.0f, 0.0f };
-	Vector3 vert = { 0.0f, 2.0f, 0.0f };
+	Vector3 a = { 1.0f, 0.0f, 0.0f };
+	Vector3 b = { 5.0f, 5.0f, 5.0f };
+
+	if (a > b)
+	{
+		a = { 5.0f, 0.0f, 0.0f };
+	}
 
 	int x = 0;
 
