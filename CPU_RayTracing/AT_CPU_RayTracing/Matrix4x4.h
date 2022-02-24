@@ -11,7 +11,7 @@ class Matrix4x4
 		
 		~Matrix4x4() = default;
 
-		Vector3 multiplyVectorToMatrix4x4(const Vector3& _lhs, Vector3& _rhs);
+		Vector3 multiplyVectorToMatrix4x4(const Vector3& _lhs, Vector3& _rhs, const float& w);
 		
 		// https://stackoverflow.com/questions/1148309/inverting-a-4x4-matrix
 		void InvertMatrix();
