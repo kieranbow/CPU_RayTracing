@@ -18,6 +18,8 @@
 
 #include "Camera.h"
 
+#include "MeshLoader.h"
+
 // https://stackoverflow.com/questions/695043/how-does-one-convert-world-coordinates-to-camera-coordinates
 // https://en.wikipedia.org/wiki/Rotation_matrix#Basic_rotations
 // https://www.3dgep.com/understanding-the-view-matrix/
@@ -45,6 +47,11 @@ int main()
 
 	// Right handed Cartesian coordinate systems
 	// X+, y+, Z-
+
+	std::vector<Vertex> vertex_buffer;
+
+	MeshLoader loader("Assets\\Unit_Cube.obj", vertex_buffer);
+
 
 	// Image in pixels
 	Vector2 image_size = { 640, 480 };
