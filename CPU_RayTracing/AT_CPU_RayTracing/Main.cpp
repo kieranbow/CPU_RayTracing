@@ -16,6 +16,8 @@
 
 #include "Ray.h"
 
+#include "Camera.h"
+
 
 long double operator"" _mm(long double _rhs)
 {
@@ -56,25 +58,6 @@ struct Viewport
 
 bool intersect(Ray& ray, Vector3 center, float radius)
 {
-	//float radius2 = radius * radius;
-	//
-	//float t0 = 0.0f, t1 = 0.0f;
-	//
-	//Vector3 l = center - ray.origin;
-	//
-	//float tca = l.dot(l, ray.direction);
-	//if (tca < 0) return false;
-	//
-	//float d2 = l.dot(l, l) - tca * tca;
-	//if (d2 > radius2) return false;
-	//
-	//float thc = sqrt(radius2 - d2);
-	//
-	//t0 = tca - thc;
-	//t1 = tca + thc;
-
-	//return true;
-
 	Vector3 oc = ray.origin - center;
 	float a = Vector3::dot(ray.direction, ray.direction);
 	float b = 2.0f * Vector3::dot(oc, ray.direction);
@@ -110,14 +93,6 @@ void Render(Vector2 imageSize, float camera_fov, std::vector<Pixel>& buffer, Mat
 
 	//Vector3 originWS(0.0f, 0.0f, 0.0f);
 	//camToWorld.multiplyVectorToMatrix4x4(cameraPosWS/*This is camera position. In camera space will always be 0*/, originWS, 1.0f);
-
-	Vector3 a = { 1.0f, 0.0f, 0.0f };
-	Vector3 b = { 5.0f, 5.0f, 5.0f };
-
-	if (a > b)
-	{
-		a = { 5.0f, 0.0f, 0.0f };
-	}
 
 	int x = 0;
 
@@ -171,23 +146,30 @@ int main()
 	Vector2 image_size = { 640, 480 };
 	float image_aspectRatio = image_size.getX() / image_size.getY(); // 4:3
 
-	// Matrix
-	Matrix4x4 camera_to_world;/*(0.871214f, 0.0f, -0.490904f, 0.0f, -0.192902f, 0.919559f, -0.342346f, 0.0f, 0.451415f, 0.392953f, 0.801132f, 0.0f, 14.777467f, 29.361945f, 27.993464f, 1.0f);*/
-
 	// Camera
-	float camera_fov = 90.0f;
-	float scale = tan(deg2rad(camera_fov) * 0.5f);
+	Camera camera(Vector3(0.0f, -3.0f, 10.0f), Vector3(0.0f, 0.0f, -1.0f), image_size, 90.0f);
 
-	Vector3 camera_positionWS		= { 0.0f, -3.0f, 10.0f };
-	Vector3 camera_direction		= { 0.0f, 0.0f, -1.0f}; // Pointing Z-
-	Vector3 camera_up				= { 0.0f, 1.0f, 0.0f }; // Pointing Y+
+
+	//// Matrix
+	//Matrix4x4 camera_to_world;
+
+	//// Camera
+	//float camera_fov = 90.0f;
+	//float scale = tan(deg2rad(camera_fov) * 0.5f);
+
+	//Vector3 camera_positionWS		= { 0.0f, -3.0f, 10.0f };
+	//Vector3 camera_direction		= { 0.0f, 0.0f, -1.0f}; // Pointing Z-
+	//Vector3 camera_up				= { 0.0f, 1.0f, 0.0f }; // Pointing Y+
 
 	// Create framebuffer and set it to black
 	std::vector<Pixel> framebuffer;
 	framebuffer.resize(static_cast<size_t>(image_size.getX() * image_size.getY()));
 	std::fill(framebuffer.begin(), framebuffer.end(), Pixel());
 
-	Render(image_size, camera_fov, framebuffer, camera_to_world, camera_positionWS);
+	camera.Render(framebuffer);
+
+
+	// Render(image_size, camera_fov, framebuffer, camera_to_world, camera_positionWS);
 
 	// https://github.com/ssloy/tinyraytracer/blob/master/tinyraytracer.cpp
 	// https://www.scratchapixel.com/code.php?id=3&origin=/lessons/3d-basic-rendering/introduction-to-ray-tracing
