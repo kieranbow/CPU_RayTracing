@@ -150,6 +150,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Matrix4x4.cpp" />
     <ClCompile Include="MeshLoader.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
@@ -161,6 +162,7 @@
     <ClInclude Include="Numbers.h" />
     <ClInclude Include="Pixel.h" />
     <ClInclude Include="Ray.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Vertex.h" />

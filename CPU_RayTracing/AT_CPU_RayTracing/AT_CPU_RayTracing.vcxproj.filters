@@ -60,6 +60,9 @@
     <ClCompile Include="MeshLoader.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ray.h">
@@ -91,6 +94,9 @@
     </ClInclude>
     <ClInclude Include="MeshLoader.h">
       <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

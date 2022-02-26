@@ -4,6 +4,7 @@
 #include <vector>
 #include <array>
 #include <fstream>
+#include <chrono> 
 
 // Maths
 #include "Vector3.h"
@@ -19,6 +20,8 @@
 #include "Camera.h"
 
 #include "MeshLoader.h"
+
+#include "Timer.h"
 
 // https://stackoverflow.com/questions/695043/how-does-one-convert-world-coordinates-to-camera-coordinates
 // https://en.wikipedia.org/wiki/Rotation_matrix#Basic_rotations
@@ -65,8 +68,22 @@ int main()
 	framebuffer.resize(static_cast<size_t>(image_size.getX() * image_size.getY()));
 	std::fill(framebuffer.begin(), framebuffer.end(), Pixel());
 
+	// Start timer
+	Timer render_timer;
+	render_timer.StartTimer();
+
 	// Render what the camera sees
 	camera.Render(framebuffer);
+
+	// End timer
+	render_timer.EndTimer();
+
+	// Output timer
+	std::cout << "Render time: " << render_timer.ShowResult() << " seconds" << std::endl;
+
+
+	Timer output_timer;
+	output_timer.StartTimer();
 
 	// Create a file and write the contents of the framebuffer to the file
 	std::ofstream file("Image.ppm", std::ios::out | std::ios::binary);
@@ -86,6 +103,12 @@ int main()
 		file.close();
 	}
 	framebuffer.clear();
+	vertex_buffer.clear();
+
+	output_timer.EndTimer();
+	
+	// Output timer
+	std::cout << "Output time: " << output_timer.ShowResult() << " seconds" << std::endl;
 
 	return 0;
 }

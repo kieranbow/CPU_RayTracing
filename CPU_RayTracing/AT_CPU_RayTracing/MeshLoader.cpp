@@ -2,17 +2,19 @@
 
 MeshLoader::MeshLoader(std::string file_path, std::vector<Vertex>& vertex_buffer)
 {
-	// Read file
+	// Read the mesh file from assimp importer and process the files data using aiProcess flags
 	pScene = importer.ReadFile(file_path, aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate);
 
+	// If pScene is null, then the importer failed to read the file
 	if (pScene == NULL)
 	{
-		std::cerr << "Assimp failed to read mesh file" << std::endl;
+		std::cerr << "failed to read " + file_path << std::endl;
 	}
 
+	// Check if assimp loaded the mesh data. 
 	if (!LoadMeshData(vertex_buffer))
 	{
-		std::cerr << "Assimp failed to create mesh from file" << std::endl;
+		std::cerr << "Assimp failed to create mesh from " + file_path << std::endl;
 	}
 }
 
@@ -26,14 +28,17 @@ bool MeshLoader::LoadMeshData(std::vector<Vertex>& vertex_buffer)
 		{
 			Vertex vertex;
 
+			// Vertex position
 			vertex.position.setX(pMesh->mVertices[vrtIdx].x);
 			vertex.position.setY(pMesh->mVertices[vrtIdx].y);
 			vertex.position.setZ(pMesh->mVertices[vrtIdx].z);
 
+			// Vertex normal
 			vertex.normal.setX(pMesh->mNormals[vrtIdx].x);
 			vertex.normal.setY(pMesh->mNormals[vrtIdx].y);
 			vertex.normal.setZ(pMesh->mNormals[vrtIdx].z);
 
+			// Vertex texture coords
 			if (pMesh->HasTextureCoords(0))
 			{
 				vertex.texcoord.setX(pMesh->mTextureCoords[0][vrtIdx].x);
