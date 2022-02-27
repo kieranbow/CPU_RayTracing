@@ -19,7 +19,7 @@
 
 #include "Camera.h"
 
-#include "MeshLoader.h"
+#include "Primitive.h"
 
 #include "Timer.h"
 
@@ -51,14 +51,12 @@ int main()
 	// Right handed Cartesian coordinate systems
 	// X+, y+, Z-
 
-	std::vector<Vertex> vertex_buffer;
+	Primitive cube;
 
-	MeshLoader loader("Assets\\Unit_Cube.obj", vertex_buffer);
 
 
 	// Image in pixels
 	Vector2 image_size = { 640, 480 };
-	float image_aspectRatio = image_size.getX() / image_size.getY(); // 4:3
 
 	// Camera
 	Camera camera(Vector3(0.0f, -3.0f, 10.0f), Vector3(0.0f, 0.0f, -1.0f), image_size, 90.0f);
@@ -73,13 +71,14 @@ int main()
 	render_timer.StartTimer();
 
 	// Render what the camera sees
-	camera.Render(framebuffer);
+	camera.Render(cube, framebuffer);
 
 	// End timer
 	render_timer.EndTimer();
 
 	// Output timer
 	std::cout << "Render time: " << render_timer.ShowResult() << " seconds" << std::endl;
+
 
 
 	Timer output_timer;
@@ -103,7 +102,6 @@ int main()
 		file.close();
 	}
 	framebuffer.clear();
-	vertex_buffer.clear();
 
 	output_timer.EndTimer();
 	

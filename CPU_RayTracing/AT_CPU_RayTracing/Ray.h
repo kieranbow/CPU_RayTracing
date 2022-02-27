@@ -10,18 +10,7 @@ class Ray
 		~Ray() = default;
 
 		Vector3 origin = { 0.0f, 0.0f, 0.0f };
-		Vector3 direction = { 0.0f, 0.0f, 0.0f };
-		
-		void setTvalue(float _value)
-		{
-			t = _value;
-		}
-
-		const Vector3& getPoint()
-		{
-			return origin + Vector3(t, t, t) * direction;
-		}
-
-	private:	
+		Vector3 direction = { 0.0f, 0.0f, 0.0f };	
 		float t = 0;
+
 };

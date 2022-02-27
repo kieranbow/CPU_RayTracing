@@ -10,14 +10,15 @@
 #include <string>
 #include <vector>
 
-// Custom
+// Vertex & index
 #include "Vertex.h"
+using Indices = unsigned short;
 
 class MeshLoader
 {
 	public:
 		// Loads a mesh from file and writes its contents to the vertex buffer
-		MeshLoader(std::string file_path, std::vector<Vertex>& vertex_buffer);
+		MeshLoader(std::string file_path, std::vector<Vertex>& vertex_buffer, std::vector<Indices>& index_buffer);
 		~MeshLoader() = default;
 
 	private:
@@ -25,5 +26,5 @@ class MeshLoader
 		const aiScene* pScene;
 		const aiMesh* pMesh;
 
-		bool LoadMeshData(std::vector<Vertex>& vertex_buffer);
+		bool LoadMeshData(std::vector<Vertex>& vertex_buffer, std::vector<Indices>& index_buffer);
 };
