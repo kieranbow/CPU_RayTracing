@@ -44,6 +44,8 @@
 // https://github.com/ssloy/tinyraytracer/blob/master/tinyraytracer.cpp	
 // https://www.scratchapixel.com/code.php?id=3&origin=/lessons/3d-basic-rendering/introduction-to-ray-tracing
 
+#include "Logger.h"
+
 int main()
 {
 	// Use stb_image for saving images
@@ -51,9 +53,12 @@ int main()
 	// Right handed Cartesian coordinate systems
 	// X+, y+, Z-
 
+	Logger logger;
+	logger.PrintWarning("Hello Warning");
+	logger.PrintError("Hello error");
+	logger.PrintMsg("Hello msg");
+
 	Primitive cube;
-
-
 
 	// Image in pixels
 	Vector2 image_size = { 640, 480 };

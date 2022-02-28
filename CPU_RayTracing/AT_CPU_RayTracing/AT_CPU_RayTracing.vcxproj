@@ -158,6 +158,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Colour.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="Matrix4x4.h" />
     <ClInclude Include="MeshLoader.h" />
     <ClInclude Include="Numbers.h" />
