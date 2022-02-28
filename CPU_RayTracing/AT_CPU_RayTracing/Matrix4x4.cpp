@@ -35,18 +35,45 @@ Matrix4x4::Matrix4x4(float c00, float c01, float c02, float c03, float c10, floa
 	this->m_elements.at(static_cast<int>(c::c33)) = c33;
 }
 
-Vector3 Matrix4x4::multiplyVectorToMatrix4x4(const Vector3& _lhs, Vector3& _rhs, const float& w)
+void Matrix4x4::multVecByMatrix4x4(const Matrix4x4& _lhs, Vector3& _rhs)
 {
-	//float a = 0.0f, b = 0.0f, c = 0.0f, w = 0.0f;
-
+	Vector3 vector;
 	// Column major
-	_rhs.setX(_lhs.getX() * m_elements.at(static_cast<int>(c::c00)) + _lhs.getY() * m_elements.at(static_cast<int>(c::c01)) + _lhs.getZ() * m_elements.at(static_cast<int>(c::c02)) + m_elements.at(static_cast<int>(c::c03)) * w);
-	_rhs.setY(_lhs.getX() * m_elements.at(static_cast<int>(c::c10)) + _lhs.getY() * m_elements.at(static_cast<int>(c::c11)) + _lhs.getZ() * m_elements.at(static_cast<int>(c::c12)) + m_elements.at(static_cast<int>(c::c13)) * w);
-	_rhs.setZ(_lhs.getX() * m_elements.at(static_cast<int>(c::c20)) + _lhs.getY() * m_elements.at(static_cast<int>(c::c21)) + _lhs.getZ() * m_elements.at(static_cast<int>(c::c22)) + m_elements.at(static_cast<int>(c::c23)) * w);
-	//w = _lhs.getX() * m_elements.at(static_cast<int>(c::c30)) + _lhs.getY() * m_elements.at(static_cast<int>(c::c31)) + _lhs.getZ() * m_elements.at(static_cast<int>(c::c32)) + m_elements.at(static_cast<int>(c::c33)) * w;
+	vector.setX(_rhs.getX() * _lhs.m_elements.at(static_cast<int>(c::c00)) + _rhs.getY() * _lhs.m_elements.at(static_cast<int>(c::c01)) + _rhs.getZ() * _lhs.m_elements.at(static_cast<int>(c::c02)) + _lhs.m_elements.at(static_cast<int>(c::c03)));
+	vector.setY(_rhs.getX() * _lhs.m_elements.at(static_cast<int>(c::c10)) + _rhs.getY() * _lhs.m_elements.at(static_cast<int>(c::c11)) + _rhs.getZ() * _lhs.m_elements.at(static_cast<int>(c::c12)) + _lhs.m_elements.at(static_cast<int>(c::c30)));
+	vector.setZ(_rhs.getX() * _lhs.m_elements.at(static_cast<int>(c::c20)) + _rhs.getY() * _lhs.m_elements.at(static_cast<int>(c::c21)) + _rhs.getZ() * _lhs.m_elements.at(static_cast<int>(c::c22)) + _lhs.m_elements.at(static_cast<int>(c::c32)));
+	float w = _rhs.getX() * _lhs.m_elements.at(static_cast<int>(c::c30)) + _rhs.getY() * _lhs.m_elements.at(static_cast<int>(c::c31)) + _rhs.getZ() * _lhs.m_elements.at(static_cast<int>(c::c32)) + _lhs.m_elements.at(static_cast<int>(c::c33));
+	
+	if (w != 1.0f)
+	{
+		vector.setX(vector.getX() / w);
+		vector.setY(vector.getY() / w);
+		vector.setZ(vector.getZ() / w);
+	}
+	_rhs = vector;
+}
 
-	//_rhs.setX(a / w);
-	//_rhs.setY(b / w);
-	//_rhs.setZ(c / w);
+Vector3 Matrix4x4::multDirByMatrix4x4(const Vector3& _lhs, Vector3& _rhs)
+{
+	// As explain here: http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
+	// if w == 0 then the vector is a direction.
+	
+	// Column major
+	_rhs.setX(_lhs.getX() * m_elements.at(static_cast<int>(c::c00)) + _lhs.getY() * m_elements.at(static_cast<int>(c::c01)) + _lhs.getZ() * m_elements.at(static_cast<int>(c::c02)));
+	_rhs.setY(_lhs.getX() * m_elements.at(static_cast<int>(c::c10)) + _lhs.getY() * m_elements.at(static_cast<int>(c::c11)) + _lhs.getZ() * m_elements.at(static_cast<int>(c::c12)));
+	_rhs.setZ(_lhs.getX() * m_elements.at(static_cast<int>(c::c20)) + _lhs.getY() * m_elements.at(static_cast<int>(c::c21)) + _lhs.getZ() * m_elements.at(static_cast<int>(c::c22)));
+
 	return _rhs;
+}
+
+// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
+Vector3 Matrix4x4::translation(const Vector3& _rhs)
+{
+	Vector3 vector;
+	// Column major
+	vector.setX(m_elements.at(static_cast<int>(c::c00)) * _rhs.getX() + m_elements.at(static_cast<int>(c::c01)) * _rhs.getY() + m_elements.at(static_cast<int>(c::c02)) * _rhs.getZ() + m_elements.at(static_cast<int>(c::c03)) * 1.0f);
+	vector.setY(m_elements.at(static_cast<int>(c::c10)) * _rhs.getX() + m_elements.at(static_cast<int>(c::c11)) * _rhs.getY() + m_elements.at(static_cast<int>(c::c12)) * _rhs.getZ() + m_elements.at(static_cast<int>(c::c31)) * 1.0f);
+	vector.setZ(m_elements.at(static_cast<int>(c::c20)) * _rhs.getX() + m_elements.at(static_cast<int>(c::c21)) * _rhs.getY() + m_elements.at(static_cast<int>(c::c22)) * _rhs.getZ() + m_elements.at(static_cast<int>(c::c32)) * 1.0f);
+
+	return vector;
 }

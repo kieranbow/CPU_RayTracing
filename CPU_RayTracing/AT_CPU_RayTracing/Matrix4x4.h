@@ -3,6 +3,10 @@
 
 class Vector3;
 
+// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
+// https://codereview.stackexchange.com/questions/144381/4x4-matrix-implementation-in-c
+// http://www.codinglabs.net/article_world_view_projection_matrix.aspx
+
 class Matrix4x4
 {
 	public:
@@ -11,10 +15,13 @@ class Matrix4x4
 		
 		~Matrix4x4() = default;
 
-		Vector3 multiplyVectorToMatrix4x4(const Vector3& _lhs, Vector3& _rhs, const float& w);
-		
+		static void multVecByMatrix4x4(const Matrix4x4& _lhs, Vector3& _rhs);
+		Vector3 multDirByMatrix4x4(const Vector3& _lhs, Vector3& _rhs);
+
 		// https://stackoverflow.com/questions/1148309/inverting-a-4x4-matrix
 		void InvertMatrix();
+
+		Vector3 translation(const Vector3& _rhs);
 
 	private:
 		std::array<float, 16> m_elements;

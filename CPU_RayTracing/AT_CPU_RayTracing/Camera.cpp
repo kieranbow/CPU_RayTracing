@@ -33,14 +33,14 @@ void Camera::Render(Primitive prim, std::vector<Pixel>& buffer)
 			pixel.position.setY(Py);
 
 			Vector3 pixelPosWS;
-			cam_to_world.multiplyVectorToMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), -1.0f), pixelPosWS, 1.0f);
+			cam_to_world.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), -1.0f), pixelPosWS);
 			Vector3::normalize(pixelPosWS);
 
 			Ray primary_rayWS;
 			primary_rayWS.origin = ws_position;
 			primary_rayWS.direction = Vector3::normalize(pixelPosWS - primary_rayWS.origin);
 
-			//if (intersect(primary_rayWS, Vector3(0.0f, 0.0f, 0.0f), 0.5f))
+			//if (intersect(primary_rayWS, Vector3(0.0f, 0.0f, -1.0f), 0.5f))
 			//{
 			//	buffer.at(iter).colour = Colour(1.0f, 0.0f, 0.0f);
 			//}
@@ -51,8 +51,9 @@ void Camera::Render(Primitive prim, std::vector<Pixel>& buffer)
 
 			if (prim.intersected(primary_rayWS))
 			{
-			
-				buffer.at(iter).colour = prim.getVertices().at(0).normal; // Colour(1.0f, 0.0f, 0.0f);
+				Colour norm = { prim.getVertices().at(0).normal.getX(), prim.getVertices().at(2).normal.getY(), prim.getVertices().at(5).normal.getZ() };
+
+				buffer.at(iter).colour = norm; // Colour(1.0f, 0.0f, 0.0f);
 			}
 			else
 			{

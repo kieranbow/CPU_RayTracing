@@ -13,21 +13,18 @@ class Primitive
 		Primitive(std::string file_path, Vector3 positionWS);
 		~Primitive();
 
-
+		// Checks a ray against all primitive's triangles
 		bool intersected(Ray &ray);
 
 		void setPosition(Vector3 position);
 		void setRotation(Vector3 rotation);
 		void setScale(Vector3 scale);
 
-		const Vector3& getPosition() const;
+		const Vector3& getPosition() const { return ws_position; }
 		const Vector3& getRotation() const;
 		const Vector3& getScale() const;
-
-		const std::vector<Vertex>& getVertices() const
-		{
-			return vertex_buffer;
-		}
+		const std::vector<Vertex>& getVertices() const { return vertex_buffer; }
+		const std::vector<Indices>& getIndices() const { return index_buffer; }
 
 	private:
 		// Mesh data

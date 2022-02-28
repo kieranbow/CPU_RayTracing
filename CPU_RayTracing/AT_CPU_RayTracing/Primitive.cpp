@@ -1,17 +1,33 @@
 #include "Primitive.h"
 #include "Ray.h"
+#include "Matrix4x4.h"
 
 Primitive::Primitive()
 {
 	// Load default unit cube and pass the data to the vertex and index buffers
-	MeshLoader loader("Assets\\Unit_Cube.obj", vertex_buffer, index_buffer);
+	MeshLoader loader("Assets\\unit_sphere.obj", vertex_buffer, index_buffer);
 
+	Matrix4x4 objectToWorld;
+
+	// Convert obj from local space to world space
+	for (auto& vert : vertex_buffer)
+	{
+		Matrix4x4::multVecByMatrix4x4(objectToWorld, vert.position);
+	}
 }
 
 Primitive::Primitive(std::string file_path, Vector3 positionWS)
 {
 	// Load mesh and pass the data to the vertex and index buffers
 	MeshLoader loader(file_path, vertex_buffer, index_buffer);
+
+	Matrix4x4 objectToWorld;
+
+	for (auto& vert : vertex_buffer)
+	{
+		Matrix4x4::multVecByMatrix4x4(objectToWorld, vert.position);
+	}
+
 
 	ws_position = positionWS;
 }
