@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Colour.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -156,6 +157,7 @@
     <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Colour.h" />
     <ClInclude Include="Logger.h" />

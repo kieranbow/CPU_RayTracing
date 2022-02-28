@@ -1,10 +1,8 @@
 #pragma once
+// C++
 #include <string>
 #include <iostream>
-#include <vector>
-#include <array>
 #include <fstream>
-#include <chrono> 
 
 // Maths
 #include "Vector3.h"
@@ -16,12 +14,12 @@
 #include "Pixel.h"
 
 #include "Ray.h"
-
 #include "Camera.h"
-
 #include "Primitive.h"
 
+// Utility
 #include "Timer.h"
+#include "Logger.h"
 
 // https://stackoverflow.com/questions/695043/how-does-one-convert-world-coordinates-to-camera-coordinates
 // https://en.wikipedia.org/wiki/Rotation_matrix#Basic_rotations
@@ -44,8 +42,6 @@
 // https://github.com/ssloy/tinyraytracer/blob/master/tinyraytracer.cpp	
 // https://www.scratchapixel.com/code.php?id=3&origin=/lessons/3d-basic-rendering/introduction-to-ray-tracing
 
-#include "Logger.h"
-
 int main()
 {
 	// Use stb_image for saving images
@@ -61,7 +57,7 @@ int main()
 	Primitive cube;
 
 	// Image in pixels
-	Vector2 image_size = { 640, 480 };
+	Vector2 image_size = { 64, 32 };
 
 	// Camera
 	Camera camera(Vector3(0.0f, 0.0f, 10.0f), Vector3(0.0f, 0.0f, -1.0f), image_size, 90.0f);

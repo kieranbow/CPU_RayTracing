@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "MeshLoader.h"
+#include "BoundingBox.h"
 
 class Ray;
 
@@ -30,6 +31,8 @@ class Primitive
 		// Mesh data
 		std::vector<Vertex> vertex_buffer;
 		std::vector<Indices> index_buffer;
+
+		BoundingBox boundingBox;
 
 		bool MollerTrumboreIntersection(Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2);
 

@@ -66,6 +66,9 @@
     <ClCompile Include="Primitive.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BoundingBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ray.h">
@@ -105,6 +108,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Logger.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

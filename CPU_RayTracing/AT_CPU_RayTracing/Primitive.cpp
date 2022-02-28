@@ -14,6 +14,10 @@ Primitive::Primitive()
 	{
 		Matrix4x4::multVecByMatrix4x4(objectToWorld, vert.position);
 	}
+
+	// Generates a bounding box around the mesh
+	boundingBox.generateBoundingBox(vertex_buffer);
+
 }
 
 Primitive::Primitive(std::string file_path, Vector3 positionWS)
