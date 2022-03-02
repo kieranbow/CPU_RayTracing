@@ -61,6 +61,7 @@ int main()
 
 	// Camera
 	Camera camera(Vector3(0.0f, 0.0f, 10.0f), Vector3(0.0f, 0.0f, -1.0f), image_size, 90.0f);
+	Matrix4x4::multVecByMatrix4x4(camera.getMatrix(), camera.getPosition());
 
 	// Create framebuffer and set it to black
 	std::vector<Pixel> framebuffer;

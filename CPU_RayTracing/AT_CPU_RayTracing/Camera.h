@@ -21,6 +21,9 @@ class Camera
 		void setPositionWS(Vector3 positionWS);
 		void setDirectionWS(Vector3 directionWS);
 
+		Vector3& getPosition() { return ws_position; }
+		const Matrix4x4& getMatrix() const { return cam_to_world; }
+
 	private:
 		Vector3 ws_position		= { 0.0f, 0.0f, 0.0f };
 		Vector3 forward			= { 0.0f, 0.0f, -1.0f };

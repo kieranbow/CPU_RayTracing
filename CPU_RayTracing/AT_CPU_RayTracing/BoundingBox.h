@@ -13,8 +13,8 @@ class BoundingBox
 		struct Plane
 		{
 			Vector3 normal = { 0.0f, 0.0f, 0.0f };
-			float near = -k_infinity;
-			float far = k_infinity;
+			float near = k_infinity;
+			float far = -k_infinity;
 		};
 
 		enum axis

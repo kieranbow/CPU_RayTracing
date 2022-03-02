@@ -51,14 +51,12 @@ void Camera::Render(Primitive prim, std::vector<Pixel>& buffer)
 
 			if (prim.intersected2(primary_rayWS))
 			{
-				buffer.at(iter).colour = Colour(1.0f, 0.0f, 0.0f);
+				buffer.at(iter).colour = Colour(1.0f, 1.0f, 1.0f);
 			}
 
 			if (prim.intersected(primary_rayWS))
 			{
-				Colour norm = { prim.getVertices().at(0).normal.getX(), prim.getVertices().at(2).normal.getY(), prim.getVertices().at(5).normal.getZ() };
-
-				buffer.at(iter).colour = norm; // Colour(1.0f, 0.0f, 0.0f);
+				buffer.at(iter).colour = Colour(1.0f, 0.0f, 0.0f);
 			}
 			//else
 			//{
