@@ -57,7 +57,7 @@ int main()
 	Primitive cube;
 
 	// Image in pixels
-	Vector2 image_size = { 64, 32 };
+	Vector2 image_size = { 640, 480 };
 
 	// Camera
 	Camera camera(Vector3(0.0f, 0.0f, 10.0f), Vector3(0.0f, 0.0f, -1.0f), image_size, 90.0f);

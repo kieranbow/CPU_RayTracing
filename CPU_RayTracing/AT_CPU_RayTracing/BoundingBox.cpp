@@ -1,77 +1,14 @@
 #include "BoundingBox.h"
+#include "Ray.h"
 
 void BoundingBox::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 {
-	//min_bounds = vertex_buffer.at(0).position;
-	//max_bounds = vertex_buffer.at(0).position;
-
-	//for (auto& vert : vertex_buffer)
-	//{
-	//	// https://www.sebastianhaas.at/calculating-bounding-box/
-
-	//	//if (vert.position < min_bounds) { min_bounds = vert.position; }
-	//	//if (vert.position > max_bounds) { max_bounds = vert.position; }
-
-	//	// x axis
-	//	if (vert.position.getX() < min_bounds.getX()) { min_bounds.setX(vert.position.getX()); }
-	//	if (vert.position.getX() > max_bounds.getX()) { max_bounds.setX(vert.position.getX()); }
-	//	
-	//	// y axis
-	//	if (vert.position.getY() < min_bounds.getY()) { min_bounds.setY(vert.position.getY()); }
-	//	if (vert.position.getY() > max_bounds.getY()) { max_bounds.setY(vert.position.getY()); }
-
-	//	// z axis
-	//	if (vert.position.getZ() < min_bounds.getZ()) { min_bounds.setZ(vert.position.getZ()); }
-	//	if (vert.position.getZ() > max_bounds.getZ()) { max_bounds.setZ(vert.position.getZ()); }
-
-	//}
-	//std::cout << "Min bounds " << min_bounds << std::endl;
-	//std::cout << "Max bounds " << max_bounds << std::endl;
-
-	// If the mesh was a unit cube each point would be:
-	// point0 [1, 1, 1] // Max bounds
-	// point1 [-1, 1, 1]
-	// point2 [-1, -1, 1]
-	// point3 [1, -1, 1]
-	// point4 [-1, 1, -1]
-	// point5 [1, 1, -1]
-	// point6 [1, -1, -1]
-	// point7 [-1, -1, -1] // Min bounds
-
-	//bounds.at(0) = max_bounds;
-	//bounds.at(1) = Vector3(min_bounds.getX(), max_bounds.getY(), max_bounds.getZ());
-	//bounds.at(2) = Vector3(min_bounds.getX(), min_bounds.getY(), max_bounds.getZ());
-	//bounds.at(3) = Vector3(max_bounds.getX(), min_bounds.getY(), max_bounds.getZ());
-	//bounds.at(4) = Vector3(min_bounds.getX(), max_bounds.getY(), min_bounds.getZ());
-	//bounds.at(5) = Vector3(max_bounds.getX(), max_bounds.getY(), min_bounds.getZ());
-	//bounds.at(6) = Vector3(max_bounds.getX(), min_bounds.getY(), min_bounds.getZ());
-	//bounds.at(7) = min_bounds;
-
-
-	//std::cout << "point0 " << bounds.at(0) << std::endl;
-	//std::cout << "point1 " << bounds.at(1) << std::endl;
-	//std::cout << "point2 " << bounds.at(2) << std::endl;
-	//std::cout << "point3 " << bounds.at(3) << std::endl;
-	//std::cout << "point4 " << bounds.at(4) << std::endl;
-	//std::cout << "point5 " << bounds.at(5) << std::endl;
-	//std::cout << "point6 " << bounds.at(6) << std::endl;
-	//std::cout << "point7 " << bounds.at(7) << std::endl;
-
-	//point0 = max_bounds;
-	//point1 = Vector3(min_bounds.getX(), max_bounds.getY(), max_bounds.getZ());
-	//point2 = Vector3(min_bounds.getX(), min_bounds.getY(), max_bounds.getZ());
-	//point3 = Vector3(max_bounds.getX(), min_bounds.getY(), max_bounds.getZ());
-
-	//point4 = Vector3(min_bounds.getX(), max_bounds.getY(), min_bounds.getZ());
-	//point5 = Vector3(max_bounds.getX(), max_bounds.getY(), min_bounds.getZ());
-	//point6 = Vector3(max_bounds.getX(), min_bounds.getY(), min_bounds.getZ());
-	//point7 = min_bounds;
-
 	// Generates a bounding box using the slab method as mention by Kay and Kajiya in 1986
-	planes.at(0).normal = { 1.0f, 0.0f, 0.0f };
-	planes.at(1).normal = { 0.0f, 1.0f, 0.0f };
-	planes.at(2).normal = { 0.0f, 0.0f, 1.0f };
+	planes.at(axis::x).normal = { 1.0f, 0.0f, 0.0f };
+	planes.at(axis::y).normal = { 0.0f, 1.0f, 0.0f };
+	planes.at(axis::z).normal = { 0.0f, 0.0f, 1.0f };
 
+	// Loop through each vertex and calculate the axis plane's near and far values
 	for (auto& vert : vertex_buffer)
 	{
 		for (auto& plane : planes)
@@ -82,8 +19,58 @@ void BoundingBox::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 		}
 	}
 
+	// Assign each plane axis near and far to the min and max bounding boxes
+	min_bounds.setX(planes.at(axis::x).near);
+	min_bounds.setY(planes.at(axis::y).near);
+	min_bounds.setZ(planes.at(axis::z).near);
+	max_bounds.setX(planes.at(axis::x).far);
+	max_bounds.setY(planes.at(axis::y).far);
+	max_bounds.setZ(planes.at(axis::z).far);
+}
+
+bool BoundingBox::intersected(Ray& ray, float& tnear, float& tfar)
+{
+	// https://tavianator.com/2011/ray_box.html
+	// https://raytracing.github.io/books/RayTracingTheNextWeek.html#boundingvolumehierarchies
+	// https://github.com/erich666/GraphicsGems/blob/master/gems/RayBox.c
+	// https://gamedev.stackexchange.com/questions/184998/ray-box-aabb-is-slower-than-without
+	// https://gamedev.stackexchange.com/questions/18436/most-efficient-aabb-vs-ray-collision-algorithms
+
 	for (auto& plane : planes)
 	{
-		std::cout << plane.near << " " << plane.far << std::endl;
+		float NdotO = Vector3::dot(plane.normal, ray.origin);
+		float NdotD = Vector3::dot(plane.normal, ray.direction);
+
+		float tn = (plane.near - NdotO) / NdotD;
+		float tf = (plane.far - NdotO) / NdotD;
+
+		if (NdotD < 0.0f) std::swap(tn, tf);
+		if (tn > plane.near) tnear = tn;
+		if (tf > plane.far) tfar = tf;
+		if (tnear > tfar) return false;
 	}
+	return true;
+
+
+	//std::array<float, 3> numerator;
+	//std::array<float, 3> Denumerator;
+
+	//for (int i = 0; i < 3; i++)
+	//{
+	//	numerator.at(i) = Vector3::dot(planes.at(i).normal, ray.origin);
+	//	Denumerator.at(i) = Vector3::dot(planes.at(i).normal, ray.direction);
+	//}
+
+	//for (int i = 0; i < 3; i++)
+	//{
+	//	float t_near = (planes.at(i).near - numerator.at(i) / Denumerator.at(i));
+	//	float t_far = (planes.at(i).far - numerator.at(i) / Denumerator.at(i));
+
+	//	if (Denumerator.at(i) < 0.0f) std::swap(t_near, t_far);
+	//	if (t_near > tnear) tnear = t_near;
+	//	if (t_far < tfar) tfar = t_far;
+	//	
+	//	if (tnear > tfar) return false;
+	//}
+	//return true;
 }

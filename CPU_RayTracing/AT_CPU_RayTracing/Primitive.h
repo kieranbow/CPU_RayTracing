@@ -16,6 +16,7 @@ class Primitive
 
 		// Checks a ray against all primitive's triangles
 		bool intersected(Ray &ray);
+		bool intersected2(Ray& ray);
 
 		void setPosition(Vector3 position);
 		void setRotation(Vector3 rotation);
