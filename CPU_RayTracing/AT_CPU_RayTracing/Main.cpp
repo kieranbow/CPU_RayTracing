@@ -49,10 +49,10 @@ int main()
 	// Right handed Cartesian coordinate systems
 	// X+, y+, Z-
 
-	Logger logger;
-	logger.PrintWarning("Hello Warning");
-	logger.PrintError("Hello error");
-	logger.PrintMsg("Hello msg");
+	//Logger logger;
+	//logger.PrintWarning("Hello Warning");
+	//logger.PrintError("Hello error");
+	//logger.PrintMsg("Hello msg");
 
 	Primitive cube;
 

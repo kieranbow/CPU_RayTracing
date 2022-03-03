@@ -66,7 +66,6 @@ Vector3 Matrix4x4::multDirByMatrix4x4(const Vector3& _lhs, Vector3& _rhs)
 	return _rhs;
 }
 
-// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
 Vector3 Matrix4x4::translation(const Vector3& _rhs)
 {
 	Vector3 vector;

@@ -7,6 +7,7 @@
 
 class Ray;
 
+// A class that generates and stores a bounding box based off objects size
 class BoundingBox
 {
 	private:
@@ -17,28 +18,23 @@ class BoundingBox
 			float far = -k_infinity;
 		};
 
-		enum axis
-		{
-			x,
-			y,
-			z
-		};
+		enum axis { x, y, z };
+
+		static const int max_num_plane = 3;
 
 	public:
 		BoundingBox() = default;
-	
-		// Loops through obj vertex buffer and generate a bounding box
+		~BoundingBox() = default;
+
+		// Loops through the obj vertex buffer and generate a bounding box
+		// Using the slab method
 		void generateBoundingBox(std::vector<Vertex>& vertex_buffer);
 
+		// Checks if a ray has intersected the slab planes that made the bounding box
 		bool intersected(Ray& ray, float& tnear, float& tfar);
 
 		const std::array<Plane, 3>& getBounds() const { return planes; }
-		const Vector3& getMinBounds() const { return min_bounds; }
-		const Vector3& getMaxBounds() const { return max_bounds; }
 
 	private:
-		Vector3 min_bounds	= { 0.0f, 0.0f, 0.0f };
-		Vector3 max_bounds	= { 0.0f, 0.0f, 0.0f };
-
-		std::array<Plane, 3> planes;
+		std::array<Plane, max_num_plane> planes;
 };

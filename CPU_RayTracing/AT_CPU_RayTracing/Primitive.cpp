@@ -5,7 +5,7 @@
 Primitive::Primitive()
 {
 	// Load default unit cube and pass the data to the vertex and index buffers
-	MeshLoader loader("Assets\\helmet.obj", vertex_buffer, index_buffer);
+	MeshLoader loader("Assets\\unit_sphere.obj", vertex_buffer, index_buffer);
 
 	Matrix4x4 objectToWorld;
 
@@ -47,29 +47,28 @@ Primitive::~Primitive()
 
 bool Primitive::intersected(Ray& ray)
 {
-	float tn = k_infinity;
-	float tf = -k_infinity;
+	float tn = -k_infinity;
+	float tf = k_infinity;
 
-	//if (boundingBox.intersected(ray, tn, tf))
-	//{
-	//	return true;
-	//}
-
-
-	// Loop through all indices inside the buffer
-	for (int i = 0; i < index_buffer.size(); i += 3)
+	// Check if ray hits the aabb bounding box
+	if (boundingBox.intersected(ray, tn, tf))
 	{
-		int vertex_idx_1 = index_buffer.at(i);
-		int vertex_idx_2 = index_buffer.at(i + 1);
-		int vertex_idx_3 = index_buffer.at(i + 2);
+		// If the ray does intersect the aabb bounding box
+		// Loop through all indices and vertices inside the buffer
+		for (int i = 0; i < index_buffer.size(); i += 3)
+		{
+			int vertex_idx_1 = index_buffer.at(i);
+			int vertex_idx_2 = index_buffer.at(i + 1);
+			int vertex_idx_3 = index_buffer.at(i + 2);
 
-		// Get the three vertices of a triangle
-		Vector3 vert0 = vertex_buffer.at(vertex_idx_1).position;
-		Vector3 vert1 = vertex_buffer.at(vertex_idx_2).position;
-		Vector3 vert2 = vertex_buffer.at(vertex_idx_3).position;
+			// Get the three vertices of a triangle
+			Vector3 vert0 = vertex_buffer.at(vertex_idx_1).position;
+			Vector3 vert1 = vertex_buffer.at(vertex_idx_2).position;
+			Vector3 vert2 = vertex_buffer.at(vertex_idx_3).position;
 
-		// Test if ray hits the triangle
-		if (MollerTrumboreIntersection(ray, vert0, vert1, vert2)) return true;
+			// Construct a triangle and test if ray hits that triangle
+			if (MollerTrumboreIntersection(ray, vert0, vert1, vert2)) return true;
+		}
 	}
 	return false;
 }
@@ -87,10 +86,11 @@ bool Primitive::intersected2(Ray& ray)
 	return false;
 }
 
-// https://cadxfem.org/inf/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
-// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
 bool Primitive::MollerTrumboreIntersection(Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2)
 {
+	// https://cadxfem.org/inf/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
+	// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
+
 	float u = 0.0f, v = 0.0f;
 
 	// Find the two edge vectors

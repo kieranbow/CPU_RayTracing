@@ -27,8 +27,8 @@ void Camera::Render(Primitive prim, std::vector<Pixel>& buffer)
 			// Create a pixel
 			Pixel pixel;
 
-			float Px = (2.0f * ((x + 0.5f) / size.getX()) - 1) * tan(fov / 2 * pi / 180.0f) * aspect_ratio * scale;
-			float Py = (1.0f - 2.0f * ((y + 0.5f) / size.getY()) * tan(fov / 2 * pi / 180.0f));
+			float Px = (2.0f * ((x + 0.5f) / size.getX()) - 1.0f) * tan(fov / 2.0f * pi / 180.0f) * aspect_ratio * scale;
+			float Py = (1.0f - 2.0f * ((y + 0.5f) / size.getY()) * tan(fov / 2.0f * pi / 180.0f));
 			pixel.position.setX(Px);
 			pixel.position.setY(Py);
 
@@ -40,7 +40,7 @@ void Camera::Render(Primitive prim, std::vector<Pixel>& buffer)
 			primary_rayWS.origin = ws_position;
 			primary_rayWS.direction = Vector3::normalize(pixelPosWS - primary_rayWS.origin);
 
-			//if (intersect(primary_rayWS, Vector3(0.0f, 0.0f, -1.0f), 0.5f))
+			//if (intersect(primary_rayWS, Vector3(-1.0f, 0.5f, -1.0f), 0.5f))
 			//{
 			//	buffer.at(iter).colour = Colour(1.0f, 0.0f, 0.0f);
 			//}
