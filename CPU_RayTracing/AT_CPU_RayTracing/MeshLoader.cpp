@@ -1,10 +1,9 @@
 #include "MeshLoader.h"
-
 #include "Logger.h"
 
 MeshLoader::MeshLoader(std::string file_path, std::vector<Vertex>& vertex_buffer, std::vector<Indices>& index_buffer)
 {
-	Logger logger;
+	/*Logger logger;*/
 
 	// Read the mesh file from assimp's importer and processes the files data using aiProcess flags
 	pScene = importer.ReadFile(file_path, aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate);
@@ -12,13 +11,13 @@ MeshLoader::MeshLoader(std::string file_path, std::vector<Vertex>& vertex_buffer
 	// If pScene is null, then the importer failed to read the file
 	if (pScene == NULL)
 	{
-		logger.PrintError("failed to read " + file_path);
+		Logger::PrintError("failed to read " + file_path);
 	}
 
 	// Check if assimp loaded the mesh data. 
 	if (!LoadMeshData(vertex_buffer, index_buffer))
 	{
-		logger.PrintError("Assimp failed to create mesh from " + file_path);
+		Logger::PrintError("Assimp failed to create mesh from " + file_path);
 	}
 }
 
