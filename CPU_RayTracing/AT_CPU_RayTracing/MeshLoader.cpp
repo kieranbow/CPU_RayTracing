@@ -3,8 +3,6 @@
 
 MeshLoader::MeshLoader(std::string file_path, std::vector<Vertex>& vertex_buffer, std::vector<Indices>& index_buffer)
 {
-	/*Logger logger;*/
-
 	// Read the mesh file from assimp's importer and processes the files data using aiProcess flags
 	pScene = importer.ReadFile(file_path, aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate);
 

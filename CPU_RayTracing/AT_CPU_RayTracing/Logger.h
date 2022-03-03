@@ -33,6 +33,16 @@ class Logger
 			SetConsoleTextAttribute(hConsole, whiteText);
 			std::cout << " " << msg << std::endl;
 		}
+		static void PrintDebug(std::string msg)
+		{
+			// Sets the text "[Error]" with a Red background and black text
+			SetConsoleTextAttribute(hConsole, backcyan_blkText);
+			std::cout << "[Debug]";
+
+			// Sets the msg with a white text
+			SetConsoleTextAttribute(hConsole, whiteText);
+			std::cout << " " << msg << std::endl;
+		}
 		static void PrintMsg(std::string msg)
 		{
 			// Sets the msg with a white text
@@ -49,6 +59,7 @@ class Logger
 		static inline int whiteText { 15 };
 
 		// Background colour with Text colour
+		static inline int backcyan_blkText{ 176 };
 		static inline int backRed_blkText { 192 };
 		static inline int backYellow_blkText { 224 };
 };

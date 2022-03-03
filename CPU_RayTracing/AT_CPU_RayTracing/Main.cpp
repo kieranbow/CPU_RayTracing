@@ -44,15 +44,11 @@
 
 int main()
 {
+	Logger::PrintMsg("Started program");
 	// Use stb_image for saving images
 
 	// Right handed Cartesian coordinate systems
 	// X+, y+, Z-
-
-	//Logger logger;
-	//logger.PrintWarning("Hello Warning");
-	//logger.PrintError("Hello error");
-	//logger.PrintMsg("Hello msg");
 
 	Primitive cube;
 
@@ -79,9 +75,7 @@ int main()
 	render_timer.EndTimer();
 
 	// Output timer
-	std::cout << "Render time: " << render_timer.ShowResult() << " seconds" << std::endl;
-
-
+	Logger::PrintDebug("Render time: " + std::to_string(render_timer.ShowResult()) + " seconds");
 
 	Timer output_timer;
 	output_timer.StartTimer();
@@ -108,7 +102,7 @@ int main()
 	output_timer.EndTimer();
 	
 	// Output timer
-	std::cout << "Output time: " << output_timer.ShowResult() << " seconds" << std::endl;
-
+	Logger::PrintDebug("Output time: " + std::to_string(output_timer.ShowResult()) + " seconds");
+	Logger::PrintMsg("Closing program");
 	return 0;
 }
