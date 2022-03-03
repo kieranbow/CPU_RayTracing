@@ -9,7 +9,7 @@ Primitive::Primitive()
 
 	Matrix4x4 objectToWorld;
 
-	// Convert obj from local space to world space
+	// Convert vertices from local space to world space
 	for (auto& vert : vertex_buffer)
 	{
 		Matrix4x4::multVecByMatrix4x4(objectToWorld, vert.position);
@@ -39,7 +39,7 @@ Primitive::Primitive(std::string file_path, Vector3 positionWS)
 
 Primitive::~Primitive()
 {
-	// When the primitive is not used and is destroyed.
+	// When the primitive is not used.
 	// Clear all the data from the vertex and index buffers.
 	vertex_buffer.clear();
 	index_buffer.clear();

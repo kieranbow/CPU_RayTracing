@@ -23,10 +23,11 @@ class Primitive
 		void setScale(Vector3 scale);
 
 		const Vector3& getPosition() const { return ws_position; }
-		const Vector3& getRotation() const;
-		const Vector3& getScale() const;
+		const Vector3& getRotation() const { return rotation; }
+		const Vector3& getScale() const { return scale; }
 		const std::vector<Vertex>& getVertices() const { return vertex_buffer; }
 		const std::vector<Indices>& getIndices() const { return index_buffer; }
+		const BoundingBox& getBoundingBox() const { return boundingBox; }
 
 	private:
 		// Mesh data
@@ -38,6 +39,6 @@ class Primitive
 		bool MollerTrumboreIntersection(Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2);
 
 		Vector3 ws_position = { 0.0f, 0.0f, 0.0f };
-		/*Vector3 rotation = { 0.0f, 0.0f, 0.0f };*/
-		/*Vector3 scale = { 0.0f, 0.0f, 0.0f }*/
+		Vector3 rotation = { 0.0f, 0.0f, 0.0f };
+		Vector3 scale = { 0.0f, 0.0f, 0.0f };
 };
