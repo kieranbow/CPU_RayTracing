@@ -20,6 +20,9 @@ void BoundingBox::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 			if (d > plane.far) plane.far = d;
 		}
 	}
+
+	bounds.min_bounds = { planes.at(axis::x).near, planes.at(axis::y).near, planes.at(axis::z).near };
+	bounds.max_bounds = { planes.at(axis::x).far, planes.at(axis::y).far, planes.at(axis::z).far };
 }
 
 bool BoundingBox::intersected(Ray& ray, float& tnear, float& tfar)
