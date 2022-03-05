@@ -4,7 +4,7 @@
 Camera::Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float _fov)
 {
 	// Set world space position and direction
-	ws_position = positionWS;
+	ws_position = cam_to_world.multVecByMatrix4x4(positionWS);
 	ws_direction = directionWS;
 
 	// Set the dimension of the camera
@@ -33,7 +33,7 @@ void Camera::Render(Primitive prim, std::vector<Pixel>& buffer)
 			pixel.position.setY(Py);
 
 			Vector3 pixelPosWS;
-			cam_to_world.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), -1.0f), pixelPosWS);
+			cam_to_world.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), ws_direction.getZ() /*-1.0f*/), pixelPosWS);
 			Vector3::normalize(pixelPosWS);
 
 			Ray primary_rayWS;
@@ -49,7 +49,7 @@ void Camera::Render(Primitive prim, std::vector<Pixel>& buffer)
 			//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
 			//}
 
-			if (prim.intersected2(primary_rayWS))
+			if (prim.intersectedBoundingBoxDebug(primary_rayWS))
 			{
 				buffer.at(iter).colour = Colour(1.0f, 1.0f, 1.0f);
 			}

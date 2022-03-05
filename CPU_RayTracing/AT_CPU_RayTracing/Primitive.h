@@ -16,7 +16,8 @@ class Primitive
 
 		// Checks a ray against all primitive's triangles
 		bool intersected(Ray &ray);
-		bool intersected2(Ray& ray);
+		// Debug function to see where the bounding box is.
+		bool intersectedBoundingBoxDebug(Ray& ray);
 
 		void setPosition(Vector3 position);
 		void setRotation(Vector3 rotation);
@@ -38,7 +39,8 @@ class Primitive
 
 		bool MollerTrumboreIntersection(Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2);
 
-		Vector3 ws_position = { 0.0f, 0.0f, 0.0f };
+		// Transformation
+		Vector3 ws_position = { 0.0f, 0.0f, 0.0f }; // World origin
 		Vector3 rotation = { 0.0f, 0.0f, 0.0f };
-		Vector3 scale = { 0.0f, 0.0f, 0.0f };
+		Vector3 scale = { 1.0f, 1.0f, 1.0f };
 };

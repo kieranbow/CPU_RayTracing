@@ -15,8 +15,14 @@ Primitive::Primitive()
 		Matrix4x4::multVecByMatrix4x4(objectToWorld, vert.position);
 	}
 
+	//for (auto& vert : vertex_buffer)
+	//{
+	//	Vector3 position = objectToWorld.translation({ 0.0f, 0.0f, -10.0f });
+	//	vert.position += position;
+	//}
+
 	// Generates a bounding box around the mesh using the slab method
-	boundingBox.generateBoundingBox(vertex_buffer);
+	//boundingBox.generateBoundingBox(vertex_buffer);
 }
 
 Primitive::Primitive(std::string file_path, Vector3 positionWS)
@@ -73,17 +79,28 @@ bool Primitive::intersected(Ray& ray)
 	return false;
 }
 
-bool Primitive::intersected2(Ray& ray)
+bool Primitive::intersectedBoundingBoxDebug(Ray& ray)
 {
 	float tn = -k_infinity;
 	float tf = k_infinity;
 
 	if (boundingBox.intersected(ray, tn, tf))
 	{
-		// std::cout << "hit\n";
 		return true;
 	}
 	return false;
+}
+
+void Primitive::setPosition(Vector3 position)
+{
+	Matrix4x4 matrix;
+	ws_position += matrix.translation(position);
+
+	for (auto& vert : vertex_buffer)
+	{
+		vert.position += ws_position;
+	}
+	boundingBox.generateBoundingBox(vertex_buffer);
 }
 
 bool Primitive::MollerTrumboreIntersection(Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2)
