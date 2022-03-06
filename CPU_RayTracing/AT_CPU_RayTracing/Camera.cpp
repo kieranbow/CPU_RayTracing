@@ -17,7 +17,7 @@ Camera::Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float 
 	scale = tan(deg2rad(fov) * 0.5f);
 }
 
-void Camera::Render(Primitive prim, std::vector<Pixel>& buffer)
+void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer)
 {
 	int iter = 0;
 	for (int y = 0; y < static_cast<int>(size.getY()); ++y)
@@ -49,20 +49,22 @@ void Camera::Render(Primitive prim, std::vector<Pixel>& buffer)
 			//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
 			//}
 
-			if (prim.intersectedBoundingBoxDebug(primary_rayWS))
+			for(auto& prim : primitives)
 			{
-				buffer.at(iter).colour = Colour(1.0f, 1.0f, 1.0f);
-			}
+				if (prim.intersectedBoundingBoxDebug(primary_rayWS))
+				{
+					buffer.at(iter).colour = Colour(1.0f, 1.0f, 1.0f);
+				}
 
-			if (prim.intersected(primary_rayWS))
-			{
-				buffer.at(iter).colour = Colour(1.0f, 0.0f, 0.0f);
+				if (prim.intersected(primary_rayWS))
+				{
+					buffer.at(iter).colour = Colour(1.0f, 0.0f, 0.0f);
+				}
+				//else
+				//{
+				//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
+				//}
 			}
-			//else
-			//{
-			//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
-			//}
-
 			iter++;
 		}
 	}

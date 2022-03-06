@@ -29,6 +29,11 @@ namespace BoundingBox
 			// Checks if a ray has intersected the slab planes that make up the bounding box
 			bool intersected(Ray& ray, float& tnear, float& tfar);
 
+			static Extent unionBounds(const AABB& b1, const AABB& b2);
+
+			void setBounds(const Extent extent);
+			void setBounds(const Vector3 min, const Vector3 max);
+
 			// Returns the min and max points that make up the bounds
 			const Extent& getBounds() const { return bounds; }
 

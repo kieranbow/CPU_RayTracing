@@ -58,7 +58,12 @@ int main()
 	Primitive cube;
 	cube.setPosition({ 1.0f, 0.0f, -10.0f });
 
+	Primitive sphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	sphere.setPosition({ -2.0f, 1.0f, -15.0f });
+
 	std::vector<Primitive> primitives;
+	primitives.push_back(cube);
+	primitives.push_back(sphere);
 
 	// Image in pixels
 	Vector2 image_size = { 640, 480 };
@@ -78,7 +83,7 @@ int main()
 	render_timer.StartTimer();
 
 	// Render what the camera sees
-	camera.Render(cube, framebuffer);
+	camera.Render(primitives, framebuffer);
 
 	// End timer
 	render_timer.EndTimer();

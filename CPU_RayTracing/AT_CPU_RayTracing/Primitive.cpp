@@ -5,7 +5,7 @@
 Primitive::Primitive()
 {
 	// Load default unit cube and pass the data to the vertex and index buffers
-	MeshLoader loader("Assets\\unit_sphere.obj", vertex_buffer, index_buffer);
+	MeshLoader loader("Assets\\Unit_Cube.obj", vertex_buffer, index_buffer);
 
 	Matrix4x4 objectToWorld;
 
@@ -40,7 +40,7 @@ Primitive::Primitive(std::string file_path, Vector3 positionWS)
 	ws_position = positionWS;
 
 	// Generates a bounding box around the mesh using the slab method
-	boundingBox.generateBoundingBox(vertex_buffer);
+	// boundingBox.generateBoundingBox(vertex_buffer);
 }
 
 Primitive::~Primitive()

@@ -16,7 +16,7 @@ class Camera
 		Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float _fov);
 
 		// void Update();
-		void Render(Primitive prim, std::vector<Pixel>& buffer);
+		void Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer);
 
 		void setPositionWS(Vector3 positionWS);
 		void setDirectionWS(Vector3 directionWS);

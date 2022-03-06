@@ -22,7 +22,8 @@ namespace BVH
 
 	struct Node
 	{
-		void initLeaf(int first, int n, BoundingBox::AABB& bounds)
+		Node() = default;
+		void initLeaf(size_t first, int n, BoundingBox::AABB& bounds)
 		{
 			first_prim_offset = first;
 			n_primitives = n;
@@ -43,8 +44,9 @@ namespace BVH
 		}
 
 		BoundingBox::AABB boundingBox;
-		std::array<Node*, 2> children;
-		int split_axis = 0, first_prim_offset = 0, n_primitives = 0;
+		std::array<BVH::Node*, 2> children;
+		size_t first_prim_offset = 0;
+		int split_axis = 0, n_primitives = 0;
 	};
 
 	// https://pbr-book.org/3ed-2018/Primitives_and_Intersection_Acceleration/Bounding_Volume_Hierarchies#fragment-InitializemonoprimitiveInfoarrayforprimitives-0
@@ -52,7 +54,7 @@ namespace BVH
 	{
 	public:
 		BVHAccel(std::vector<Primitive>& prim, int _maxPrimInNode);
-		BVH::Node* recursiveBuild(std::vector<BVH::PrimitiveInfo>& prim_info, int start, int end, int *total_nodes, std::vector<std::shared_ptr<Primitive>>& ordered_prims);
+		std::shared_ptr<BVH::Node> recursiveBuild(std::vector<BVH::PrimitiveInfo>& prim_info, int start, int end, int *total_nodes, std::vector<std::shared_ptr<Primitive>>& ordered_prims);
 
 	private:
 		int maxPrimInNode = 1;

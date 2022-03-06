@@ -27,31 +27,34 @@ BVH::BVHAccel::BVHAccel(std::vector<Primitive>& prim, int _maxPrimInNode)
 
 }
 
-BVH::Node* BVH::BVHAccel::recursiveBuild(std::vector<BVH::PrimitiveInfo>& prim_info, int start, int end, int* total_nodes, std::vector<std::shared_ptr<Primitive>>& ordered_prims)
+std::shared_ptr<BVH::Node> BVH::BVHAccel::recursiveBuild(std::vector<BVH::PrimitiveInfo>& prim_info, int start, int end, int* total_nodes, std::vector<std::shared_ptr<Primitive>>& ordered_prims)
 {
-	//BVH::Node* node;
-	//*total_nodes++;
+	std::shared_ptr<BVH::Node> node = std::make_unique<BVH::Node>();
+	*total_nodes++;
 
-	//// Compute the bounds of all primitives within the BVH node
-	//BoundingBox::AABB bounds;
-	//for (int i = start; i < end; ++i)
-	//{
-	//	//bounds = Union();
-	//}
+	// Compute the bounds of all primitives within the BVH node
+	BoundingBox::AABB bounds;
+	for (int i = start; i < end; ++i)
+	{
+		bounds.setBounds(BoundingBox::AABB::unionBounds(bounds, prim_info.at(i).boundingbox));
+	}
 
-	//int n_primitives = end - start;
-
-	//if (n_primitives == 1)
-	//{
-	//	size_t first_prim_offset = ordered_prims.size();
-	//	for (int i = start; i < end; ++i)
-	//	{
-	//		int prim_num = prim_info.at(i).id;
-	//		//ordered_prims.push_back(primitives.at(prim_num));
-	//	}
-	//	node->initLeaf(first_prim_offset, n_primitives, bounds);
-	//	return node;
-	//}
-
-	return nullptr;
+	int n_primitives = end - start;
+	
+	// Create leaf node
+	if (n_primitives == 1)
+	{
+		size_t first_prim_offset = ordered_prims.size();
+		for (int i = start; i < end; ++i)
+		{
+			int prim_num = prim_info.at(i).id;
+			//ordered_prims.push_back(primitives.at(prim_num));
+		}
+		node->initLeaf(first_prim_offset, n_primitives, bounds);
+		return node;
+	}
+	else
+	{
+		return nullptr;
+	}
 }

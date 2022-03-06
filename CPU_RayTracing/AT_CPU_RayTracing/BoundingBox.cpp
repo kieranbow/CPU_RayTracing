@@ -13,8 +13,6 @@ void BoundingBox::AABB::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 	{
 		for (auto & vert : vertex_buffer)
 		{
-			// Using dot is the same as
-			// plane.normal.x * vert.position.x + plane.normal.y * vert.position.y + plane.normal.z * vert.position.z
 			float d = Vector3::dot(plane.normal, vert.position);
 			if (d < plane.near) plane.near = d;
 			if (d > plane.far) plane.far = d;
@@ -45,4 +43,30 @@ bool BoundingBox::AABB::intersected(Ray& ray, float& tnear, float& tfar)
 		if (tnear > tfar) return false;
 	}
 	return true;
+}
+
+BoundingBox::Extent BoundingBox::AABB::unionBounds(const AABB& b1, const AABB& b2)
+{
+	// https://pbr-book.org/3ed-2018/Geometry_and_Transformations/Bounding_Boxes#fragment-GeometryInlineFunctions-19
+	BoundingBox::Extent extent;
+	extent.min_extent.setX(std::min(b1.bounds.min_extent.getX(), b2.bounds.min_extent.getX()));
+	extent.min_extent.setY(std::min(b1.bounds.min_extent.getY(), b2.bounds.min_extent.getY()));
+	extent.min_extent.setZ(std::min(b1.bounds.min_extent.getZ(), b2.bounds.min_extent.getZ()));
+
+	extent.max_extent.setX(std::max(b1.bounds.max_extent.getX(), b2.bounds.max_extent.getX()));
+	extent.max_extent.setY(std::max(b1.bounds.max_extent.getY(), b2.bounds.max_extent.getY()));
+	extent.max_extent.setZ(std::max(b1.bounds.max_extent.getZ(), b2.bounds.max_extent.getZ()));
+	
+	return extent;
+}
+
+void BoundingBox::AABB::setBounds(const Extent extent)
+{
+	bounds = extent;
+}
+
+void BoundingBox::AABB::setBounds(const Vector3 min, const Vector3 max)
+{
+	bounds.min_extent = min;
+	bounds.max_extent = max;
 }
