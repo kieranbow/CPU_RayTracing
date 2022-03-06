@@ -1,7 +1,7 @@
 #include "BoundingBox.h"
 #include "Ray.h"
 
-void BoundingBox::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
+void BoundingBox::AABB::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 {
 	// Generates a bounding box using the slab method as mention by Kay and Kajiya (1986)
 	planes.at(axis::x).normal = { 1.0f, 0.0f, 0.0f };
@@ -21,11 +21,11 @@ void BoundingBox::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 		}
 	}
 
-	bounds.min_bounds = { planes.at(axis::x).near, planes.at(axis::y).near, planes.at(axis::z).near };
-	bounds.max_bounds = { planes.at(axis::x).far, planes.at(axis::y).far, planes.at(axis::z).far };
+	bounds.min_extent = { planes.at(axis::x).near, planes.at(axis::y).near, planes.at(axis::z).near };
+	bounds.max_extent = { planes.at(axis::x).far, planes.at(axis::y).far, planes.at(axis::z).far };
 }
 
-bool BoundingBox::intersected(Ray& ray, float& tnear, float& tfar)
+bool BoundingBox::AABB::intersected(Ray& ray, float& tnear, float& tfar)
 {
 	// https://www.scratchapixel.com/lessons/advanced-rendering/introduction-acceleration-structure/bounding-volume-hierarchy-BVH-part1
 

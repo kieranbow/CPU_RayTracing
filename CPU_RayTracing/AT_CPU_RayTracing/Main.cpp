@@ -42,6 +42,11 @@
 // https://github.com/ssloy/tinyraytracer/blob/master/tinyraytracer.cpp	
 // https://www.scratchapixel.com/code.php?id=3&origin=/lessons/3d-basic-rendering/introduction-to-ray-tracing
 
+
+// https://www.scratchapixel.com/lessons/advanced-rendering/introduction-acceleration-structure/bounding-volume-hierarchy-BVH-part2
+// https://computergraphics.stackexchange.com/questions/1976/how-to-determine-the-object-to-world-matrix
+// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/#translation-matrices
+
 int main()
 {
 	Logger::PrintMsg("Started program");

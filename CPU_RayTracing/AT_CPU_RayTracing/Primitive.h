@@ -28,14 +28,14 @@ class Primitive
 		const Vector3& getScale() const { return scale; }
 		const std::vector<Vertex>& getVertices() const { return vertex_buffer; }
 		const std::vector<Indices>& getIndices() const { return index_buffer; }
-		const BoundingBox& getBoundingBox() const { return boundingBox; }
+		const BoundingBox::AABB& getBoundingBox() const { return boundingBox; }
 
 	private:
 		// Mesh data
 		std::vector<Vertex> vertex_buffer;
 		std::vector<Indices> index_buffer;
 
-		BoundingBox boundingBox;
+		BoundingBox::AABB boundingBox;
 
 		bool MollerTrumboreIntersection(Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2);
 
