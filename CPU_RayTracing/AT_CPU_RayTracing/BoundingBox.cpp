@@ -19,8 +19,8 @@ void BoundingBox::AABB::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 		}
 	}
 
-	bounds.min_extent = { planes.at(axis::x).near, planes.at(axis::y).near, planes.at(axis::z).near };
-	bounds.max_extent = { planes.at(axis::x).far, planes.at(axis::y).far, planes.at(axis::z).far };
+	bounds.min = { planes.at(axis::x).near, planes.at(axis::y).near, planes.at(axis::z).near };
+	bounds.max = { planes.at(axis::x).far, planes.at(axis::y).far, planes.at(axis::z).far };
 }
 
 bool BoundingBox::AABB::intersected(Ray& ray, float& tnear, float& tfar)
@@ -45,28 +45,30 @@ bool BoundingBox::AABB::intersected(Ray& ray, float& tnear, float& tfar)
 	return true;
 }
 
-BoundingBox::Extent BoundingBox::AABB::unionBounds(const AABB& b1, const AABB& b2)
+BoundingBox::Bounds BoundingBox::AABB::combineBounds(const AABB& b1, const AABB& b2)
 {
 	// https://pbr-book.org/3ed-2018/Geometry_and_Transformations/Bounding_Boxes#fragment-GeometryInlineFunctions-19
-	BoundingBox::Extent extent;
-	extent.min_extent.setX(std::min(b1.bounds.min_extent.getX(), b2.bounds.min_extent.getX()));
-	extent.min_extent.setY(std::min(b1.bounds.min_extent.getY(), b2.bounds.min_extent.getY()));
-	extent.min_extent.setZ(std::min(b1.bounds.min_extent.getZ(), b2.bounds.min_extent.getZ()));
-
-	extent.max_extent.setX(std::max(b1.bounds.max_extent.getX(), b2.bounds.max_extent.getX()));
-	extent.max_extent.setY(std::max(b1.bounds.max_extent.getY(), b2.bounds.max_extent.getY()));
-	extent.max_extent.setZ(std::max(b1.bounds.max_extent.getZ(), b2.bounds.max_extent.getZ()));
+	// https://raytracing.github.io/books/RayTracingTheNextWeek.html#boundingvolumehierarchies
 	
-	return extent;
+	BoundingBox::Bounds bounds;
+	bounds.min.setX(std::min(b1.bounds.min.getX(), b2.bounds.min.getX()));
+	bounds.min.setY(std::min(b1.bounds.min.getY(), b2.bounds.min.getY()));
+	bounds.min.setZ(std::min(b1.bounds.min.getZ(), b2.bounds.min.getZ()));
+
+	bounds.max.setX(std::max(b1.bounds.max.getX(), b2.bounds.max.getX()));
+	bounds.max.setY(std::max(b1.bounds.max.getY(), b2.bounds.max.getY()));
+	bounds.max.setZ(std::max(b1.bounds.max.getZ(), b2.bounds.max.getZ()));
+	
+	return bounds;
 }
 
-void BoundingBox::AABB::setBounds(const Extent extent)
+void BoundingBox::AABB::setBounds(const Bounds extent)
 {
 	bounds = extent;
 }
 
 void BoundingBox::AABB::setBounds(const Vector3 min, const Vector3 max)
 {
-	bounds.min_extent = min;
-	bounds.max_extent = max;
+	bounds.min = min;
+	bounds.max = max;
 }

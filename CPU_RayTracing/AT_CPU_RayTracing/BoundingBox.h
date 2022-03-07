@@ -10,10 +10,11 @@ class Ray;
 
 namespace BoundingBox
 {
-	struct Extent
+	// Contains the min and max points for a bounding box
+	struct Bounds
 	{
-		Vector3 min_extent;
-		Vector3 max_extent;
+		Vector3 min;
+		Vector3 max;
 	};
 
 	// A class that generates and stores a bounding box based off objects size
@@ -24,18 +25,19 @@ namespace BoundingBox
 			~AABB() = default;
 
 			// Loops through the obj vertex buffer and generate a bounding box using the slab method
-			void generateBoundingBox(std::vector<Vertex>& vertex_buffer);
+			void generateBoundingBox(std::vector<Vertex>& _vertex_buffer);
 
 			// Checks if a ray has intersected the slab planes that make up the bounding box
 			bool intersected(Ray& ray, float& tnear, float& tfar);
 
-			static Extent unionBounds(const AABB& b1, const AABB& b2);
+			// Computes a new bounding box around two separate bounding boxes
+			static Bounds combineBounds(const AABB& b1, const AABB& b2);
 
-			void setBounds(const Extent extent);
-			void setBounds(const Vector3 min, const Vector3 max);
+			void setBounds(const Bounds _bounds);
+			void setBounds(const Vector3 _min, const Vector3 _max);
 
 			// Returns the min and max points that make up the bounds
-			const Extent& getBounds() const { return bounds; }
+			const Bounds& getBounds() const { return bounds; }
 
 		private:
 			struct Plane
@@ -49,7 +51,6 @@ namespace BoundingBox
 			static const int max_num_plane = 3;
 
 			std::array<Plane, max_num_plane> planes;
-			Extent bounds;
+			Bounds bounds;
 	};
 }
-

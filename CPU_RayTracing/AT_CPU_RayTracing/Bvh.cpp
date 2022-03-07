@@ -36,7 +36,7 @@ std::shared_ptr<BVH::Node> BVH::BVHAccel::recursiveBuild(std::vector<BVH::Primit
 	BoundingBox::AABB bounds;
 	for (int i = start; i < end; ++i)
 	{
-		bounds.setBounds(BoundingBox::AABB::unionBounds(bounds, prim_info.at(i).boundingbox));
+		bounds.setBounds(BoundingBox::AABB::combineBounds(bounds, prim_info.at(i).boundingbox));
 	}
 
 	int n_primitives = end - start;

@@ -13,7 +13,7 @@ namespace BVH
 		PrimitiveInfo(int prim_id, BoundingBox::AABB bounds) :
 			id(prim_id),
 			boundingbox(bounds),
-			centroid(Vector3(0.5f, 0.5f, 0.5f)* bounds.getBounds().min_extent + Vector3(0.5f, 0.5f, 0.5f) * bounds.getBounds().max_extent) {}
+			centroid(Vector3(0.5f, 0.5f, 0.5f)* bounds.getBounds().min + Vector3(0.5f, 0.5f, 0.5f) * bounds.getBounds().max) {}
 
 		int id = 0;
 		BoundingBox::AABB boundingbox;
