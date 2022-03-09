@@ -91,6 +91,12 @@ bool Primitive::intersectedBoundingBoxDebug(Ray& ray)
 	return false;
 }
 
+bool Primitive::generateBoundingBox()
+{
+	boundingBox.generateBoundingBox(vertex_buffer);
+	return true;
+}
+
 void Primitive::setPosition(Vector3 position)
 {
 	Matrix4x4 matrix;
@@ -100,6 +106,7 @@ void Primitive::setPosition(Vector3 position)
 	{
 		vert.position += ws_position;
 	}
+	// boundingBox.generateBoundingBox(vertex_buffer);
 	boundingBox.generateBoundingBox(vertex_buffer);
 }
 

@@ -45,7 +45,7 @@ bool BoundingBox::AABB::intersected(Ray& ray, float& tnear, float& tfar)
 	return true;
 }
 
-BoundingBox::Bounds BoundingBox::AABB::combineBounds(const AABB& b1, const AABB& b2)
+BoundingBox::Bounds BoundingBox::AABB::combineBounds(AABB& b1, AABB& b2)
 {
 	// https://pbr-book.org/3ed-2018/Geometry_and_Transformations/Bounding_Boxes#fragment-GeometryInlineFunctions-19
 	// https://raytracing.github.io/books/RayTracingTheNextWeek.html#boundingvolumehierarchies
@@ -59,6 +59,8 @@ BoundingBox::Bounds BoundingBox::AABB::combineBounds(const AABB& b1, const AABB&
 	bounds.max.setY(std::max(b1.bounds.max.getY(), b2.bounds.max.getY()));
 	bounds.max.setZ(std::max(b1.bounds.max.getZ(), b2.bounds.max.getZ()));
 	
+	b1.bounds = bounds;
+
 	return bounds;
 }
 

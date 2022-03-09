@@ -20,6 +20,20 @@ namespace BoundingBox
 	// A class that generates and stores a bounding box based off objects size
 	class AABB
 	{
+	private:
+		struct Plane
+		{
+			Vector3 normal = { 0.0f, 0.0f, 0.0f };
+			float near = k_infinity;
+			float far = -k_infinity;;
+		};
+
+		enum axis { x, y, z };
+		static const int max_num_plane = 3;
+
+		std::array<Plane, max_num_plane> planes;
+		Bounds bounds;
+
 		public:
 			AABB() = default;
 			~AABB() = default;
@@ -31,26 +45,20 @@ namespace BoundingBox
 			bool intersected(Ray& ray, float& tnear, float& tfar);
 
 			// Computes a new bounding box around two separate bounding boxes
-			static Bounds combineBounds(const AABB& b1, const AABB& b2);
+			static Bounds combineBounds(AABB& b1, AABB& b2);
 
 			void setBounds(const Bounds _bounds);
 			void setBounds(const Vector3 _min, const Vector3 _max);
+			void setBoundsMinX(float min) { bounds.min.setX(min); }
+			void setBoundsMinY(float min) { bounds.min.setY(min); }
+			void setBoundsMinZ(float min) { bounds.min.setZ(min); }
+			void setBoundsMaxX(float max) { bounds.max.setX(max); }
+			void setBoundsMaxY(float max) { bounds.max.setY(max); }
+			void setBoundsMaxZ(float max) { bounds.max.setZ(max); }
 
 			// Returns the min and max points that make up the bounds
 			const Bounds& getBounds() const { return bounds; }
+			const std::array<Plane, max_num_plane>& getPlanes() const { return planes; }
 
-		private:
-			struct Plane
-			{
-				Vector3 normal = { 0.0f, 0.0f, 0.0f };
-				float near = k_infinity;
-				float far = -k_infinity;;
-			};
-
-			enum axis { x, y, z };
-			static const int max_num_plane = 3;
-
-			std::array<Plane, max_num_plane> planes;
-			Bounds bounds;
 	};
 }

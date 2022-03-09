@@ -14,10 +14,13 @@ class Primitive
 		Primitive(std::string file_path, Vector3 positionWS);
 		~Primitive();
 
-		// Checks a ray against all primitive's triangles
+		// Checks a ray primitive's bounding box before checking if that ray
+		// hits the primitive's triangles
 		bool intersected(Ray &ray);
 		// Debug function to see where the bounding box is.
 		bool intersectedBoundingBoxDebug(Ray& ray);
+
+		bool generateBoundingBox();
 
 		void setPosition(Vector3 position);
 		void setRotation(Vector3 rotation);

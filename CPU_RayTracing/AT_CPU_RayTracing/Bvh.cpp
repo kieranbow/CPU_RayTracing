@@ -1,60 +1,53 @@
 #include "Bvh.h"
+#include "Logger.h"
 
-BVH::BVHAccel::BVHAccel(std::vector<Primitive>& prim, int _maxPrimInNode)
+void BVH::Accelerator::buildBVH(const std::vector<Primitive>& v_prims)
 {
-	maxPrimInNode = std::min(255, _maxPrimInNode);
-	primitives = prim;
-
-	if (primitives.size() == 0) return;
-
-	// Init an array of primitive info
-	std::vector<BVH::PrimitiveInfo> primitive_info(primitives.size());
-
-	// Loop through all primitives and assign info about id and bounding box to
-	// primtive_info
-	for (int i = 0; i < primitives.size(); i++)
+	// Copy scenes prmitives to change order of primitives for BVH
+	if (v_prims.empty())
 	{
-		primitive_info.at(i) = { i, primitives.at(i).getBoundingBox() };
+		Logger::PrintWarning("No primitives to build the BVH from");
+		return;
 	}
-
-	int total_nodes = 0;
-	std::vector<std::shared_ptr<Primitive>> orderedPrims;
-	//BVH::Node* root;
-
-	//root = recusiveBuild
-
-	//primitives.swap(orderedPrims);
-
-}
-
-std::shared_ptr<BVH::Node> BVH::BVHAccel::recursiveBuild(std::vector<BVH::PrimitiveInfo>& prim_info, int start, int end, int* total_nodes, std::vector<std::shared_ptr<Primitive>>& ordered_prims)
-{
-	std::shared_ptr<BVH::Node> node = std::make_unique<BVH::Node>();
-	*total_nodes++;
-
-	// Compute the bounds of all primitives within the BVH node
-	BoundingBox::AABB bounds;
-	for (int i = start; i < end; ++i)
-	{
-		bounds.setBounds(BoundingBox::AABB::combineBounds(bounds, prim_info.at(i).boundingbox));
-	}
-
-	int n_primitives = end - start;
 	
-	// Create leaf node
-	if (n_primitives == 1)
+	m_shape.reserve(v_prims.size());
+	std::copy(v_prims.begin(), v_prims.end(), std::back_inserter(m_shape));
+
+	std::vector<std::shared_ptr<BVH::Node>> sp_nodes;
+	int left_idx = 0;
+	int right_idx = m_shape.size();
+	int n_nodes = 1;
+
+	// Generate root bounding box around entire scene
+	
+	BoundingBox::AABB worldBounds = m_shape.at(0).getBoundingBox();
+
+	Vector3 world_min = { -k_infinity, -k_infinity, -k_infinity };
+	Vector3 world_max = { k_infinity, k_infinity, k_infinity };
+	for(auto& prim: m_shape)
 	{
-		size_t first_prim_offset = ordered_prims.size();
-		for (int i = start; i < end; ++i)
-		{
-			int prim_num = prim_info.at(i).id;
-			//ordered_prims.push_back(primitives.at(prim_num));
-		}
-		node->initLeaf(first_prim_offset, n_primitives, bounds);
-		return node;
+		BoundingBox::AABB box = prim.getBoundingBox();
+
+		BoundingBox::AABB::combineBounds(worldBounds, box);
+
+		//if (world_min.getX() < box.min.getX()) worldBounds.setBoundsMinX(box.min.getX());
+		//if (world_min.getY() < box.min.getY()) worldBounds.setBoundsMinY(box.min.getY());
+		//if (world_min.getZ() < box.min.getZ()) worldBounds.setBoundsMinZ(box.min.getZ());
+
+		//if (world_max.getX() > box.max.getX()) worldBounds.setBoundsMaxX(box.max.getX());
+		//if (world_max.getY() > box.max.getY()) worldBounds.setBoundsMaxY(box.max.getY());
+		//if (world_max.getZ() > box.max.getZ()) worldBounds.setBoundsMaxZ(box.max.getZ());
+
 	}
-	else
-	{
-		return nullptr;
-	}
+	
+	
+	//sp_root->m_boundingBox = ;
+
+
+	// Split primitives using mid-point to create child nodes from root
+	// Find midpoint of largest axis
+	// Sort each primitive and split between left and right nodes
+
+	// Continue spliting until only one primitives is in each node
+
 }

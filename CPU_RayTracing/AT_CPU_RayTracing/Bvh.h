@@ -5,59 +5,40 @@
 #include "Primitive.h"
 #include "BoundingBox.h"
 
+class Ray;
+
 namespace BVH
 {
-	struct PrimitiveInfo
+	// A node that makes up the tree of a BVH
+	class Node
 	{
-		PrimitiveInfo() {}
-		PrimitiveInfo(int prim_id, BoundingBox::AABB bounds) :
-			id(prim_id),
-			boundingbox(bounds),
-			centroid(Vector3(0.5f, 0.5f, 0.5f)* bounds.getBounds().min + Vector3(0.5f, 0.5f, 0.5f) * bounds.getBounds().max) {}
+		public:
+			
+			void setNodeAABB();
+			void makeLeaf();
+			void makeNode();
+			
 
-		int id = 0;
-		BoundingBox::AABB boundingbox;
-		Vector3 centroid;
+			std::shared_ptr<Node> sp_leftNode;
+			std::shared_ptr<Node> sp_rightNode;
+			BoundingBox::AABB m_boundingBox;
+			bool m_leaf;
+			size_t m_idx;
+			size_t m_objs;
 	};
 
-	struct Node
+	// Handles all the primitives within the scene
+	class Accelerator
 	{
-		Node() = default;
-		void initLeaf(size_t first, int n, BoundingBox::AABB& bounds)
-		{
-			first_prim_offset = first;
-			n_primitives = n;
-			boundingBox = bounds;
-			children.at(0) = children.at(1) = nullptr;
-			// ++leafNodes;
-			// ++totalLeafNodes;
-			// totalPrimitives += n;
-		}
-		void initInterior(int axis, Node *c0, Node *c1)
-		{
-			children.at(0) = c0;
-			children.at(1) = c1;
-			// boundingBox = Union(c0->getBounds(), c1->getBounds()
-			split_axis = axis;
-			n_primitives = 0;
-			// ++interiorNode;
-		}
+		public:
+			void buildBVH(const std::vector<Primitive>& v_prims);
+			void buildRecursive(size_t leftIdx, size_t rightIdx, BoundingBox::AABB box, std::shared_ptr<BVH::Node> sp_node, int depth);
 
-		BoundingBox::AABB boundingBox;
-		std::array<BVH::Node*, 2> children;
-		size_t first_prim_offset = 0;
-		int split_axis = 0, n_primitives = 0;
-	};
+			bool hit();
+			bool hitRecursive();
 
-	// https://pbr-book.org/3ed-2018/Primitives_and_Intersection_Acceleration/Bounding_Volume_Hierarchies#fragment-InitializemonoprimitiveInfoarrayforprimitives-0
-	class BVHAccel
-	{
-	public:
-		BVHAccel(std::vector<Primitive>& prim, int _maxPrimInNode);
-		std::shared_ptr<BVH::Node> recursiveBuild(std::vector<BVH::PrimitiveInfo>& prim_info, int start, int end, int *total_nodes, std::vector<std::shared_ptr<Primitive>>& ordered_prims);
-
-	private:
-		int maxPrimInNode = 1;
-		std::vector<Primitive> primitives;
+			std::vector<Primitive> m_shape;
+			std::shared_ptr<BVH::Node> sp_root;
+			std::vector<std::shared_ptr<BVH::Node>> sp_nodes;
 	};
 }

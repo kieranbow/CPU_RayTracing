@@ -21,6 +21,8 @@
 #include "Timer.h"
 #include "Logger.h"
 
+#include "Bvh.h"
+
 // https://stackoverflow.com/questions/695043/how-does-one-convert-world-coordinates-to-camera-coordinates
 // https://en.wikipedia.org/wiki/Rotation_matrix#Basic_rotations
 // https://www.3dgep.com/understanding-the-view-matrix/
@@ -64,6 +66,10 @@ int main()
 	std::vector<Primitive> primitives;
 	primitives.push_back(cube);
 	primitives.push_back(sphere);
+
+	BVH::Accelerator test;
+	test.buildBVH(primitives);
+
 
 	// Image in pixels
 	Vector2 image_size = { 640, 480 };
