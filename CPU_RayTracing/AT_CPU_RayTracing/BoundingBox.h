@@ -33,6 +33,7 @@ namespace BoundingBox
 
 		std::array<Plane, max_num_plane> planes;
 		Bounds bounds;
+		Vector3 centroid;
 
 		public:
 			AABB() = default;
@@ -59,6 +60,6 @@ namespace BoundingBox
 			// Returns the min and max points that make up the bounds
 			const Bounds& getBounds() const { return bounds; }
 			const std::array<Plane, max_num_plane>& getPlanes() const { return planes; }
-
+			const Vector3& getCentroid() const { return centroid; }
 	};
 }

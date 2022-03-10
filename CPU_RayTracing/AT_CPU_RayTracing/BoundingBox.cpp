@@ -21,6 +21,11 @@ void BoundingBox::AABB::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 
 	bounds.min = { planes.at(axis::x).near, planes.at(axis::y).near, planes.at(axis::z).near };
 	bounds.max = { planes.at(axis::x).far, planes.at(axis::y).far, planes.at(axis::z).far };
+
+	// Create centroid of bounding box
+	centroid.setX(0.5f * bounds.min.getX() + 0.5f * bounds.max.getX());
+	centroid.setY(0.5f * bounds.min.getY() + 0.5f * bounds.max.getY());
+	centroid.setZ(0.5f * bounds.min.getZ() + 0.5f * bounds.max.getZ());
 }
 
 bool BoundingBox::AABB::intersected(Ray& ray, float& tnear, float& tfar)

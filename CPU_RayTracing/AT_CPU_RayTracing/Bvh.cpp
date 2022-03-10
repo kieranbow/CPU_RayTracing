@@ -3,46 +3,30 @@
 
 void BVH::Accelerator::buildBVH(const std::vector<Primitive>& v_prims)
 {
-	// Copy scenes prmitives to change order of primitives for BVH
 	if (v_prims.empty())
 	{
 		Logger::PrintWarning("No primitives to build the BVH from");
 		return;
 	}
 	
+	// Copy scenes prmitives to change order of primitives for BVH
 	m_shape.reserve(v_prims.size());
 	std::copy(v_prims.begin(), v_prims.end(), std::back_inserter(m_shape));
 
-	std::vector<std::shared_ptr<BVH::Node>> sp_nodes;
-	int left_idx = 0;
-	int right_idx = m_shape.size();
-	int n_nodes = 1;
-
 	// Generate root bounding box around entire scene
-	
 	BoundingBox::AABB worldBounds = m_shape.at(0).getBoundingBox();
 
-	Vector3 world_min = { -k_infinity, -k_infinity, -k_infinity };
-	Vector3 world_max = { k_infinity, k_infinity, k_infinity };
 	for(auto& prim: m_shape)
 	{
 		BoundingBox::AABB box = prim.getBoundingBox();
-
 		BoundingBox::AABB::combineBounds(worldBounds, box);
-
-		//if (world_min.getX() < box.min.getX()) worldBounds.setBoundsMinX(box.min.getX());
-		//if (world_min.getY() < box.min.getY()) worldBounds.setBoundsMinY(box.min.getY());
-		//if (world_min.getZ() < box.min.getZ()) worldBounds.setBoundsMinZ(box.min.getZ());
-
-		//if (world_max.getX() > box.max.getX()) worldBounds.setBoundsMaxX(box.max.getX());
-		//if (world_max.getY() > box.max.getY()) worldBounds.setBoundsMaxY(box.max.getY());
-		//if (world_max.getZ() > box.max.getZ()) worldBounds.setBoundsMaxZ(box.max.getZ());
-
 	}
 	
-	
-	//sp_root->m_boundingBox = ;
+	// Make root node
+	sp_node = std::make_shared<BVH::Node>();
+	sp_node->m_boundingBox = worldBounds;
 
+	buildTree(sp_node);
 
 	// Split primitives using mid-point to create child nodes from root
 	// Find midpoint of largest axis
@@ -50,4 +34,48 @@ void BVH::Accelerator::buildBVH(const std::vector<Primitive>& v_prims)
 
 	// Continue spliting until only one primitives is in each node
 
+}
+
+void BVH::Accelerator::buildTree(std::shared_ptr<Node> root)
+{
+	// Make leaf node if the number of prims is less than an arbitrary number
+	size_t n = 2;
+	if (m_shape.size() < n) { root->makeLeaf(); }
+	else
+	{
+		// Find longest axis | sort prims along axis
+
+		// Get parent nodes bounding box min and max
+		Vector3 min = root->m_boundingBox.getBounds().min;
+		Vector3 max = root->m_boundingBox.getBounds().max;
+
+		Vector3 diff = max - min;
+
+		int axis = getGreatestAxis(diff);
+
+		// Find the split index mid-point using longest axis and divide left and right side
+
+		// Create AABB bounds around the split primitives
+
+		// Create Left and right node
+		//sp_node->sp_leftNode = std::make_shared<Node>();
+
+		root->sp_rightNode = std::make_shared<Node>();
+	}
+}
+
+int BVH::Accelerator::getGreatestAxis(Vector3 vec)
+{
+	if (vec.getX() > vec.getY()) return axis::x;
+	else
+	{
+		return axis::z;
+	}
+	if (vec.getY() > vec.getZ()) return axis::y;
+	return axis::z;
+}
+
+void BVH::Node::makeLeaf()
+{
+	m_leaf = true;
 }

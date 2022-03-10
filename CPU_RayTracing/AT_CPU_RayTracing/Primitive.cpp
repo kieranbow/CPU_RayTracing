@@ -5,7 +5,7 @@
 Primitive::Primitive()
 {
 	// Load default unit cube and pass the data to the vertex and index buffers
-	MeshLoader loader("Assets\\Unit_Cube.obj", vertex_buffer, index_buffer);
+	MeshLoader loader("Assets\\unit_sphere.obj", vertex_buffer, index_buffer);
 
 	Matrix4x4 objectToWorld;
 
