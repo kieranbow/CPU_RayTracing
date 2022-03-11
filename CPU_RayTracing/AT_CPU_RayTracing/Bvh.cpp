@@ -3,6 +3,7 @@
 
 void BVH::Accelerator::buildBVH(const std::vector<Primitive>& v_prims)
 {
+	// Checks if the vector of primitives is empty.
 	if (v_prims.empty())
 	{
 		Logger::PrintWarning("No primitives to build the BVH from");
@@ -13,43 +14,33 @@ void BVH::Accelerator::buildBVH(const std::vector<Primitive>& v_prims)
 	m_shape.reserve(v_prims.size());
 	std::copy(v_prims.begin(), v_prims.end(), std::back_inserter(m_shape));
 
-	// Generate root bounding box around entire scene
-	BoundingBox::AABB worldBounds = m_shape.at(0).getBoundingBox();
-
-	for(auto& prim: m_shape)
-	{
-		BoundingBox::AABB box = prim.getBoundingBox();
-		BoundingBox::AABB::combineBounds(worldBounds, box);
-	}
-	
-	// Make root node
-	sp_node = std::make_shared<BVH::Node>();
-	sp_node->m_boundingBox = worldBounds;
-
-	buildTree(sp_node);
-
-	// Split primitives using mid-point to create child nodes from root
-	// Find midpoint of largest axis
-	// Sort each primitive and split between left and right nodes
-
-	// Continue spliting until only one primitives is in each node
-
+	buildTree(m_shape);
 }
 
-void BVH::Accelerator::buildTree(std::shared_ptr<Node> root)
+void BVH::Accelerator::buildTree(std::vector<Primitive> primitive)
 {
-	// Make leaf node if the number of prims is less than an arbitrary number
-	size_t n = 2;
-	if (m_shape.size() < n) { root->makeLeaf(); }
+	// Make a leaf node if the number of primitives is less than an arbitrary number
+	if (primitive.size() < m_numOfPrims) 
+	{ 
+		std::shared_ptr<Node> sp_leaf = std::make_shared<Node>();
+		sp_leaf->m_leaf = true;
+	}
 	else
 	{
-		// Find longest axis
+		// Generate bounding box around primitives
+		BoundingBox::AABB node_bounds = primitive.at(0).getBoundingBox();
 
-		// Get parent nodes bounding box min and max
-		Vector3 min = root->m_boundingBox.getBounds().min;
-		Vector3 max = root->m_boundingBox.getBounds().max;
+		for (auto& prim : primitive)
+		{
+			BoundingBox::AABB box = prim.getBoundingBox();
+			BoundingBox::AABB::combineBounds(node_bounds, box);
+		}
 
-		// Find the split index mid-point using longest axis
+		// Get parent nodes min and max bounding box
+		Vector3 min = node_bounds.getBounds().min; //sp_root->m_boundingBox.getBounds().min;
+		Vector3 max = node_bounds.getBounds().max; //sp_root->m_boundingBox.getBounds().max;
+
+		// Find the mid-point using longest axis for the split index
 		float mid_x = (max.getX() + min.getX()) / 2.0f;
 		float mid_y = (max.getY() + min.getY()) / 2.0f;
 		float mid_z = (max.getZ() + min.getZ()) / 2.0f;
@@ -57,13 +48,14 @@ void BVH::Accelerator::buildTree(std::shared_ptr<Node> root)
 
 		int axis = getGreatestAxis(midPoint);
 
+		// Create list of left and right primitives for splitting
 		std::vector<Primitive> left_list;
 		std::vector<Primitive> right_list;
 
-		// Divide primitives to left and right side
+		// Split the primitives based on their position and the split position
 		for (auto& prim : m_shape)
 		{
-			if (prim.getBoundingBox().getCentroid().getValue().at(axis) < root->m_boundingBox.getCentroid().getValue().at(axis)) // prim.getBoundingBox().getCentroid().getValue().at(axis) > split
+			if (prim.getBoundingBox().getCentroid().getValue().at(axis) < node_bounds.getCentroid().getValue().at(axis))
 			{
 				left_list.push_back(prim);
 			}
@@ -73,14 +65,13 @@ void BVH::Accelerator::buildTree(std::shared_ptr<Node> root)
 			}
 		}
 
-		// Create AABB bounds around the split primitives
+		// Create Left node
+		std::shared_ptr<Node> sp_leftNode = std::make_shared<Node>();
+		buildTree(left_list); 		// Continue building tree until a condition is met
 
-
-
-		// Create Left and right node
-		//sp_node->sp_leftNode = std::make_shared<Node>();
-
-		root->sp_rightNode = std::make_shared<Node>();
+		// Create Left node
+		std::shared_ptr<Node> sp_rightNode = std::make_shared<Node>();
+		buildTree(right_list); 		// Continue building tree until a condition is met
 	}
 }
 
@@ -101,13 +92,4 @@ int BVH::Accelerator::getGreatestAxis(Vector3 vec)
 	if (vec.getX() > vec.getY() && vec.getX() > vec.getZ()) return axis::x;
 	else if (vec.getY() > vec.getZ()) return axis::y;
 	else return axis::z;
-
-
-
-
-}
-
-void BVH::Node::makeLeaf()
-{
-	m_leaf = true;
 }
