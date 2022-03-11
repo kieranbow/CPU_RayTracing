@@ -126,6 +126,6 @@ Vector2 Vector2::normalize(const Vector2& _rhs)
 {
 	float mag = magnitude(_rhs);
 
-	if (mag < epsilon) return Vector2(0.0f, 0.0f);
+	if (mag < Maths::special::epsilon) return Vector2(0.0f, 0.0f);
 	return Vector2(_rhs.x / mag, _rhs.y / mag);
 }

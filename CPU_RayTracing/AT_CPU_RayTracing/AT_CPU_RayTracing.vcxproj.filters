@@ -86,7 +86,7 @@
     <ClInclude Include="Vector3.h">
       <Filter>Header Files\Utilities\Maths</Filter>
     </ClInclude>
-    <ClInclude Include="Numbers.h">
+    <ClInclude Include="Maths.h">
       <Filter>Header Files\Utilities\Maths</Filter>
     </ClInclude>
     <ClInclude Include="Pixel.h">

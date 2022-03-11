@@ -67,8 +67,8 @@ int main()
 	primitives.push_back(cube);
 	primitives.push_back(sphere);
 
-	BVH::Accelerator test;
-	test.buildBVH(primitives);
+	//BVH::Accelerator test;
+	//test.buildBVH(primitives);
 
 
 	// Image in pixels

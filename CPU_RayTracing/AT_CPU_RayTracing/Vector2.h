@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#include "Numbers.h"
+#include "Maths.h"
 
 // Essentally the same as vector3 but without a z component
 class Vector2

@@ -4,9 +4,8 @@
 #include <string>
 #include <array>
 
-#include "Numbers.h"
+#include "Maths.h"
 
-// Add template to vector
 class Vector3
 {
 	public:
@@ -46,7 +45,7 @@ class Vector3
 		// Mainly used for debugging
 		friend std::ostream& operator<<(std::ostream& _lhs, const Vector3& _rhs)
 		{
-			_lhs << std::to_string(_rhs.value.at(0)) << ", " << std::to_string(_rhs.value.at(1)) << ", " << std::to_string(_rhs.value.at(2));
+			_lhs << std::to_string(_rhs.value.at(Maths::coord::x)) << ", " << std::to_string(_rhs.value.at(Maths::coord::y)) << ", " << std::to_string(_rhs.value.at(Maths::coord::z));
 			return _lhs;
 		}
 
@@ -62,12 +61,10 @@ class Vector3
 		// Normalizes a vector using it magnitude
 		static Vector3 normalize(const Vector3& _rhs);
 
-		static Vector3 findMidPoint(const Vector3 & vec1);
-
 		// Setters
-		void setX(float _x) { value.at(0) = _x; }
-		void setY(float _y) { value.at(1) = _y; }
-		void setZ(float _z) { value.at(2) = _z; }
+		void setX(float _x) { value.at(Maths::coord::x) = _x; }
+		void setY(float _y) { value.at(Maths::coord::y) = _y; }
+		void setZ(float _z) { value.at(Maths::coord::z) = _z; }
 
 		// Getters
 		const float& getX() const { return value.at(0); }

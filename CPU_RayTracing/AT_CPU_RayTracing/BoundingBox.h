@@ -4,7 +4,7 @@
 
 #include "Vector3.h"
 #include "Vertex.h"
-#include "Numbers.h"
+#include "Maths.h"
 
 class Ray;
 
@@ -13,8 +13,8 @@ namespace BoundingBox
 	// Contains the min and max points for a bounding box
 	struct Bounds
 	{
-		Vector3 min = { k_infinity, k_infinity, k_infinity };
-		Vector3 max = { -k_infinity, -k_infinity, -k_infinity };
+		Vector3 min = { Maths::special::k_infinity, Maths::special::k_infinity, Maths::special::k_infinity };
+		Vector3 max = { -Maths::special::k_infinity, -Maths::special::k_infinity, -Maths::special::k_infinity };
 	};
 
 	// A class that generates and stores a bounding box based off objects size
@@ -24,8 +24,8 @@ namespace BoundingBox
 		struct Plane
 		{
 			Vector3 normal = { 0.0f, 0.0f, 0.0f };
-			float near = k_infinity;
-			float far = -k_infinity;;
+			float near = Maths::special::k_infinity;
+			float far = -Maths::special::k_infinity;
 		};
 
 		enum axis { x, y, z };

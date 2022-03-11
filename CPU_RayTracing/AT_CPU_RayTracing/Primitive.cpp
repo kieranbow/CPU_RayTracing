@@ -54,8 +54,8 @@ Primitive::~Primitive()
 
 bool Primitive::intersected(Ray& ray, Colour& hitColour)
 {
-	float tn = -k_infinity;
-	float tf = k_infinity;
+	float tn = -Maths::special::k_infinity;
+	float tf = Maths::special::k_infinity;
 
 	// Check if ray hits the aabb bounding box
 	if (boundingBox.intersected(ray, tn, tf))
@@ -94,8 +94,8 @@ bool Primitive::intersected(Ray& ray, Colour& hitColour)
 
 bool Primitive::intersectedBoundingBoxDebug(Ray& ray)
 {
-	float tn = -k_infinity;
-	float tf = k_infinity;
+	float tn = -Maths::special::k_infinity;
+	float tf = Maths::special::k_infinity;
 
 	if (boundingBox.intersected(ray, tn, tf))
 	{
@@ -138,7 +138,7 @@ bool Primitive::MollerTrumboreIntersection(Ray& ray, Vector3 vert0, Vector3 vert
 	float det = Vector3::dot(pvec, v0v1);
 
 	// if the determinant is close to 0, the ray misses the triangle
-	if (det < epsilon) return false; // Culls backface triangles
+	if (det < Maths::special::epsilon) return false; // Culls backface triangles
 
 	float invDet = 1.0f / det;
 

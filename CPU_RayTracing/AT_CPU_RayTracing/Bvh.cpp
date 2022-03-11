@@ -10,7 +10,7 @@ void BVH::Accelerator::buildBVH(const std::vector<Primitive>& v_prims)
 		return;
 	}
 	
-	// Copy scenes prmitives to change order of primitives for BVH
+	// Copy scenes prmitives into BVH
 	m_shape.reserve(v_prims.size());
 	std::copy(v_prims.begin(), v_prims.end(), std::back_inserter(m_shape));
 

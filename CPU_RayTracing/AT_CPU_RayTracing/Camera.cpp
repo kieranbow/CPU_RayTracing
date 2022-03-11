@@ -27,8 +27,8 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 			// Create a pixel
 			Pixel pixel;
 
-			float Px = (2.0f * ((x + 0.5f) / size.getX()) - 1.0f) * tan(fov / 2.0f * pi / 180.0f) * aspect_ratio * scale;
-			float Py = (1.0f - 2.0f * ((y + 0.5f) / size.getY()) * tan(fov / 2.0f * pi / 180.0f));
+			float Px = (2.0f * ((x + 0.5f) / size.getX()) - 1.0f) * tan(fov / 2.0f * Maths::special::pi / 180.0f) * aspect_ratio * scale;
+			float Py = (1.0f - 2.0f * ((y + 0.5f) / size.getY()) * tan(fov / 2.0f * Maths::special::pi / 180.0f));
 			pixel.position.setX(Px);
 			pixel.position.setY(Py);
 

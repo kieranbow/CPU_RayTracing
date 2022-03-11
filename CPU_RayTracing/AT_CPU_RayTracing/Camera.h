@@ -40,7 +40,7 @@ class Camera
 		float scale			= 0.0f;
 
 		// Converts degress to radians
-		float deg2rad(const float& deg) { return deg * pi / 180.0f; }
+		float deg2rad(const float& deg) { return deg * Maths::special::pi / 180.0f; }
 
 		bool intersect(Ray& ray, Vector3 center, float radius);
 };
