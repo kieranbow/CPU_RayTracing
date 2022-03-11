@@ -37,10 +37,11 @@ class Vector3
 		bool operator==(const Vector3& _rhs);
 		bool operator!=(const Vector3& _rhs);
 		
-		friend Vector3 operator*(const float& _lhs, const Vector3& _rhs)
-		{
-			return Vector3(_rhs.getX() * _lhs, _rhs.getY() * _lhs, _rhs.getZ() * _lhs);
-		}
+		// Friend Operators
+		friend Vector3 operator+(const float& _lhs, const Vector3& _rhs);
+		friend Vector3 operator-(const float& _lhs, const Vector3& _rhs);
+		friend Vector3 operator*(const float& _lhs, const Vector3& _rhs);
+		friend Vector3 operator/(const float& _lhs, const Vector3& _rhs);
 
 		// Mainly used for debugging
 		friend std::ostream& operator<<(std::ostream& _lhs, const Vector3& _rhs)
@@ -61,6 +62,8 @@ class Vector3
 		// Normalizes a vector using it magnitude
 		static Vector3 normalize(const Vector3& _rhs);
 
+		static Vector3 findMidPoint(const Vector3 & vec1);
+
 		// Setters
 		void setX(float _x) { value.at(0) = _x; }
 		void setY(float _y) { value.at(1) = _y; }
@@ -73,8 +76,5 @@ class Vector3
 		const std::array<float, 3>& getValue() const{ return value; }
 
 	private:
-		//float x = 0;
-		//float y = 0;
-		//float z = 0;
 		std::array<float, 3> value = {0.0f, 0.0f, 0.0f};
 };

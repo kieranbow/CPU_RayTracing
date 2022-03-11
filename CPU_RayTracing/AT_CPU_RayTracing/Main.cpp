@@ -57,14 +57,14 @@ int main()
 	// Right handed Cartesian coordinate systems
 	// X+, y+, Z-
 
-	//Primitive cube;
-	//cube.setPosition({ 1.0f, 0.0f, -10.0f });
+	Primitive cube;
+	cube.setPosition({ 1.0f, 0.0f, -10.0f });
 
-	Primitive sphere("Assets\\helmet.obj", { 0.0f, 0.0f, 0.0f });
-	sphere.setPosition({ 0.0f, 0.0f, 2.0f }); // -2.0f, 1.0f, -15.0f
+	Primitive sphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	sphere.setPosition({ -2.0f, 1.0f, -15.0f }); // -2.0f, 1.0f, -15.0f
 
 	std::vector<Primitive> primitives;
-	//primitives.push_back(cube);
+	primitives.push_back(cube);
 	primitives.push_back(sphere);
 
 	BVH::Accelerator test;

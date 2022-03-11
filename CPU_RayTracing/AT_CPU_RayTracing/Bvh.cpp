@@ -49,19 +49,18 @@ void BVH::Accelerator::buildTree(std::shared_ptr<Node> root)
 		Vector3 min = root->m_boundingBox.getBounds().min;
 		Vector3 max = root->m_boundingBox.getBounds().max;
 
-		float test = max.getValue().at(2) - min.getValue().at(2);
+		// Find the split index mid-point using longest axis
+		float mid_x = (max.getX() + min.getX()) / 2.0f;
+		float mid_y = (max.getY() + min.getY()) / 2.0f;
+		float mid_z = (max.getZ() + min.getZ()) / 2.0f;
+		Vector3 midPoint = Vector3(mid_x, mid_y, mid_z);
 
-		Vector3 deg = min - max;
-
-		// Find the split index mid-point using longest axis and divide left and right side
-		// Vector3 midpoint = min + max / Vector3(2.0f, 2.0f, 2.0f);
-		int axis = getGreatestAxis(deg);
-
-		//float split = (min.getValue().at(axis) + max.getValue().at(axis)) / 2.0f;
+		int axis = getGreatestAxis(midPoint);
 
 		std::vector<Primitive> left_list;
 		std::vector<Primitive> right_list;
 
+		// Divide primitives to left and right side
 		for (auto& prim : m_shape)
 		{
 			if (prim.getBoundingBox().getCentroid().getValue().at(axis) < root->m_boundingBox.getCentroid().getValue().at(axis)) // prim.getBoundingBox().getCentroid().getValue().at(axis) > split
@@ -102,6 +101,10 @@ int BVH::Accelerator::getGreatestAxis(Vector3 vec)
 	if (vec.getX() > vec.getY() && vec.getX() > vec.getZ()) return axis::x;
 	else if (vec.getY() > vec.getZ()) return axis::y;
 	else return axis::z;
+
+
+
+
 }
 
 void BVH::Node::makeLeaf()
