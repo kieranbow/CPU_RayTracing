@@ -2,6 +2,7 @@
 #include <math.h>
 #include <iostream>
 #include <string>
+#include <array>
 
 #include "Numbers.h"
 
@@ -10,7 +11,7 @@ class Vector3
 {
 	public:
 		Vector3();
-		Vector3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
+		Vector3(float _x, float _y, float _z) : value{_x, _y, _z} {}
 
 		~Vector3() = default;
 		
@@ -36,10 +37,15 @@ class Vector3
 		bool operator==(const Vector3& _rhs);
 		bool operator!=(const Vector3& _rhs);
 		
+		friend Vector3 operator*(const float& _lhs, const Vector3& _rhs)
+		{
+			return Vector3(_rhs.getX() * _lhs, _rhs.getY() * _lhs, _rhs.getZ() * _lhs);
+		}
+
 		// Mainly used for debugging
 		friend std::ostream& operator<<(std::ostream& _lhs, const Vector3& _rhs)
 		{
-			_lhs << std::to_string(_rhs.x) << ", " << std::to_string(_rhs.y) << ", " << std::to_string(_rhs.z);
+			_lhs << std::to_string(_rhs.value.at(0)) << ", " << std::to_string(_rhs.value.at(1)) << ", " << std::to_string(_rhs.value.at(2));
 			return _lhs;
 		}
 
@@ -56,17 +62,19 @@ class Vector3
 		static Vector3 normalize(const Vector3& _rhs);
 
 		// Setters
-		void setX(float _x) { x = _x; }
-		void setY(float _y) { y = _y; }
-		void setZ(float _z) { z = _z; }
+		void setX(float _x) { value.at(0) = _x; }
+		void setY(float _y) { value.at(1) = _y; }
+		void setZ(float _z) { value.at(2) = _z; }
 
 		// Getters
-		const float& getX() const { return x; }
-		const float& getY() const { return y; }
-		const float& getZ() const { return z; }
+		const float& getX() const { return value.at(0); }
+		const float& getY() const { return value.at(1); }
+		const float& getZ() const { return value.at(2); }
+		const std::array<float, 3>& getValue() const{ return value; }
 
 	private:
-		float x = 0;
-		float y = 0;
-		float z = 0;
+		//float x = 0;
+		//float y = 0;
+		//float z = 0;
+		std::array<float, 3> value = {0.0f, 0.0f, 0.0f};
 };

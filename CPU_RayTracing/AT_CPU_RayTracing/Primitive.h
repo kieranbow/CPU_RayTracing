@@ -4,6 +4,8 @@
 #include "MeshLoader.h"
 #include "BoundingBox.h"
 
+class Colour;
+
 class Ray;
 
 class Primitive
@@ -16,7 +18,7 @@ class Primitive
 
 		// Checks a ray primitive's bounding box before checking if that ray
 		// hits the primitive's triangles
-		bool intersected(Ray &ray);
+		bool intersected(Ray &ray, Colour &hitColour);
 		// Debug function to see where the bounding box is.
 		bool intersectedBoundingBoxDebug(Ray& ray);
 
@@ -40,7 +42,7 @@ class Primitive
 
 		BoundingBox::AABB boundingBox;
 
-		bool MollerTrumboreIntersection(Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2);
+		bool MollerTrumboreIntersection(Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2, float& u, float& v);
 
 		// Transformation
 		Vector3 ws_position = { 0.0f, 0.0f, 0.0f }; // World origin

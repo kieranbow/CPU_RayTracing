@@ -12,22 +12,22 @@ namespace BVH
 	// A node that makes up the tree of a BVH
 	class Node
 	{
-		public:
-			
-			void setNodeAABB();
-			void makeLeaf();
-			void makeNode();
-			
+	public:
 
-			std::shared_ptr<Node> sp_leftNode;
-			std::shared_ptr<Node> sp_rightNode;
-			std::shared_ptr<std::vector<Primitive>> primitive;
-			BoundingBox::AABB m_boundingBox;
-			bool m_leaf;
-			//size_t m_idx;
-			//size_t m_objs;
+		void setNodeAABB();
+		void makeLeaf();
+		void makeNode();
 
-			int size = 0;
+
+		std::shared_ptr<Node> sp_leftNode;
+		std::shared_ptr<Node> sp_rightNode;
+		std::shared_ptr<std::vector<Primitive>> primitive;
+		BoundingBox::AABB m_boundingBox;
+		bool m_leaf;
+		//size_t m_idx;
+		//size_t m_objs;
+
+		int size = 0;
 	};
 
 	// Handles all the primitives within the scene
@@ -43,7 +43,7 @@ namespace BVH
 			std::vector<Primitive> m_shape;
 			std::shared_ptr<BVH::Node> sp_node;
 
-			enum axis{ x, y, z };
+			enum axis { x, y, z };
 
 			int getGreatestAxis(Vector3 vec);
 	};

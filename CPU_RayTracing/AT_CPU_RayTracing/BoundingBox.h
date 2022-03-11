@@ -13,8 +13,8 @@ namespace BoundingBox
 	// Contains the min and max points for a bounding box
 	struct Bounds
 	{
-		Vector3 min;
-		Vector3 max;
+		Vector3 min = { k_infinity, k_infinity, k_infinity };
+		Vector3 max = { -k_infinity, -k_infinity, -k_infinity };
 	};
 
 	// A class that generates and stores a bounding box based off objects size

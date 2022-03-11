@@ -49,6 +49,8 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 			//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
 			//}
 
+			Colour hit_colour;
+
 			for(auto& prim : primitives)
 			{
 				if (prim.intersectedBoundingBoxDebug(primary_rayWS))
@@ -56,9 +58,9 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 					buffer.at(iter).colour = Colour(1.0f, 1.0f, 1.0f);
 				}
 
-				if (prim.intersected(primary_rayWS))
+				if (prim.intersected(primary_rayWS, hit_colour))
 				{
-					buffer.at(iter).colour = Colour(1.0f, 0.0f, 0.0f);
+					buffer.at(iter).colour = hit_colour;
 				}
 				//else
 				//{

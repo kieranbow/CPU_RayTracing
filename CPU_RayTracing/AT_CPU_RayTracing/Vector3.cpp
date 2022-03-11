@@ -2,142 +2,145 @@
 
 Vector3::Vector3()
 {
-	x = 0.0f;
-	y = 0.0f;
-	z = 0.0f;
+	//x = 0.0f;
+	//y = 0.0f;
+	//z = 0.0f;
+	value.at(0) = 0;
+	value.at(1) = 0;
+	value.at(2) = 0;
 }
 
 Vector3& Vector3::operator=(const Vector3& _rhs)
 {
-	this->x = _rhs.x;
-	this->y = _rhs.y;
-	this->z = _rhs.z;
+	this->value.at(0) = _rhs.value.at(0);
+	this->value.at(1) = _rhs.value.at(1);
+	this->value.at(2) = _rhs.value.at(2);
 	return *this;
 }
 
 Vector3 Vector3::operator+(const Vector3& _rhs)
 {
 	Vector3 vector;
-	vector.x = this->x + _rhs.x;
-	vector.y = this->y + _rhs.y;
-	vector.z = this->z + _rhs.z;
+	vector.value.at(0) = this->value.at(0) + _rhs.value.at(0);
+	vector.value.at(1) = this->value.at(1) + _rhs.value.at(1);
+	vector.value.at(2) = this->value.at(2) + _rhs.value.at(2);
 	return vector;
 }
 
 Vector3 Vector3::operator+(const float& _rhs)
 {
 	Vector3 vector;
-	vector.x = this->x + _rhs;
-	vector.y = this->x + _rhs;
-	vector.z = this->x + _rhs;
+	vector.value.at(0) = this->value.at(0) + _rhs;
+	vector.value.at(1) = this->value.at(1) + _rhs;
+	vector.value.at(2) = this->value.at(2) + _rhs;
 	return vector;
 }
 
 Vector3 Vector3::operator+=(const Vector3& _rhs)
 {
-	this->x += _rhs.x;
-	this->y += _rhs.y;
-	this->z += _rhs.z;
+	this->value.at(0) += _rhs.value.at(0);
+	this->value.at(1) += _rhs.value.at(1);
+	this->value.at(2) += _rhs.value.at(2);
 	return *this;
 }
 
 Vector3 Vector3::operator-(const Vector3& _rhs)
 {
 	Vector3 vector;
-	vector.x = this->x - _rhs.x;
-	vector.y = this->y - _rhs.y;
-	vector.z = this->z - _rhs.z;
+	vector.value.at(0) = this->value.at(0) - _rhs.value.at(0);
+	vector.value.at(1) = this->value.at(1) - _rhs.value.at(1);
+	vector.value.at(2) = this->value.at(2) - _rhs.value.at(2);
 	return vector;
 }
 
 Vector3 Vector3::operator-=(const Vector3& _rhs)
 {
-	this->x -= _rhs.x;
-	this->y -= _rhs.y;
-	this->z -= _rhs.z;
+	this->value.at(0) -= _rhs.value.at(0);
+	this->value.at(1) -= _rhs.value.at(1);
+	this->value.at(2) -= _rhs.value.at(2);
 	return *this;
 }
 
 Vector3 Vector3::operator*(const Vector3& _rhs)
 {
 	Vector3 vector;
-	vector.x = this->x * _rhs.x;
-	vector.y = this->y * _rhs.y;
-	vector.z = this->z * _rhs.z;
+	vector.value.at(0) = this->value.at(0) * _rhs.value.at(0);
+	vector.value.at(1) = this->value.at(1) * _rhs.value.at(1);
+	vector.value.at(2) = this->value.at(2) * _rhs.value.at(2);
 	return vector;
 }
 
 Vector3 Vector3::operator*=(const Vector3& _rhs)
 {
-	this->x *= _rhs.x;
-	this->y *= _rhs.y;
-	this->z *= _rhs.z;
+	this->value.at(0) *= _rhs.value.at(0);
+	this->value.at(1) *= _rhs.value.at(1);
+	this->value.at(2) *= _rhs.value.at(2);
 	return *this;
 }
 
 Vector3 Vector3::operator/=(const Vector3& _rhs)
 {
-	this->x /= _rhs.x;
-	this->y /= _rhs.y;
-	this->z /= _rhs.z;
+	this->value.at(0) /= _rhs.value.at(0);
+	this->value.at(1) /= _rhs.value.at(1);
+	this->value.at(2) /= _rhs.value.at(2);
 	return *this;
 }
 
 Vector3 Vector3::operator/(const Vector3& _rhs)
 {
 	Vector3 vector;
-	vector.x = this->x / _rhs.x;
-	vector.y = this->y / _rhs.y;
-	vector.z = this->z / _rhs.z;
+	vector.value.at(0) = this->value.at(0) / _rhs.value.at(0);
+	vector.value.at(1) = this->value.at(1) / _rhs.value.at(1);
+	vector.value.at(2) = this->value.at(2) / _rhs.value.at(2);
 	return vector;
 }
 
 bool Vector3::operator>(const Vector3& _rhs)
 {
-	return (this->x > _rhs.x && this->y > _rhs.y && this->z > _rhs.z);
+	return (this->value.at(0) > _rhs.value.at(0) && this->value.at(1) > _rhs.value.at(1) && this->value.at(2) > _rhs.value.at(2));
 }
 
 bool Vector3::operator<(const Vector3& _rhs)
 {
-	return (this->x < _rhs.x && this->y < _rhs.y && this->z < _rhs.z);
+	return (this->value.at(0) < _rhs.value.at(0) && this->value.at(1) < _rhs.value.at(1) && this->value.at(2) < _rhs.value.at(2));
 }
 
 bool Vector3::operator>=(const Vector3& _rhs)
 {
-	return (this->x >= _rhs.x && this->y >= _rhs.y && this->z >= _rhs.z);
+	return (this->value.at(0) >= _rhs.value.at(0) && this->value.at(1) >= _rhs.value.at(1) && this->value.at(2) >= _rhs.value.at(2));
 }
 
 bool Vector3::operator<=(const Vector3& _rhs)
 {
-	return (this->x <= _rhs.x && this->y <= _rhs.y && this->z <= _rhs.z);
+	return (this->value.at(0) <= _rhs.value.at(0) && this->value.at(1) <= _rhs.value.at(1) && this->value.at(2) <= _rhs.value.at(2));
 }
 
 bool Vector3::operator==(const Vector3& _rhs)
 {
-	return (this->x == _rhs.x && this->y == _rhs.y && this->z == _rhs.z);
+	return (this->value.at(0) == _rhs.value.at(0) && this->value.at(1) == _rhs.value.at(1) && this->value.at(2) == _rhs.value.at(2));
 }
 
 bool Vector3::operator!=(const Vector3& _rhs)
 {
-	return (this->x != _rhs.x && this->y != _rhs.y && this->z != _rhs.z);
+	return (this->value.at(0) != _rhs.value.at(0) && this->value.at(1) != _rhs.value.at(1) && this->value.at(0) != _rhs.value.at(0));
 }
 
 Vector3 Vector3::cross(const Vector3& _lhs, const Vector3& _rhs)
 {
-	float x = (_lhs.y * _rhs.z) - (_lhs.z * _rhs.y);
-	float y = (_lhs.z * _rhs.x) - (_lhs.x * _rhs.z);
-	float z = (_lhs.x * _rhs.y) - (_lhs.y * _rhs.x);
+	float x = (_lhs.value.at(1) * _rhs.value.at(2)) - (_lhs.value.at(2) * _rhs.value.at(1));
+	float y = (_lhs.value.at(2) * _rhs.value.at(0)) - (_lhs.value.at(0) * _rhs.value.at(2));
+	float z = (_lhs.value.at(0) * _rhs.value.at(1)) - (_lhs.value.at(1) * _rhs.value.at(0));
 	return Vector3(x, y, z);
 }
 
 float Vector3::dot(const Vector3& _lhs, const Vector3& _rhs)
 {
-	return (_lhs.x * _rhs.x) + (_lhs.y * _rhs.y) + (_lhs.z * _rhs.z);
+	return (_lhs.value.at(0) * _rhs.value.at(0)) + (_lhs.value.at(1) * _rhs.value.at(1)) + (_lhs.value.at(2) * _rhs.value.at(2));
 }
 
 float Vector3::magnitude(const Vector3& _rhs)
 {
-	return sqrtf((_rhs.x * _rhs.x) + (_rhs.y * _rhs.y) + (_rhs.z * _rhs.z));
+	return sqrtf((_rhs.value.at(0) * _rhs.value.at(0)) + (_rhs.value.at(1) * _rhs.value.at(1)) + (_rhs.value.at(2) * _rhs.value.at(2)));
 }
 
 Vector3 Vector3::normalize(const Vector3& _rhs)
@@ -145,5 +148,5 @@ Vector3 Vector3::normalize(const Vector3& _rhs)
 	float mag = magnitude(_rhs);
 
 	if (mag < epsilon) return Vector3(0.0f, 0.0f, 0.0f);
-	return Vector3(_rhs.x / mag, _rhs.y / mag, _rhs.z / mag);
+	return Vector3(_rhs.value.at(0) / mag, _rhs.value.at(1) / mag, _rhs.value.at(2) / mag);
 }

@@ -1,11 +1,12 @@
 #include "Primitive.h"
 #include "Ray.h"
 #include "Matrix4x4.h"
+#include "Colour.h"
 
 Primitive::Primitive()
 {
 	// Load default unit cube and pass the data to the vertex and index buffers
-	MeshLoader loader("Assets\\unit_sphere.obj", vertex_buffer, index_buffer);
+	MeshLoader loader("Assets\\Unit_Cube.obj", vertex_buffer, index_buffer);
 
 	Matrix4x4 objectToWorld;
 
@@ -51,7 +52,7 @@ Primitive::~Primitive()
 	index_buffer.clear();
 }
 
-bool Primitive::intersected(Ray& ray)
+bool Primitive::intersected(Ray& ray, Colour& hitColour)
 {
 	float tn = -k_infinity;
 	float tf = k_infinity;
@@ -72,8 +73,20 @@ bool Primitive::intersected(Ray& ray)
 			Vector3 vert1 = vertex_buffer.at(vertex_idx_2).position;
 			Vector3 vert2 = vertex_buffer.at(vertex_idx_3).position;
 
+			Vector3 vert0_n = vertex_buffer.at(vertex_idx_1).normal;
+			Vector3 vert1_n = vertex_buffer.at(vertex_idx_2).normal;
+			Vector3 vert2_n = vertex_buffer.at(vertex_idx_3).normal;
+			//hitColour = Vector3::normalize(Vector3::cross(vert1 - vert0, vert2 - vert0));
+
+			float u = 0.0f;
+			float v = 0.0f;
+
 			// Construct a triangle and test if ray hits that triangle
-			if (MollerTrumboreIntersection(ray, vert0, vert1, vert2)) return true;
+			if (MollerTrumboreIntersection(ray, vert0, vert1, vert2, u, v))
+			{
+				hitColour = Vector3::normalize((1.0f - u - v) * vert0_n + u * vert1_n + v * vert2_n);
+				return true;
+			}
 		}
 	}
 	return false;
@@ -110,12 +123,10 @@ void Primitive::setPosition(Vector3 position)
 	boundingBox.generateBoundingBox(vertex_buffer);
 }
 
-bool Primitive::MollerTrumboreIntersection(Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2)
+bool Primitive::MollerTrumboreIntersection(Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2, float& u, float& v)
 {
 	// https://cadxfem.org/inf/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
 	// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
-
-	float u = 0.0f, v = 0.0f;
 
 	// Find the two edge vectors
 	Vector3 v0v1 = vert1 - vert0;

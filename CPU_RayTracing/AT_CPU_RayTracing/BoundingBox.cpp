@@ -65,6 +65,10 @@ BoundingBox::Bounds BoundingBox::AABB::combineBounds(AABB& b1, AABB& b2)
 	bounds.max.setZ(std::max(b1.bounds.max.getZ(), b2.bounds.max.getZ()));
 	
 	b1.bounds = bounds;
+	// Create centroid of bounding box
+	b1.centroid.setX(0.5f * bounds.min.getX() + 0.5f * bounds.max.getX());
+	b1.centroid.setY(0.5f * bounds.min.getY() + 0.5f * bounds.max.getY());
+	b1.centroid.setZ(0.5f * bounds.min.getZ() + 0.5f * bounds.max.getZ());
 
 	return bounds;
 }
