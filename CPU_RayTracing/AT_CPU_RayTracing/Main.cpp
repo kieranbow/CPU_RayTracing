@@ -42,10 +42,7 @@
 // https://link.springer.com/book/10.1007/978-1-4842-4427-2
 // https://codereview.stackexchange.com/questions/144381/4x4-matrix-implementation-in-c
 // https://github.com/ssloy/tinyraytracer/blob/master/tinyraytracer.cpp	
-// https://www.scratchapixel.com/code.php?id=3&origin=/lessons/3d-basic-rendering/introduction-to-ray-tracing
 
-
-// https://www.scratchapixel.com/lessons/advanced-rendering/introduction-acceleration-structure/bounding-volume-hierarchy-BVH-part2
 // https://computergraphics.stackexchange.com/questions/1976/how-to-determine-the-object-to-world-matrix
 // http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/#translation-matrices
 
@@ -61,7 +58,7 @@ int main()
 	cube.setPosition({ 1.0f, 0.0f, -10.0f });
 
 	Primitive sphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
-	sphere.setPosition({ -2.0f, 1.0f, -15.0f }); // -2.0f, 1.0f, -15.0f
+	sphere.setPosition({ -2.0f, 1.0f, -15.0f });
 
 	std::vector<Primitive> primitives;
 	primitives.push_back(cube);
@@ -90,6 +87,9 @@ int main()
 
 	// Render what the camera sees
 	camera.Render(primitives, framebuffer);
+
+	// Once the render has finished, clear all primitive data
+	primitives.clear();
 
 	// End timer
 	render_timer.EndTimer();

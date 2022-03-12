@@ -2,6 +2,7 @@
 #include <math.h>
 #include <iostream>
 #include <string>
+#include <array>
 
 #include "Maths.h"
 
@@ -10,7 +11,7 @@ class Vector2
 {
 	public:
 		Vector2();
-		Vector2(float _x, float _y) : x(_x), y(_y) {}
+		Vector2(float _x, float _y) : m_value{_x, _y} {}
 
 		~Vector2() = default;
 
@@ -39,28 +40,31 @@ class Vector2
 		// Mainly used for debugging 
 		friend std::ostream& operator<<(std::ostream& _lhs, const Vector2& _rhs)
 		{
-			_lhs << std::to_string(_rhs.x) << ", " << std::to_string(_rhs.y);
+			_lhs << std::to_string(_rhs.m_value.at(Maths::coord::x)) << ", " << std::to_string(_rhs.m_value.at(Maths::coord::y));
 			return _lhs;
 		}
 
-		// Calculates the relationship between two vectors. I.e opposite vectors = -1
+		// Calculates the relationship between two vector2
 		static float dot(const Vector2& _lhs, const Vector2& _rhs);
 
-		// Finds the magnitude from the vectors x,y coords
+		// Finds the magnitude from the vector2
 		static float magnitude(const Vector2& _rhs);
 
-		// Normalizes a vector using it magnitude
+		// Normalizes a vector2 using it magnitude
 		static Vector2 normalize(const Vector2& _rhs);
 
+		// Find a vector2 midpoint between two vectors2
+		static Vector2 findMidPoint(Vector2 vec1, Vector2 vec2);
+
 		// Setters
-		void setX(float _x) { x = _x; }
-		void setY(float _y) { y = _y; }
+		void setX(float _x) { m_value.at(Maths::coord::x) = _x; }
+		void setY(float _y) { m_value.at(Maths::coord::y) = _y; }
 
 		// Getters
-		const float& getX() const { return x; }
-		const float& getY() const { return y; }
+		const float& getX() const { return m_value.at(Maths::coord::x); }
+		const float& getY() const { return m_value.at(Maths::coord::y); }
+		const std::array<float, 2>& getValue() const { return m_value; }
 
 	private:
-		float x = 0;
-		float y = 0;
+		std::array<float, 2> m_value;
 };
