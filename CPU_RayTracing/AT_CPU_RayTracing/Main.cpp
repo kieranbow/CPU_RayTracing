@@ -64,8 +64,8 @@ int main()
 	primitives.push_back(cube);
 	primitives.push_back(sphere);
 
-	//BVH::Accelerator test;
-	//test.buildBVH(primitives);
+	BVH::Accelerator test;
+	test.buildBVH(primitives);
 
 
 	// Image in pixels
@@ -86,7 +86,7 @@ int main()
 	render_timer.StartTimer();
 
 	// Render what the camera sees
-	camera.Render(primitives, framebuffer);
+	camera.Render(primitives, framebuffer, test);
 
 	// Once the render has finished, clear all primitive data
 	primitives.clear();

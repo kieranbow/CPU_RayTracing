@@ -52,7 +52,7 @@ Primitive::~Primitive()
 	index_buffer.clear();
 }
 
-bool Primitive::intersected(Ray& ray, Colour& hitColour)
+bool Primitive::intersected(RayTrace::Ray& ray, Colour& hitColour)
 {
 	float tn = -Maths::special::k_infinity;
 	float tf = Maths::special::k_infinity;
@@ -92,7 +92,7 @@ bool Primitive::intersected(Ray& ray, Colour& hitColour)
 	return false;
 }
 
-bool Primitive::intersectedBoundingBoxDebug(Ray& ray)
+bool Primitive::intersectedBoundingBoxDebug(RayTrace::Ray& ray)
 {
 	float tn = -Maths::special::k_infinity;
 	float tf = Maths::special::k_infinity;
@@ -123,7 +123,7 @@ void Primitive::setPosition(Vector3 position)
 	boundingBox.generateBoundingBox(vertex_buffer);
 }
 
-bool Primitive::MollerTrumboreIntersection(Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2, float& u, float& v)
+bool Primitive::MollerTrumboreIntersection(RayTrace::Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2, float& u, float& v)
 {
 	// https://cadxfem.org/inf/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
 	// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection

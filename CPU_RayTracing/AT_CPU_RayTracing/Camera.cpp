@@ -17,7 +17,7 @@ Camera::Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float 
 	scale = tan(deg2rad(fov) * 0.5f);
 }
 
-void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer)
+void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Accelerator bvh)
 {
 	int iter = 0;
 	for (int y = 0; y < static_cast<int>(size.getY()); ++y)
@@ -36,7 +36,7 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 			cam_to_world.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), ws_direction.getZ() /*-1.0f*/), pixelPosWS);
 			Vector3::normalize(pixelPosWS);
 
-			Ray primary_rayWS;
+			RayTrace::Ray primary_rayWS;
 			primary_rayWS.origin = ws_position;
 			primary_rayWS.direction = Vector3::normalize(pixelPosWS - primary_rayWS.origin);
 
@@ -50,6 +50,9 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 			//}
 
 			Colour hit_colour;
+
+			bvh.hit(primary_rayWS);
+
 
 			for(auto& prim : primitives)
 			{
@@ -72,7 +75,7 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 	}
 }
 
-bool Camera::intersect(Ray& ray, Vector3 center, float radius)
+bool Camera::intersect(RayTrace::Ray& ray, Vector3 center, float radius)
 {
 	Vector3 oc = ray.origin - center;
 	float a = Vector3::dot(ray.direction, ray.direction);

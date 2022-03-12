@@ -5,8 +5,7 @@
 #include "Vector3.h"
 #include "Vertex.h"
 #include "Maths.h"
-
-class Ray;
+#include "Ray.h"
 
 namespace BoundingBox
 {
@@ -43,7 +42,7 @@ namespace BoundingBox
 			void generateBoundingBox(std::vector<Vertex>& _vertex_buffer);
 
 			// Checks if a ray has intersected the slab planes that make up the bounding box
-			bool intersected(Ray& ray, float& tnear, float& tfar);
+			bool intersected(RayTrace::Ray& ray, float& tnear, float& tfar);
 
 			// Computes a new bounding box around two separate bounding boxes
 			static Bounds combineBounds(AABB& b1, AABB& b2);

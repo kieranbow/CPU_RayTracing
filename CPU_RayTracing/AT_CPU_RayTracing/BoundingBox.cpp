@@ -28,7 +28,7 @@ void BoundingBox::AABB::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 	centroid.setZ(0.5f * bounds.min.getZ() + 0.5f * bounds.max.getZ());
 }
 
-bool BoundingBox::AABB::intersected(Ray& ray, float& tnear, float& tfar)
+bool BoundingBox::AABB::intersected(RayTrace::Ray& ray, float& tnear, float& tfar)
 {
 	// https://www.scratchapixel.com/lessons/advanced-rendering/introduction-acceleration-structure/bounding-volume-hierarchy-BVH-part1
 

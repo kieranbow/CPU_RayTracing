@@ -6,6 +6,7 @@
 #include "Matrix4x4.h"
 #include "Ray.h"
 #include "Pixel.h"
+#include "Bvh.h"
 
 class Primitive;
 
@@ -16,7 +17,7 @@ class Camera
 		Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float _fov);
 
 		// void Update();
-		void Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer);
+		void Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Accelerator bvh);
 
 		void setPositionWS(Vector3 positionWS);
 		void setDirectionWS(Vector3 directionWS);
@@ -42,6 +43,6 @@ class Camera
 		// Converts degress to radians
 		float deg2rad(const float& deg) { return deg * Maths::special::pi / 180.0f; }
 
-		bool intersect(Ray& ray, Vector3 center, float radius);
+		bool intersect(RayTrace::Ray& ray, Vector3 center, float radius);
 };
 
