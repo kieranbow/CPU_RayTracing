@@ -17,7 +17,7 @@ Camera::Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float 
 	scale = tan(deg2rad(fov) * 0.5f);
 }
 
-void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Accelerator bvh)
+void Camera::Render(/*std::vector<Primitive> primitives, */std::vector<Pixel>& buffer, BVH::Accelerator bvh)
 {
 	int iter = 0;
 	for (int y = 0; y < static_cast<int>(size.getY()); ++y)
@@ -33,37 +33,28 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 			pixel.position.setX(Px);
 			pixel.position.setY(Py);
 
+			// Convert pixel camera space to world space
 			Vector3 pixelPosWS;
 			cam_to_world.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), ws_direction.getZ() /*-1.0f*/), pixelPosWS);
 			Vector3::normalize(pixelPosWS);
 
+			// Create ray that's origin is the camera and it's direction towards the pixel
 			RayTrace::Ray primary_rayWS;
 			primary_rayWS.origin = ws_position;
 			primary_rayWS.direction = Vector3::normalize(pixelPosWS - primary_rayWS.origin);
 
-			Colour hit_colour;
 
 			if (bvh.hit(primary_rayWS))
 			{
-				buffer.at(iter).colour = primary_rayWS.data.normal;
+				if (primary_rayWS.t >= primary_rayWS.t_near && primary_rayWS.t <= primary_rayWS.t_far)
+				{
+					buffer.at(iter).colour = primary_rayWS.data.normal;
+				}
 			}
-
-			//for(auto& prim : primitives)
-			//{
-			//	//if (prim.intersectedBoundingBoxDebug(primary_rayWS))
-			//	//{
-			//	//	buffer.at(iter).colour = Colour(1.0f, 1.0f, 1.0f);
-			//	//}
-
-			//	if (prim.intersected(primary_rayWS))
-			//	{
-			//		buffer.at(iter).colour = primary_rayWS.data.normal;
-			//	}
-			//	//else
-			//	//{
-			//	//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
-			//	//}
-			//}
+			else
+			{
+				buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
+			}
 			iter++;
 		}
 	}
@@ -79,3 +70,20 @@ bool Camera::intersect(RayTrace::Ray& ray, Vector3 center, float radius)
 
 	return (distriminant > 0.0f);
 }
+
+//for(auto& prim : primitives)
+//{
+//	//if (prim.intersectedBoundingBoxDebug(primary_rayWS))
+//	//{
+//	//	buffer.at(iter).colour = Colour(1.0f, 1.0f, 1.0f);
+//	//}
+
+//	if (prim.intersected(primary_rayWS))
+//	{
+//		buffer.at(iter).colour = primary_rayWS.data.normal;
+//	}
+//	//else
+//	//{
+//	//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
+//	//}
+//}

@@ -1,6 +1,7 @@
 #include "Bvh.h"
 #include "Logger.h"
 #include "Colour.h"
+#include "Intersection.h"
 
 void BVH::Accelerator::buildBVH(const std::vector<Primitive>& primitive)
 {
@@ -14,31 +15,31 @@ void BVH::Accelerator::buildBVH(const std::vector<Primitive>& primitive)
 	// Make the root node of the bvh
 	sp_root = std::make_shared<Node>();
 
-	// Pass the primitives and root node to recusive function
-	buildTree(primitive, sp_root);
+	// Pass the primitives and root node to recusive function.
+	buildRecursive(primitive, sp_root);
 }
 
-void BVH::Accelerator::buildTree(const std::vector<Primitive>& primitive, std::shared_ptr<Node> node)
+void BVH::Accelerator::buildRecursive(const std::vector<Primitive>& primitive, std::shared_ptr<Node> node)
 {
 	// Make a leaf node if the number of primitives is less than an arbitrary number
 	if (primitive.size() <= m_numOfPrims) 
 	{ 
 		node->m_leaf = true;
-		node->primitive = primitive;
+		node->m_primitive = primitive;
 
-		Logger::PrintDebug("Here be leaf");
+		// Logger::PrintDebug("Here be leaf");
 	}
 	else
 	{
-		// Generate bounding box around primitives
+		// Generate a bounding box around all the primitives
 		BoundingBox::AABB node_bounds;
-		node_bounds.setBoundsMinX(Maths::special::k_infinity);
-		node_bounds.setBoundsMinY(Maths::special::k_infinity);
-		node_bounds.setBoundsMinZ(Maths::special::k_infinity);
+		node_bounds.setBoundsMinX(Maths::special::infinity);
+		node_bounds.setBoundsMinY(Maths::special::infinity);
+		node_bounds.setBoundsMinZ(Maths::special::infinity);
 
-		node_bounds.setBoundsMaxX(-Maths::special::k_infinity);
-		node_bounds.setBoundsMaxY(-Maths::special::k_infinity);
-		node_bounds.setBoundsMaxZ(-Maths::special::k_infinity);
+		node_bounds.setBoundsMaxX(-Maths::special::infinity);
+		node_bounds.setBoundsMaxY(-Maths::special::infinity);
+		node_bounds.setBoundsMaxZ(-Maths::special::infinity);
 
 		for (auto& prim : primitive)
 		{
@@ -48,54 +49,54 @@ void BVH::Accelerator::buildTree(const std::vector<Primitive>& primitive, std::s
 
 		node->m_boundingBox = node_bounds;
 
-		// Get node's min and max bounding box
+		// Get node's min and max bounding box points
 		Vector3 min = node->m_boundingBox.getBounds().min;
 		Vector3 max = node->m_boundingBox.getBounds().max;
 
 		// Find the mid-point using longest axis for the split index
 		Vector3 midpoint = Vector3::findMidPoint(max, min);
-
 		int axis = getGreatestAxis(midpoint);
 
-		Logger::PrintDebug("Here be node");
+		// Logger::PrintDebug("Here be node");
 
 		// Create Left node and Right node
 		node->sp_leftNode = std::make_shared<Node>();
 		node->sp_rightNode = std::make_shared<Node>();
 
-		Logger::PrintDebug("Here be left node");
-		Logger::PrintDebug("Here be right node");
+		//Logger::PrintDebug("Here be left node");
+		//Logger::PrintDebug("Here be right node");
 
+		// Create two list of primitives and split them based on their position and the splits position
 		std::vector<Primitive> left_list;
 		std::vector<Primitive> right_list;
 
-		// Split the primitives based on their position and the split position
 		for (auto& prim : primitive)
 		{
 			if (prim.getBoundingBox().getCentroid().getValue().at(axis) < node->m_boundingBox.getCentroid().getValue().at(axis))
 			{
-				//node->left_list.push_back(prim);
 				left_list.push_back(prim);
 			}
 			else
 			{
-				//node->right_list.push_back(prim);
 				right_list.push_back(prim);
 			}
 		}
 
-		buildTree(left_list, node->sp_leftNode);
-		buildTree(right_list, node->sp_rightNode);
+		// Continue making nodes and splitting primitives until a condition is met 
+		buildRecursive(left_list, node->sp_leftNode);
+		buildRecursive(right_list, node->sp_rightNode);
 
-		//buildTree(node->left_list, node->sp_leftNode);	// Continue building tree until a condition is met
-		//buildTree(node->right_list, node->sp_rightNode);// Continue building tree until a condition is met
-
+		// Clear both list since they won't be used again.
+		left_list.clear();
+		right_list.clear();
 	}
 }
 
 bool BVH::Accelerator::hit(RayTrace::Ray& ray)
 {
-	if (sp_root->m_boundingBox.minMaxIntersected(ray))
+	// If a ray hits the root node's bounding box, begin the recusion and step through
+	// the bvh tree until a primitive is hit
+	if (Intersection::minMaxBounds(ray, sp_root->m_boundingBox))
 	{
 		if (hitRecursive(ray, sp_root))
 		{
@@ -103,91 +104,50 @@ bool BVH::Accelerator::hit(RayTrace::Ray& ray)
 		}
 	}
 	return false;
-
-	//if (sp_root->m_boundingBox.minMaxIntersected(ray))
-	//{
-	//	// ray.data.colour = Colour(1.0f, 0.0f, 0.0f);
-	//	
-	//	if (sp_root->sp_leftNode->sp_leftNode != nullptr)
-	//	{
-	//		// hit node bounding box
-	//		std::cout << "recusrive";
-	//	}
-	//	else if (sp_root->sp_leftNode->m_leaf)
-	//	{
-	//		for (auto& prim : sp_root->sp_leftNode->primitive)
-	//		{
-	//			if (prim.intersected(ray))
-	//			{
-	//				return true;
-	//			}
-	//		}
-	//	}
-
-	//	if (sp_root->sp_rightNode->sp_rightNode != nullptr)
-	//	{
-	//		// hit node bounding box
-	//		std::cout << "recusrive";
-	//	}
-	//	else if (sp_root->sp_rightNode->m_leaf)
-	//	{
-	//		for (auto& prim : sp_root->sp_rightNode->primitive)
-	//		{
-	//			if (prim.intersected(ray))
-	//			{
-	//				return true;
-	//			}
-	//		}
-	//	}
-	//	return false;
-	//}
-	//return false;
 }
 
 bool BVH::Accelerator::hitRecursive(RayTrace::Ray& ray, std::shared_ptr<Node> parentNode)
 {
+	// If the node is a leaf, loop through all its primitives and test if the ray has hit
+	// both the bounding box and triangles.
 	if (parentNode->m_leaf)
 	{
-		for (auto& prim : parentNode->primitive)
+		for (auto& prim : parentNode->m_primitive)
 		{
-			if (prim.intersected(ray))
+			if (prim.triangleIntersected(ray))
 			{
 				return true;
 			}
 		}
 	}
+
+	// If either sp_leftNode or sp_rightNode are NULL. This means that the node is a leaf
+	// and any intersection checks can be skipped.
+	// If either sp_leftNode or sp_rightNode are not NULL, check that both it's bounding box
+	// and hitRecusive are true.
+
 	if (parentNode->sp_leftNode != nullptr)
 	{
-		if (parentNode->sp_leftNode->m_boundingBox.minMaxIntersected(ray) && hitRecursive(ray, parentNode->sp_leftNode))
+		if (Intersection::minMaxBounds(ray, parentNode->sp_leftNode->m_boundingBox) && hitRecursive(ray, parentNode->sp_leftNode))
 		{
 			return true;
 		}
 	}
 	if (parentNode->sp_rightNode != nullptr)
 	{
-		if (parentNode->sp_rightNode->m_boundingBox.minMaxIntersected(ray) && hitRecursive(ray, parentNode->sp_rightNode))
+		if (Intersection::minMaxBounds(ray, parentNode->sp_rightNode->m_boundingBox) && hitRecursive(ray, parentNode->sp_rightNode))
 		{
 			return true;
 		}
 	}
+
+	// If none of the checks return true, return false since nothing was hit
 	return false;
 }
 
 int BVH::Accelerator::getGreatestAxis(Vector3 vec)
 {
-	//if (vec.getX() > vec.getY()) return axis::x;
-	//else
-	//{
-	//	return axis::z;
-	//}
-	//if (vec.getY() > vec.getZ()) return axis::y;
-	//return axis::z;
-
-	//if (vec.getX() > vec.getY() && vec.getX() > vec.getZ()) return axis::x;
-	//if (vec.getY() > vec.getX() && vec.getY() > vec.getZ()) return axis::y;
-	//if (vec.getZ() > vec.getX() && vec.getZ() > vec.getY()) return axis::z;
-
-	if (vec.getX() > vec.getY() && vec.getX() > vec.getZ()) return axis::x;
-	else if (vec.getY() > vec.getZ()) return axis::y;
-	else return axis::z;
+	if (vec.getX() > vec.getY() && vec.getX() > vec.getZ()) return Maths::coord::x;
+	else if (vec.getY() > vec.getZ()) return Maths::coord::y;
+	else return Maths::coord::z;
 }

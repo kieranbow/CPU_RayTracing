@@ -12,8 +12,8 @@ namespace BoundingBox
 	// Contains the min and max points for a bounding box
 	struct Bounds
 	{
-		Vector3 min = { Maths::special::k_infinity, Maths::special::k_infinity, Maths::special::k_infinity };
-		Vector3 max = { -Maths::special::k_infinity, -Maths::special::k_infinity, -Maths::special::k_infinity };
+		Vector3 min = { Maths::special::infinity, Maths::special::infinity, Maths::special::infinity };
+		Vector3 max = { -Maths::special::infinity, -Maths::special::infinity, -Maths::special::infinity };
 	};
 
 	// A class that generates and stores a bounding box based off objects size
@@ -23,11 +23,10 @@ namespace BoundingBox
 		struct Plane
 		{
 			Vector3 normal = { 0.0f, 0.0f, 0.0f };
-			float near = Maths::special::k_infinity;
-			float far = -Maths::special::k_infinity;
+			float near = Maths::special::infinity;
+			float far = -Maths::special::infinity;
 		};
 
-		enum axis { x, y, z };
 		static const int max_num_plane = 3;
 
 		std::array<Plane, max_num_plane> planes;
@@ -42,9 +41,9 @@ namespace BoundingBox
 			void generateBoundingBox(std::vector<Vertex>& _vertex_buffer);
 
 			// Checks if a ray has intersected the slab planes that make up the bounding box
-			bool slabIntersected(RayTrace::Ray& ray, float& tnear, float& tfar);
+			//bool slabIntersected(RayTrace::Ray& ray, float& tnear, float& tfar);
 
-			bool minMaxIntersected(RayTrace::Ray& ray);
+			//bool minMaxIntersected(RayTrace::Ray& ray);
 
 			// Computes a new bounding box around two separate bounding boxes
 			static Bounds combineBounds(AABB& b1, AABB& b2);

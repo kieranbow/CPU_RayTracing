@@ -6,7 +6,7 @@ namespace Maths
 	{
 		constexpr float epsilon = 0.000001f; // A really really really small floating point
 		constexpr float pi = 3.14159265358979323846f;
-		constexpr float k_infinity = std::numeric_limits<float>::max();
+		constexpr float infinity = std::numeric_limits<float>::max(); // A very big floating point to represent infinity
 	}
 	namespace coord
 	{

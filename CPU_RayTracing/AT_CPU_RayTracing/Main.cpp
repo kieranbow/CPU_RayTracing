@@ -56,19 +56,15 @@ int main()
 
 	Primitive cube;
 	cube.setPosition({ 1.0f, 0.0f, -10.0f });
-	cube.name = "cube";
 
 	Primitive sphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
 	sphere.setPosition({ -1.0f, 1.0f, -15.0f });
-	sphere.name = "sphere";
 
 	Primitive triangle("Assets\\small_cube.obj", { 0.0f, 0.0f, 0.0f });
 	triangle.setPosition({ 0.0f, 1.0f, -5.0f });
-	triangle.name = "triangle";
 
 	Primitive cone("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
 	cone.setPosition({ -0.5f, -1.0f, -8.0f });
-	cone.name = "cone";
 
 	std::vector<Primitive> primitives;
 	primitives.push_back(cube);
@@ -76,9 +72,12 @@ int main()
 	primitives.push_back(triangle);
 	primitives.push_back(cone);
 
-	BVH::Accelerator test;
-	test.buildBVH(primitives);
+	// Split scene primitives into bounding boxes using a BVH accelerator
+	BVH::Accelerator bvh;
+	bvh.buildBVH(primitives);
 
+	// Once the bvh has finished, clear all primitive data since that data now lives inside the bvh
+	primitives.clear();
 
 	// Image in pixels
 	Vector2 image_size = { 640, 480 };
@@ -98,10 +97,7 @@ int main()
 	render_timer.StartTimer();
 
 	// Render what the camera sees
-	camera.Render(primitives, framebuffer, test);
-
-	// Once the render has finished, clear all primitive data
-	primitives.clear();
+	camera.Render(/*primitives, */framebuffer, bvh);
 
 	// End timer
 	render_timer.EndTimer();

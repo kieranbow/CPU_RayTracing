@@ -16,9 +16,9 @@ class Primitive
 		Primitive(std::string file_path, Vector3 positionWS);
 		~Primitive();
 
-		// Checks a ray primitive's bounding box before checking if that ray
-		// hits the primitive's triangles
-		bool intersected(RayTrace::Ray&ray);
+		// Checks a ray primitive's bounding box before checking if that ray hits the primitive's triangles
+		bool triangleIntersected(RayTrace::Ray&ray);
+		
 		// Debug function to see where the bounding box is.
 		bool intersectedBoundingBoxDebug(RayTrace::Ray& ray);
 
@@ -35,8 +35,6 @@ class Primitive
 		const std::vector<Indices>& getIndices() const { return index_buffer; }
 		const BoundingBox::AABB& getBoundingBox() const { return boundingBox; }
 
-		std::string name;
-
 	private:
 		// Mesh data
 		std::vector<Vertex> vertex_buffer;
@@ -44,7 +42,7 @@ class Primitive
 
 		BoundingBox::AABB boundingBox;
 
-		bool MollerTrumboreIntersection(RayTrace::Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2, float& u, float& v);
+		bool MollerTrumboreIntersection(RayTrace::Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2);
 
 		// Transformation
 		Vector3 ws_position = { 0.0f, 0.0f, 0.0f }; // World origin

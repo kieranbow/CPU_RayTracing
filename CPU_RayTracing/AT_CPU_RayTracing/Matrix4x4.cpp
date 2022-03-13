@@ -35,6 +35,31 @@ Matrix4x4::Matrix4x4(float c00, float c01, float c02, float c03, float c10, floa
 	this->m_elements.at(c::c33) = c33;
 }
 
+Matrix4x4 Matrix4x4::operator*(const Matrix4x4& _rhs)
+{
+	Matrix4x4 matrix;
+	this->m_elements.at(c::c00) = this->m_elements.at(c::c00) * _rhs.m_elements.at(c::c00);
+	this->m_elements.at(c::c01) = this->m_elements.at(c::c01) * _rhs.m_elements.at(c::c01);
+	this->m_elements.at(c::c02) = this->m_elements.at(c::c02) * _rhs.m_elements.at(c::c02);
+	this->m_elements.at(c::c03) = this->m_elements.at(c::c03) * _rhs.m_elements.at(c::c03);
+
+	this->m_elements.at(c::c10) = this->m_elements.at(c::c10) * _rhs.m_elements.at(c::c10);
+	this->m_elements.at(c::c11) = this->m_elements.at(c::c11) * _rhs.m_elements.at(c::c11);
+	this->m_elements.at(c::c12) = this->m_elements.at(c::c12) * _rhs.m_elements.at(c::c12);
+	this->m_elements.at(c::c13) = this->m_elements.at(c::c13) * _rhs.m_elements.at(c::c13);
+
+	this->m_elements.at(c::c20) = this->m_elements.at(c::c20) * _rhs.m_elements.at(c::c20);
+	this->m_elements.at(c::c21) = this->m_elements.at(c::c21) * _rhs.m_elements.at(c::c21);
+	this->m_elements.at(c::c22) = this->m_elements.at(c::c22) * _rhs.m_elements.at(c::c22);
+	this->m_elements.at(c::c23) = this->m_elements.at(c::c23) * _rhs.m_elements.at(c::c23);
+
+	this->m_elements.at(c::c30) = this->m_elements.at(c::c30) * _rhs.m_elements.at(c::c30);
+	this->m_elements.at(c::c31) = this->m_elements.at(c::c31) * _rhs.m_elements.at(c::c31);
+	this->m_elements.at(c::c32) = this->m_elements.at(c::c32) * _rhs.m_elements.at(c::c32);
+	this->m_elements.at(c::c33) = this->m_elements.at(c::c33) * _rhs.m_elements.at(c::c33);
+	return matrix;
+}
+
 void Matrix4x4::multVecByMatrix4x4(const Matrix4x4& _lhs, Vector3& _rhs)
 {
 	Vector3 vector;
@@ -100,4 +125,19 @@ Vector3 Matrix4x4::translation(Vector3 _rhs)
 	_rhs.setZ(m_elements.at(c::c20) * _rhs.getX() + m_elements.at(c::c21) * _rhs.getY() + m_elements.at(c::c22) * _rhs.getZ() + m_elements.at(c::c32) * 1.0f);
 
 	return _rhs;
+}
+
+Vector3 Matrix4x4::scale(Vector3 scale, Vector3 position)
+{
+	// Defines a scaled idenity matrix
+	this->m_elements.at(c::c00) = scale.getX();
+	this->m_elements.at(c::c11) = scale.getY();
+	this->m_elements.at(c::c22) = scale.getZ();
+
+	// Column major
+	position.setX(m_elements.at(c::c00) * position.getX() + m_elements.at(c::c01) * position.getY() + m_elements.at(c::c02) * position.getZ() + m_elements.at(c::c03) * 0.0f);
+	position.setY(m_elements.at(c::c10) * position.getX() + m_elements.at(c::c11) * position.getY() + m_elements.at(c::c12) * position.getZ() + m_elements.at(c::c31) * 0.0f);
+	position.setZ(m_elements.at(c::c20) * position.getX() + m_elements.at(c::c21) * position.getY() + m_elements.at(c::c22) * position.getZ() + m_elements.at(c::c32) * 0.0f);
+
+	return position;
 }

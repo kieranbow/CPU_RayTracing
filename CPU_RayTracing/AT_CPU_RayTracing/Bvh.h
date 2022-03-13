@@ -19,27 +19,32 @@ namespace BVH
 			BoundingBox::AABB m_boundingBox;
 			bool m_leaf = false;
 
-			std::vector<Primitive> primitive;
-			//std::vector<Primitive> left_list;
-			//std::vector<Primitive> right_list;
+			// Node will only contain primitives when it is a leaf.
+			std::vector<Primitive> m_primitive;
 	};
 
-	// Handles all the primitives within the scene
+	// Handles all the bvh buidling and collision testing
 	class Accelerator
 	{
 		public:
+			// Builds a bvh from a scene of primitives. This tree is top down
 			void buildBVH(const std::vector<Primitive>& primitive);
-			void buildTree(const std::vector<Primitive>& primitive, std::shared_ptr<Node> node);
 
+			// A recursive function that continues building the tree until the number of primitives < 2
+			void buildRecursive(const std::vector<Primitive>& primitive, std::shared_ptr<Node> node);
+
+			// Checks if a ray has hit any of the bvh bounding boxes
 			bool hit(RayTrace::Ray& ray);
+
+			// Another recursive function that loops throught the tree finding and intersecting with
+			// any bounding boxes and primitives
 			bool hitRecursive(RayTrace::Ray& ray, std::shared_ptr<Node> parentNode);
 		
-			std::shared_ptr<Node> sp_root;
-
 		private:
 			static constexpr size_t m_numOfPrims = 2;
-			
-			enum axis { x, y, z };
+			std::shared_ptr<Node> sp_root;
+
+			// Finds the biggest axis from a Vector3
 			int getGreatestAxis(Vector3 vec);
 	};
 }

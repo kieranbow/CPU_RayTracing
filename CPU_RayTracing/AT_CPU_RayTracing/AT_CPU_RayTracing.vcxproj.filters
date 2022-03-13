@@ -31,10 +31,10 @@
     <Filter Include="Source Files\Utilities\Graphics">
       <UniqueIdentifier>{454919df-9210-4580-a8e1-683aaba2ddbc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Mesh">
+    <Filter Include="Header Files\Geometry">
       <UniqueIdentifier>{ba185f0d-4d33-41d4-9358-b1314f197f5e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Mesh">
+    <Filter Include="Source Files\Geometry">
       <UniqueIdentifier>{93a61030-fad6-4836-9f2b-5b6774775d73}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -58,18 +58,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MeshLoader.cpp">
-      <Filter>Source Files\Mesh</Filter>
+      <Filter>Source Files\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files\Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="Primitive.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BoundingBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Bvh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Primitive.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Intersection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -99,16 +102,13 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
-      <Filter>Header Files\Mesh</Filter>
+      <Filter>Header Files\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="MeshLoader.h">
-      <Filter>Header Files\Mesh</Filter>
+      <Filter>Header Files\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Header Files\Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="Primitive.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>Header Files\Utilities</Filter>
@@ -117,6 +117,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Bvh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitive.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Intersection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
