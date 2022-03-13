@@ -57,7 +57,7 @@ int main()
 	Primitive cube;
 	cube.setPosition({ 1.0f, 0.0f, -10.0f });
 
-	Primitive sphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	Primitive sphere("Assets\\helmet.obj", { 0.0f, 0.0f, 0.0f });
 	sphere.setPosition({ -1.0f, 1.0f, -15.0f });
 
 	Primitive triangle("Assets\\small_cube.obj", { 0.0f, 0.0f, 0.0f });
@@ -73,14 +73,14 @@ int main()
 	primitives.push_back(cone);
 
 	// Split scene primitives into bounding boxes using a BVH accelerator
-	BVH::Scene::Accelerator bvh_scene;
-	bvh_scene.buildBVHScene(primitives);
+	//BVH::Scene::Accelerator bvh_scene;
+	//bvh_scene.buildBVHScene(primitives);
 
 	// Once the bvh has finished, clear all primitive data since that data now lives inside the bvh
 	primitives.clear();
 
-	//BVH::Object::Accelerator test;
-	//test.buildBVHPrimitive(cube);
+	BVH::Object::Accelerator test;
+	test.buildBVHPrimitive(sphere);
 
 	// Image in pixels
 	Vector2 image_size = { 640, 480 };
@@ -100,7 +100,7 @@ int main()
 	render_timer.StartTimer();
 
 	// Render what the camera sees in the frame buffer
-	camera.Render(framebuffer, bvh_scene);
+	camera.Render(framebuffer, test);
 
 	// End timer
 	render_timer.EndTimer();

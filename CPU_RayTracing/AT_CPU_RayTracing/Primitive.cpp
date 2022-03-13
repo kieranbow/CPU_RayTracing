@@ -71,20 +71,20 @@ bool Primitive::triangleIntersected(RayTrace::Ray& ray)
 			int vertex_idx_3 = index_buffer.at(i + 2);
 
 			Triangle triangle;
-			triangle.vertices.at(0).position	= vertex_buffer.at(vertex_idx_1).position;
-			triangle.vertices.at(0).normal		= vertex_buffer.at(vertex_idx_1).normal;
+			triangle.vert0.position	= vertex_buffer.at(vertex_idx_1).position;
+			triangle.vert0.normal	= vertex_buffer.at(vertex_idx_1).normal;
 
-			triangle.vertices.at(1).position	= vertex_buffer.at(vertex_idx_2).position;
-			triangle.vertices.at(1).normal		= vertex_buffer.at(vertex_idx_2).normal;
+			triangle.vert1.position	= vertex_buffer.at(vertex_idx_2).position;
+			triangle.vert1.normal	= vertex_buffer.at(vertex_idx_2).normal;
 
-			triangle.vertices.at(2).position	= vertex_buffer.at(vertex_idx_3).position;
-			triangle.vertices.at(2).normal		= vertex_buffer.at(vertex_idx_3).normal;
+			triangle.vert2.position	= vertex_buffer.at(vertex_idx_3).position;
+			triangle.vert2.normal	= vertex_buffer.at(vertex_idx_3).normal;
 
 			// Construct a triangle and test if ray hits that triangle
 			if (Intersection::MollerTrumbore(ray, triangle))
 			{
 				ray.data.colour = Colour(1.0f, 1.0f, 1.0f);
-				ray.data.normal = Vector3::normalize((1.0f - ray.data.uv.getX() - ray.data.uv.getY()) * triangle.vertices.at(0).normal + ray.data.uv.getX() * triangle.vertices.at(1).normal + ray.data.uv.getY() * triangle.vertices.at(2).normal);
+				ray.data.normal = Vector3::normalize((1.0f - ray.data.uv.getX() - ray.data.uv.getY()) * triangle.vert0.normal + ray.data.uv.getX() * triangle.vert1.normal + ray.data.uv.getY() * triangle.vert2.normal);
 				//ray.data.normal = Vector3::normalize(Vector3::cross(vert1 - vert0, vert2 - vert0));
 				return true;
 			}

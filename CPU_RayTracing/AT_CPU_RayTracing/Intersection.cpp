@@ -8,8 +8,8 @@ bool Intersection::MollerTrumbore(RayTrace::Ray& ray, Triangle triangle)
 	// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
 
 	// Find the two edge vectors
-	Vector3 v0v1 = triangle.vertices.at(1).position - triangle.vertices.at(0).position;
-	Vector3 v0v2 = triangle.vertices.at(2).position - triangle.vertices.at(0).position;
+	Vector3 v0v1 = triangle.vert1.position - triangle.vert0.position;
+	Vector3 v0v2 = triangle.vert2.position - triangle.vert0.position;
 
 	// Begin calculating determinant - also used to calculate U parameter
 	Vector3 pvec = Vector3::cross(ray.direction, v0v2);
@@ -22,7 +22,7 @@ bool Intersection::MollerTrumbore(RayTrace::Ray& ray, Triangle triangle)
 	float invDet = 1.0f / det;
 
 	// Calculate distance from vert0 to ray's origin
-	Vector3 tvec = ray.origin - triangle.vertices.at(0).position;
+	Vector3 tvec = ray.origin - triangle.vert0.position;
 
 	// Calculate U parameter and test bounds
 	ray.data.uv.setX(Vector3::dot(tvec, pvec) * invDet);

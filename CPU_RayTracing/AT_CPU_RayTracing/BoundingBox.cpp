@@ -1,6 +1,17 @@
 #include "BoundingBox.h"
 #include "Ray.h"
 
+BoundingBox::AABB::AABB()
+{
+	bounds.min.setX(Maths::special::infinity);
+	bounds.min.setY(Maths::special::infinity);
+	bounds.min.setZ(Maths::special::infinity);
+
+	bounds.max.setX(-Maths::special::infinity);
+	bounds.max.setY(-Maths::special::infinity);
+	bounds.max.setZ(-Maths::special::infinity);
+}
+
 void BoundingBox::AABB::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 {
 	// Generates a bounding box using the slab method as mention by Kay and Kajiya (1986)
@@ -37,19 +48,23 @@ void BoundingBox::AABB::generateBoundingBox(const std::vector<Triangle>& triangl
 	float z_min = Maths::special::infinity;
 	float z_max = -Maths::special::infinity;
 
-
-	for (int i = 0; i < triangles.size(); i++)
+	for (auto& tri : triangles)
 	{
-		for (int j = 0; j < triangles.at(i).vertices.size(); j++)
+		std::array<Vertex, 3> temp;
+		temp.at(0) = tri.vert0;
+		temp.at(1) = tri.vert1;
+		temp.at(2) = tri.vert1;
+
+		for (auto& vert : temp)
 		{
-			x_max = std::max(x_max, triangles.at(i).vertices.at(j).position.getX());
-			x_min = std::min(x_min, triangles.at(i).vertices.at(j).position.getX());
+			x_max = std::max(x_max, vert.position.getX());
+			x_min = std::min(x_min, vert.position.getX());
 
-			y_max = std::max(y_max, triangles.at(i).vertices.at(j).position.getY());
-			y_min = std::min(y_min, triangles.at(i).vertices.at(j).position.getY());
+			y_max = std::max(y_max, vert.position.getY());
+			y_min = std::min(y_min, vert.position.getY());
 
-			z_max = std::max(z_max, triangles.at(i).vertices.at(j).position.getZ());
-			z_min = std::min(z_min, triangles.at(i).vertices.at(j).position.getZ());
+			z_max = std::max(z_max, vert.position.getZ());
+			z_min = std::min(z_min, vert.position.getZ());
 		}
 	}
 

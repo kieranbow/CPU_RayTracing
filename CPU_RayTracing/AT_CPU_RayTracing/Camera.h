@@ -17,7 +17,7 @@ class Camera
 		Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float _fov);
 
 		// void Update();
-		void Render(/*std::vector<Primitive> primitives, */std::vector<Pixel>& buffer, BVH::Scene::Accelerator bvh);
+		void Render(/*std::vector<Primitive> primitives, */std::vector<Pixel>& buffer, BVH::Object::Accelerator bvh);
 
 		void setPositionWS(Vector3 positionWS);
 		void setDirectionWS(Vector3 directionWS);

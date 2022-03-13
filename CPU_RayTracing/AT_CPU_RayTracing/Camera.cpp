@@ -17,7 +17,7 @@ Camera::Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float 
 	scale = tan(deg2rad(fov) * 0.5f);
 }
 
-void Camera::Render(/*std::vector<Primitive> primitives, */std::vector<Pixel>& buffer, BVH::Scene::Accelerator bvh)
+void Camera::Render(/*std::vector<Primitive> primitives, */std::vector<Pixel>& buffer, BVH::Object::Accelerator bvh)
 {
 	int iter = 0;
 	for (int y = 0; y < static_cast<int>(size.getY()); ++y)
@@ -43,26 +43,26 @@ void Camera::Render(/*std::vector<Primitive> primitives, */std::vector<Pixel>& b
 			primary_rayWS.origin = ws_position;
 			primary_rayWS.direction = Vector3::normalize(pixelPosWS - primary_rayWS.origin);
 
-			//if (bvh.hitPrimitive(primary_rayWS))
-			//{
-			//	buffer.at(iter).colour = primary_rayWS.data.normal;
-			//}
-			//else
-			//{
-			//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
-			//}
-
-			if (bvh.hit(primary_rayWS))
+			if (bvh.hitPrimitive(primary_rayWS))
 			{
-				if (primary_rayWS.t >= primary_rayWS.t_near && primary_rayWS.t <= primary_rayWS.t_far)
-				{
-					buffer.at(iter).colour = primary_rayWS.data.normal;
-				}
+				buffer.at(iter).colour = primary_rayWS.data.normal;
 			}
 			else
 			{
 				buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
 			}
+
+			//if (bvh.hit(primary_rayWS))
+			//{
+			//	if (primary_rayWS.t >= primary_rayWS.t_near && primary_rayWS.t <= primary_rayWS.t_far)
+			//	{
+			//		buffer.at(iter).colour = primary_rayWS.data.normal;
+			//	}
+			//}
+			//else
+			//{
+			//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
+			//}
 			iter++;
 		}
 	}

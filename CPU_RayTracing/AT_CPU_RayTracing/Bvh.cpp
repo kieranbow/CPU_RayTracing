@@ -156,10 +156,12 @@ void BVH::Object::Accelerator::buildBVHPrimitive(Primitive& prim)
 {
 	if (prim.getIndices().empty())
 	{
-		Logger::PrintWarning("No vertices in mesh to build the BVH from");
+		Logger::PrintWarning("No indices in the mesh to build the BVH from");
 		return;
 	}
 
+	// Loop through the primitives indices and re-create the triangles and push them
+	// in the vector of triangles
 	for (int i = 0; i < prim.getIndices().size(); i += 3)
 	{
 		int vertex_idx_1 = prim.getIndices().at(i);
@@ -167,17 +169,17 @@ void BVH::Object::Accelerator::buildBVHPrimitive(Primitive& prim)
 		int vertex_idx_3 = prim.getIndices().at(i + 2);
 
 		Triangle triangle;
-		triangle.vertices.at(0).position	= prim.getVertices().at(vertex_idx_1).position;
-		triangle.vertices.at(0).normal		= prim.getVertices().at(vertex_idx_1).normal;
-		triangle.vertices.at(0).texcoord	= prim.getVertices().at(vertex_idx_1).texcoord;
+		triangle.vert0.position	= prim.getVertices().at(vertex_idx_1).position;
+		triangle.vert0.normal	= prim.getVertices().at(vertex_idx_1).normal;
+		triangle.vert0.texcoord	= prim.getVertices().at(vertex_idx_1).texcoord;
 
-		triangle.vertices.at(1).position	= prim.getVertices().at(vertex_idx_2).position;
-		triangle.vertices.at(1).normal		= prim.getVertices().at(vertex_idx_2).normal;
-		triangle.vertices.at(1).texcoord	= prim.getVertices().at(vertex_idx_2).texcoord;
+		triangle.vert1.position	= prim.getVertices().at(vertex_idx_2).position;
+		triangle.vert1.normal	= prim.getVertices().at(vertex_idx_2).normal;
+		triangle.vert1.texcoord	= prim.getVertices().at(vertex_idx_2).texcoord;
 
-		triangle.vertices.at(2).position	= prim.getVertices().at(vertex_idx_3).position;
-		triangle.vertices.at(2).normal		= prim.getVertices().at(vertex_idx_3).normal;
-		triangle.vertices.at(2).texcoord	= prim.getVertices().at(vertex_idx_3).texcoord;
+		triangle.vert2.position	= prim.getVertices().at(vertex_idx_3).position;
+		triangle.vert2.normal	= prim.getVertices().at(vertex_idx_3).normal;
+		triangle.vert2.texcoord	= prim.getVertices().at(vertex_idx_3).texcoord;
 		
 		m_triangles.push_back(triangle);
 	}
@@ -185,31 +187,29 @@ void BVH::Object::Accelerator::buildBVHPrimitive(Primitive& prim)
 	// Make the root node of the bvh
 	sp_root = std::make_shared<Node>();
 
-	// Pass the primitives and root node to recusive function.
-	buildRecursivePrimitive(m_triangles, sp_root);
+	// Pass the vector of triangles and root node to recusive function.
+	buildRecursivePrimitive(m_triangles, sp_root, 0, m_max_depth);
 }
 
-void BVH::Object::Accelerator::buildRecursivePrimitive(const std::vector<Triangle>& triangles, std::shared_ptr<BVH::Object::Node> node)
+void BVH::Object::Accelerator::buildRecursivePrimitive(const std::vector<Triangle>& triangles, std::shared_ptr<BVH::Object::Node> node, int depth, int maxDepth)
 {
-	// Make a leaf node if the number of primitives is less than an arbitrary number
-	if (triangles.size() <= m_numOfTris)
+	// Make a leaf node if the number of triangles is less than an arbitrary number
+	if (triangles.size() <= m_numOfTris || depth >= maxDepth)
 	{
 		node->m_leaf = true;
 		node->m_triangles = triangles;
-
-		// Logger::PrintDebug("Here be leaf");
 	}
 	else
 	{
 		// Generate a bounding box around all the triangles
 		BoundingBox::AABB node_bounds;
-		node_bounds.setBoundsMinX(Maths::special::infinity);
-		node_bounds.setBoundsMinY(Maths::special::infinity);
-		node_bounds.setBoundsMinZ(Maths::special::infinity);
+		//node_bounds.setBoundsMinX(Maths::special::infinity);
+		//node_bounds.setBoundsMinY(Maths::special::infinity);
+		//node_bounds.setBoundsMinZ(Maths::special::infinity);
 
-		node_bounds.setBoundsMaxX(-Maths::special::infinity);
-		node_bounds.setBoundsMaxY(-Maths::special::infinity);
-		node_bounds.setBoundsMaxZ(-Maths::special::infinity);
+		//node_bounds.setBoundsMaxX(-Maths::special::infinity);
+		//node_bounds.setBoundsMaxY(-Maths::special::infinity);
+		//node_bounds.setBoundsMaxZ(-Maths::special::infinity);
 
 		BoundingBox::AABB box;
 		box.generateBoundingBox(triangles);
@@ -236,9 +236,9 @@ void BVH::Object::Accelerator::buildRecursivePrimitive(const std::vector<Triangl
 
 		for (auto& tri : triangles)
 		{
-			Vector3 vert0 = tri.vertices.at(0).position;
-			Vector3 vert1 = tri.vertices.at(1).position;
-			Vector3 vert2 = tri.vertices.at(2).position;
+			Vector3 vert0 = tri.vert0.position;
+			Vector3 vert1 = tri.vert1.position;
+			Vector3 vert2 = tri.vert2.position;
 
 			Vector3 tri_centroid;
 			tri_centroid.setX((vert0.getX() + vert1.getX() + vert2.getX()) / 3);
@@ -256,8 +256,8 @@ void BVH::Object::Accelerator::buildRecursivePrimitive(const std::vector<Triangl
 		}
 
 		// Continue making nodes and splitting primitives until a condition is met 
-		buildRecursivePrimitive(left_list, node->sp_leftNode);
-		buildRecursivePrimitive(right_list, node->sp_rightNode);
+		buildRecursivePrimitive(left_list, node->sp_leftNode, depth + 1, m_max_depth);
+		buildRecursivePrimitive(right_list, node->sp_rightNode, depth + 1, m_max_depth);
 
 		// Clear both list since they won't be used again.
 		left_list.clear();
@@ -289,9 +289,9 @@ bool BVH::Object::Accelerator::hitRecursivePrimitive(RayTrace::Ray& ray, std::sh
 		{
 			if (Intersection::MollerTrumbore(ray, tri))
 			{
-				Vector3 vert0_normal = tri.vertices.at(0).normal;
-				Vector3 vert1_normal = tri.vertices.at(1).normal;
-				Vector3 vert2_normal = tri.vertices.at(2).normal;
+				Vector3 vert0_normal = tri.vert0.normal;
+				Vector3 vert1_normal = tri.vert1.normal;
+				Vector3 vert2_normal = tri.vert2.normal;
 
 				ray.data.normal = Vector3::normalize((1.0f - ray.data.uv.getX() - ray.data.uv.getY()) * vert0_normal + ray.data.uv.getX() * vert1_normal + ray.data.uv.getY() * vert2_normal);
 				return true;

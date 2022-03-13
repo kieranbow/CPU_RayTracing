@@ -47,7 +47,6 @@ namespace BVH
 
 			private:
 				static constexpr size_t m_numOfPrims = 2;
-				static constexpr size_t m_numOfTris = 3;
 				std::shared_ptr<BVH::Scene::Node> sp_root;
 		};
 	}
@@ -65,10 +64,9 @@ namespace BVH
 				BoundingBox::AABB m_boundingBox;
 				bool m_leaf = false;
 
-				// Node will only contain primitives when it is a leaf.
+				// Node will only contain triangles when it is a leaf.
 				std::vector<Triangle> m_triangles;
 		};
-
 
 		// Handles all the bvh buidling and collision testing
 		class Accelerator
@@ -77,15 +75,19 @@ namespace BVH
 				// Builds a bvh from the triangles of a primitives. This tree is top down
 				void buildBVHPrimitive(Primitive& prim);
 
-				// A recursive function that continues building the tree until the number of triangles < 3
-				void buildRecursivePrimitive(const std::vector<Triangle>& triangles, std::shared_ptr<BVH::Object::Node> node);
+				// A recursive function that continues building the tree until a condition is met
+				void buildRecursivePrimitive(const std::vector<Triangle>& triangles, std::shared_ptr<BVH::Object::Node> node, int depth, int maxDepth);
 
+				// Checks if a ray has hit any of the bvh bounding boxes
 				bool hitPrimitive(RayTrace::Ray& ray);
 
+				// Another recursive function that loops throught the tree finding and intersecting with
+				// any bounding boxes. This function stops when its found a leaf and intersected with the triangles.
 				bool hitRecursivePrimitive(RayTrace::Ray& ray, std::shared_ptr<BVH::Object::Node> parentNode);
 
 			private:
-				static constexpr size_t m_numOfTris = 64;
+				static constexpr size_t m_numOfTris = 4;
+				static constexpr int m_max_depth = 6;
 				std::shared_ptr<BVH::Object::Node> sp_root;
 				std::vector<Triangle> m_triangles;
 		};

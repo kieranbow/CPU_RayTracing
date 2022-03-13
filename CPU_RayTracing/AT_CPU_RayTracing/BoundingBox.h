@@ -19,22 +19,22 @@ namespace BoundingBox
 	// A class that generates and stores a bounding box based off objects size
 	class AABB
 	{
-	private:
-		struct Plane
-		{
-			Vector3 normal = { 0.0f, 0.0f, 0.0f };
-			float near = Maths::special::infinity;
-			float far = -Maths::special::infinity;
-		};
+		private:
+			struct Plane
+			{
+				Vector3 normal = { 0.0f, 0.0f, 0.0f };
+				float near = Maths::special::infinity;
+				float far = -Maths::special::infinity;
+			};
 
-		static constexpr int max_num_plane = 3;
+			static constexpr int max_num_plane = 3;
 
-		std::array<Plane, max_num_plane> planes;
-		Bounds bounds;
-		Vector3 centroid;
+			std::array<Plane, max_num_plane> planes;
+			Bounds bounds;
+			Vector3 centroid;
 
 		public:
-			AABB() = default;
+			AABB();
 			~AABB() = default;
 
 			// Loops through the obj vertex buffer and generate a bounding box using the slab method

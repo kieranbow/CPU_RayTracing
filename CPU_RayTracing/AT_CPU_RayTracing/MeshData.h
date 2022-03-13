@@ -21,5 +21,7 @@ struct Vertex
 
 struct Triangle
 {
-	std::array<Vertex, 3> vertices;
+	Vertex vert0;
+	Vertex vert1;
+	Vertex vert2;
 };
