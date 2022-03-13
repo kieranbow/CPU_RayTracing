@@ -3,6 +3,7 @@
 #include "Matrix4x4.h"
 #include "Colour.h"
 #include "Intersection.h"
+#include "MeshData.h"
 
 Primitive::Primitive()
 {
@@ -69,20 +70,21 @@ bool Primitive::triangleIntersected(RayTrace::Ray& ray)
 			int vertex_idx_2 = index_buffer.at(i + 1);
 			int vertex_idx_3 = index_buffer.at(i + 2);
 
-			// Get the three vertices of a triangle
-			Vector3 vert0 = vertex_buffer.at(vertex_idx_1).position;
-			Vector3 vert1 = vertex_buffer.at(vertex_idx_2).position;
-			Vector3 vert2 = vertex_buffer.at(vertex_idx_3).position;
+			Triangle triangle;
+			triangle.vertices.at(0).position	= vertex_buffer.at(vertex_idx_1).position;
+			triangle.vertices.at(0).normal		= vertex_buffer.at(vertex_idx_1).normal;
 
-			Vector3 vert0_n = vertex_buffer.at(vertex_idx_1).normal;
-			Vector3 vert1_n = vertex_buffer.at(vertex_idx_2).normal;
-			Vector3 vert2_n = vertex_buffer.at(vertex_idx_3).normal;
+			triangle.vertices.at(1).position	= vertex_buffer.at(vertex_idx_2).position;
+			triangle.vertices.at(1).normal		= vertex_buffer.at(vertex_idx_2).normal;
+
+			triangle.vertices.at(2).position	= vertex_buffer.at(vertex_idx_3).position;
+			triangle.vertices.at(2).normal		= vertex_buffer.at(vertex_idx_3).normal;
 
 			// Construct a triangle and test if ray hits that triangle
-			if (MollerTrumboreIntersection(ray, vert0, vert1, vert2))
+			if (Intersection::MollerTrumbore(ray, triangle))
 			{
 				ray.data.colour = Colour(1.0f, 1.0f, 1.0f);
-				ray.data.normal = Vector3::normalize((1.0f - ray.data.uv.getX() - ray.data.uv.getY()) * vert0_n + ray.data.uv.getX() * vert1_n + ray.data.uv.getY() * vert2_n);
+				ray.data.normal = Vector3::normalize((1.0f - ray.data.uv.getX() - ray.data.uv.getY()) * triangle.vertices.at(0).normal + ray.data.uv.getX() * triangle.vertices.at(1).normal + ray.data.uv.getY() * triangle.vertices.at(2).normal);
 				//ray.data.normal = Vector3::normalize(Vector3::cross(vert1 - vert0, vert2 - vert0));
 				return true;
 			}
@@ -141,43 +143,4 @@ void Primitive::setScale(Vector3 scale)
 
 	// boundingBox.generateBoundingBox(vertex_buffer);
 	boundingBox.generateBoundingBox(vertex_buffer);
-}
-
-bool Primitive::MollerTrumboreIntersection(RayTrace::Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2)
-{
-	// https://cadxfem.org/inf/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
-	// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
-
-	// Find the two edge vectors
-	Vector3 v0v1 = vert1 - vert0;
-	Vector3 v0v2 = vert2 - vert0;
-
-	// Begin calculating determinant - also used to calculate U parameter
-	Vector3 pvec = Vector3::cross(ray.direction, v0v2);
-
-	float det = Vector3::dot(pvec, v0v1);
-
-	// if the determinant is close to 0, the ray misses the triangle
-	if (det < Maths::special::epsilon) return false; // Culls backface triangles
-
-	float invDet = 1.0f / det;
-
-	// Calculate distance from vert0 to ray's origin
-	Vector3 tvec = ray.origin - vert0;
-
-	// Calculate U parameter and test bounds
-	ray.data.uv.setX(Vector3::dot(tvec, pvec) * invDet);
-	if (ray.data.uv.getX() < 0.0f || ray.data.uv.getX() > 1.0f) return false;
-
-	// Prepare to test V parameter
-	Vector3 qvec = Vector3::cross(tvec, v0v1);
-
-	// Calculate V parameter and test bounds
-	ray.data.uv.setY(Vector3::dot(ray.direction, qvec) * invDet);
-	if (ray.data.uv.getY() < 0.0f || ray.data.uv.getX() + ray.data.uv.getY() > 1.0f) return false; // u + v should never be greater than 1
-
-	// Calculate t, ray intersection triangle
-	ray.t = Vector3::dot(v0v2, qvec) * invDet;
-
-	return true;
 }

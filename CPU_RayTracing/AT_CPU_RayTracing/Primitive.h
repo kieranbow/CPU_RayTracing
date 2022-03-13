@@ -42,8 +42,6 @@ class Primitive
 
 		BoundingBox::AABB boundingBox;
 
-		bool MollerTrumboreIntersection(RayTrace::Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2);
-
 		// Transformation
 		Vector3 ws_position = { 0.0f, 0.0f, 0.0f }; // World origin
 		Vector3 rotation = { 0.0f, 0.0f, 0.0f };

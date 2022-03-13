@@ -3,7 +3,7 @@
 #include <array>
 
 #include "Vector3.h"
-#include "Vertex.h"
+#include "MeshData.h"
 #include "Maths.h"
 #include "Ray.h"
 
@@ -27,7 +27,7 @@ namespace BoundingBox
 			float far = -Maths::special::infinity;
 		};
 
-		static const int max_num_plane = 3;
+		static constexpr int max_num_plane = 3;
 
 		std::array<Plane, max_num_plane> planes;
 		Bounds bounds;
@@ -39,11 +39,7 @@ namespace BoundingBox
 
 			// Loops through the obj vertex buffer and generate a bounding box using the slab method
 			void generateBoundingBox(std::vector<Vertex>& _vertex_buffer);
-
-			// Checks if a ray has intersected the slab planes that make up the bounding box
-			//bool slabIntersected(RayTrace::Ray& ray, float& tnear, float& tfar);
-
-			//bool minMaxIntersected(RayTrace::Ray& ray);
+			void generateBoundingBox(const std::vector<Triangle>& triangles);
 
 			// Computes a new bounding box around two separate bounding boxes
 			static Bounds combineBounds(AABB& b1, AABB& b2);
@@ -59,7 +55,11 @@ namespace BoundingBox
 
 			// Returns the min and max points that make up the bounds
 			const Bounds& getBounds() const { return bounds; }
+
+			// Returns the planes used to generate the slabs
 			const std::array<Plane, max_num_plane>& getPlanes() const { return planes; }
+
+			// Returns the centre point of the bounding box
 			const Vector3& getCentroid() const { return centroid; }
 	};
 }

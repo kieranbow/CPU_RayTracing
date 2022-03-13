@@ -2,6 +2,8 @@
 #include "Vector3.h"
 #include "Vector2.h"
 
+using Indices = unsigned short;
+
 struct Vertex
 {
 	Vertex() {}
@@ -15,4 +17,9 @@ struct Vertex
 	Vector3 position	= { 0.0f, 0.0f, 0.0f };
 	Vector3 normal		= { 0.0f, 0.0f, 0.0f };
 	Vector2 texcoord	= { 0.0f, 0.0f };
+};
+
+struct Triangle
+{
+	std::array<Vertex, 3> vertices;
 };

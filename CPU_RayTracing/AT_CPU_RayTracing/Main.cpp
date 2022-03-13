@@ -73,11 +73,14 @@ int main()
 	primitives.push_back(cone);
 
 	// Split scene primitives into bounding boxes using a BVH accelerator
-	BVH::Accelerator bvh;
-	bvh.buildBVH(primitives);
+	BVH::Scene::Accelerator bvh_scene;
+	bvh_scene.buildBVHScene(primitives);
 
 	// Once the bvh has finished, clear all primitive data since that data now lives inside the bvh
 	primitives.clear();
+
+	//BVH::Object::Accelerator test;
+	//test.buildBVHPrimitive(cube);
 
 	// Image in pixels
 	Vector2 image_size = { 640, 480 };
@@ -96,8 +99,8 @@ int main()
 	Timer render_timer;
 	render_timer.StartTimer();
 
-	// Render what the camera sees
-	camera.Render(/*primitives, */framebuffer, bvh);
+	// Render what the camera sees in the frame buffer
+	camera.Render(framebuffer, bvh_scene);
 
 	// End timer
 	render_timer.EndTimer();

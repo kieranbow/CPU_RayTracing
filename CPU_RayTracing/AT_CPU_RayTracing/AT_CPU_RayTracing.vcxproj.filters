@@ -101,7 +101,7 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vertex.h">
+    <ClInclude Include="MeshData.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="MeshLoader.h">

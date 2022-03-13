@@ -11,8 +11,7 @@
 #include <vector>
 
 // Vertex & index
-#include "Vertex.h"
-using Indices = unsigned short;
+#include "MeshData.h"
 
 // Handles loading a mesh from file using the Assimp library
 class MeshLoader

@@ -1,15 +1,15 @@
 #pragma once
 
-
 #include "Ray.h"
 #include "BoundingBox.h"
 
 class Vector3;
+struct Triangle;
 
 namespace Intersection
 {
 	// Calculates a triangle and tests if a ray has intersected it
-	bool MollerTrumbore(RayTrace::Ray& ray, Vector3 vert0, Vector3 vert1, Vector3 vert2);
+	bool MollerTrumbore(RayTrace::Ray& ray, Triangle triangle);
 
 	// Checks if a ray has intersected the slab planes that make up the bounding box
 	bool slab(RayTrace::Ray& ray, BoundingBox::AABB aabb, float& tnear, float& tfar);
