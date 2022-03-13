@@ -52,13 +52,13 @@ Primitive::~Primitive()
 	index_buffer.clear();
 }
 
-bool Primitive::intersected(RayTrace::Ray& ray, Colour& hitColour)
+bool Primitive::intersected(RayTrace::Ray& ray)
 {
 	float tn = -Maths::special::k_infinity;
 	float tf = Maths::special::k_infinity;
 
 	// Check if ray hits the aabb bounding box
-	if (boundingBox.intersected(ray, tn, tf))
+	if (boundingBox.slabIntersected(ray, tn, tf))
 	{
 		// If the ray does intersect the aabb bounding box
 		// Loop through all indices and vertices inside the buffer
@@ -76,7 +76,6 @@ bool Primitive::intersected(RayTrace::Ray& ray, Colour& hitColour)
 			Vector3 vert0_n = vertex_buffer.at(vertex_idx_1).normal;
 			Vector3 vert1_n = vertex_buffer.at(vertex_idx_2).normal;
 			Vector3 vert2_n = vertex_buffer.at(vertex_idx_3).normal;
-			//hitColour = Vector3::normalize(Vector3::cross(vert1 - vert0, vert2 - vert0));
 
 			float u = 0.0f;
 			float v = 0.0f;
@@ -84,7 +83,9 @@ bool Primitive::intersected(RayTrace::Ray& ray, Colour& hitColour)
 			// Construct a triangle and test if ray hits that triangle
 			if (MollerTrumboreIntersection(ray, vert0, vert1, vert2, u, v))
 			{
-				hitColour = Vector3::normalize((1.0f - u - v) * vert0_n + u * vert1_n + v * vert2_n);
+				ray.data.colour = Colour(1.0f, 1.0f, 1.0f);
+				ray.data.normal = Vector3::normalize((1.0f - u - v) * vert0_n + u * vert1_n + v * vert2_n);
+				//ray.data.normal = Vector3::normalize(Vector3::cross(vert1 - vert0, vert2 - vert0));
 				return true;
 			}
 		}
@@ -97,7 +98,7 @@ bool Primitive::intersectedBoundingBoxDebug(RayTrace::Ray& ray)
 	float tn = -Maths::special::k_infinity;
 	float tf = Maths::special::k_infinity;
 
-	if (boundingBox.intersected(ray, tn, tf))
+	if (boundingBox.slabIntersected(ray, tn, tf))
 	{
 		return true;
 	}

@@ -35,7 +35,7 @@ class Logger
 		}
 		static void PrintDebug(std::string msg)
 		{
-			// Sets the text "[Error]" with a Red background and black text
+			// Sets the text "[Debug]" with a Red background and black text
 			SetConsoleTextAttribute(hConsole, backcyan_blkText);
 			std::cout << "[Debug]";
 

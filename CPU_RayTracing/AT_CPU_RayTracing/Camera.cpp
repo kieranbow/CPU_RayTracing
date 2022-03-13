@@ -27,6 +27,7 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 			// Create a pixel
 			Pixel pixel;
 
+			// Convert pixel from raster space to camera space
 			float Px = (2.0f * ((x + 0.5f) / size.getX()) - 1.0f) * tan(fov / 2.0f * Maths::special::pi / 180.0f) * aspect_ratio * scale;
 			float Py = (1.0f - 2.0f * ((y + 0.5f) / size.getY()) * tan(fov / 2.0f * Maths::special::pi / 180.0f));
 			pixel.position.setX(Px);
@@ -40,36 +41,29 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 			primary_rayWS.origin = ws_position;
 			primary_rayWS.direction = Vector3::normalize(pixelPosWS - primary_rayWS.origin);
 
-			//if (intersect(primary_rayWS, Vector3(-1.0f, 0.5f, -1.0f), 0.5f))
-			//{
-			//	buffer.at(iter).colour = Colour(1.0f, 0.0f, 0.0f);
-			//}
-			//else
-			//{
-			//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
-			//}
-
 			Colour hit_colour;
 
-			bvh.hit(primary_rayWS);
-
-
-			for(auto& prim : primitives)
+			if (bvh.hit(primary_rayWS))
 			{
-				if (prim.intersectedBoundingBoxDebug(primary_rayWS))
-				{
-					buffer.at(iter).colour = Colour(1.0f, 1.0f, 1.0f);
-				}
-
-				if (prim.intersected(primary_rayWS, hit_colour))
-				{
-					buffer.at(iter).colour = hit_colour;
-				}
-				//else
-				//{
-				//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
-				//}
+				buffer.at(iter).colour = primary_rayWS.data.normal;
 			}
+
+			//for(auto& prim : primitives)
+			//{
+			//	//if (prim.intersectedBoundingBoxDebug(primary_rayWS))
+			//	//{
+			//	//	buffer.at(iter).colour = Colour(1.0f, 1.0f, 1.0f);
+			//	//}
+
+			//	if (prim.intersected(primary_rayWS))
+			//	{
+			//		buffer.at(iter).colour = primary_rayWS.data.normal;
+			//	}
+			//	//else
+			//	//{
+			//	//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
+			//	//}
+			//}
 			iter++;
 		}
 	}

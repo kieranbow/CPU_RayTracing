@@ -42,7 +42,9 @@ namespace BoundingBox
 			void generateBoundingBox(std::vector<Vertex>& _vertex_buffer);
 
 			// Checks if a ray has intersected the slab planes that make up the bounding box
-			bool intersected(RayTrace::Ray& ray, float& tnear, float& tfar);
+			bool slabIntersected(RayTrace::Ray& ray, float& tnear, float& tfar);
+
+			bool minMaxIntersected(RayTrace::Ray& ray);
 
 			// Computes a new bounding box around two separate bounding boxes
 			static Bounds combineBounds(AABB& b1, AABB& b2);

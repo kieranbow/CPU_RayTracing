@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 
 #include "MeshLoader.h"
 #include "BoundingBox.h"
@@ -17,7 +18,7 @@ class Primitive
 
 		// Checks a ray primitive's bounding box before checking if that ray
 		// hits the primitive's triangles
-		bool intersected(RayTrace::Ray&ray, Colour &hitColour);
+		bool intersected(RayTrace::Ray&ray);
 		// Debug function to see where the bounding box is.
 		bool intersectedBoundingBoxDebug(RayTrace::Ray& ray);
 
@@ -33,6 +34,8 @@ class Primitive
 		const std::vector<Vertex>& getVertices() const { return vertex_buffer; }
 		const std::vector<Indices>& getIndices() const { return index_buffer; }
 		const BoundingBox::AABB& getBoundingBox() const { return boundingBox; }
+
+		std::string name;
 
 	private:
 		// Mesh data

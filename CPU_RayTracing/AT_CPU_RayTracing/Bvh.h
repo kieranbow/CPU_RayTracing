@@ -19,8 +19,9 @@ namespace BVH
 			BoundingBox::AABB m_boundingBox;
 			bool m_leaf = false;
 
-			std::vector<Primitive> left_list;
-			std::vector<Primitive> right_list;
+			std::vector<Primitive> primitive;
+			//std::vector<Primitive> left_list;
+			//std::vector<Primitive> right_list;
 	};
 
 	// Handles all the primitives within the scene
@@ -31,11 +32,13 @@ namespace BVH
 			void buildTree(const std::vector<Primitive>& primitive, std::shared_ptr<Node> node);
 
 			bool hit(RayTrace::Ray& ray);
-			bool hitRecursive(RayTrace::Ray& ray, std::shared_ptr<Node> node);
+			bool hitRecursive(RayTrace::Ray& ray, std::shared_ptr<Node> parentNode);
 		
+			std::shared_ptr<Node> sp_root;
+
 		private:
 			static constexpr size_t m_numOfPrims = 2;
-			std::shared_ptr<Node> sp_root;
+			
 			enum axis { x, y, z };
 			int getGreatestAxis(Vector3 vec);
 	};
