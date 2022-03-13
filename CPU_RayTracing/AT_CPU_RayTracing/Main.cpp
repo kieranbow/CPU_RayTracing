@@ -54,7 +54,7 @@ int main()
 	// Right handed Cartesian coordinate systems
 	// X+, y+, Z-
 
-	Primitive cube("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	Primitive cube;
 	cube.setPosition({ 1.0f, 0.0f, -10.0f });
 	cube.name = "cube";
 
@@ -62,19 +62,19 @@ int main()
 	sphere.setPosition({ -1.0f, 1.0f, -15.0f });
 	sphere.name = "sphere";
 
-	Primitive triangle("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	Primitive triangle("Assets\\small_cube.obj", { 0.0f, 0.0f, 0.0f });
 	triangle.setPosition({ 0.0f, 1.0f, -5.0f });
 	triangle.name = "triangle";
 
-	//Primitive cone("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
-	//cone.setPosition({ -0.5f, -1.0f, -8.0f });
-	//cone.name = "cone";
+	Primitive cone("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	cone.setPosition({ -0.5f, -1.0f, -8.0f });
+	cone.name = "cone";
 
 	std::vector<Primitive> primitives;
 	primitives.push_back(cube);
 	primitives.push_back(sphere);
 	primitives.push_back(triangle);
-	//primitives.push_back(cone);
+	primitives.push_back(cone);
 
 	BVH::Accelerator test;
 	test.buildBVH(primitives);
