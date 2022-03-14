@@ -14,18 +14,17 @@ namespace BVH
 	namespace Scene
 	{
 		// A node that makes up the tree of a BVH
-		class Node
+		struct Node
 		{
-			public:
-				// Pointers to left node and right node
-				std::shared_ptr<BVH::Scene::Node> sp_leftNode;
-				std::shared_ptr<BVH::Scene::Node> sp_rightNode;
+			// Pointers to left node and right node
+			std::shared_ptr<BVH::Scene::Node> sp_leftNode;
+			std::shared_ptr<BVH::Scene::Node> sp_rightNode;
 
-				BoundingBox::AABB m_boundingBox;
-				bool m_leaf = false;
+			BoundingBox::AABB m_boundingBox;
+			bool m_leaf = false;
 
-				// Node will only contain primitives when it is a leaf.
-				std::vector<Primitive> m_primitive;
+			// Node will only contain primitives when it is a leaf.
+			std::vector<Primitive> m_primitive;
 		};
 
 		// Handles all the bvh buidling and collision testing
@@ -54,18 +53,17 @@ namespace BVH
 	namespace Object
 	{
 		// A node that makes up the tree of a BVH
-		class Node
+		struct Node
 		{
-			public:
-				// Pointers to left node and right node
-				std::shared_ptr<BVH::Object::Node> sp_leftNode;
-				std::shared_ptr<BVH::Object::Node> sp_rightNode;
+			// Pointers to left node and right node
+			std::shared_ptr<BVH::Object::Node> sp_leftNode;
+			std::shared_ptr<BVH::Object::Node> sp_rightNode;
 
-				BoundingBox::AABB m_boundingBox;
-				bool m_leaf = false;
+			BoundingBox::AABB m_boundingBox;
+			bool m_leaf = false;
 
-				// Node will only contain triangles when it is a leaf.
-				std::vector<Triangle> m_triangles;
+			// Node will only contain triangles when it is a leaf.
+			std::vector<Triangle> m_triangles;
 		};
 
 		// Handles all the bvh buidling and collision testing

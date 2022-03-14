@@ -3,24 +3,24 @@
 
 BoundingBox::AABB::AABB()
 {
-	bounds.min.setX(Maths::special::infinity);
-	bounds.min.setY(Maths::special::infinity);
-	bounds.min.setZ(Maths::special::infinity);
+	m_bounds.min.setX(Maths::special::infinity);
+	m_bounds.min.setY(Maths::special::infinity);
+	m_bounds.min.setZ(Maths::special::infinity);
 
-	bounds.max.setX(-Maths::special::infinity);
-	bounds.max.setY(-Maths::special::infinity);
-	bounds.max.setZ(-Maths::special::infinity);
+	m_bounds.max.setX(-Maths::special::infinity);
+	m_bounds.max.setY(-Maths::special::infinity);
+	m_bounds.max.setZ(-Maths::special::infinity);
 }
 
 void BoundingBox::AABB::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 {
 	// Generates a bounding box using the slab method as mention by Kay and Kajiya (1986)
-	planes.at(Maths::coord::x).normal = { 1.0f, 0.0f, 0.0f };
-	planes.at(Maths::coord::y).normal = { 0.0f, 1.0f, 0.0f };
-	planes.at(Maths::coord::z).normal = { 0.0f, 0.0f, 1.0f };
+	m_planes.at(Maths::coord::x).normal = { 1.0f, 0.0f, 0.0f };
+	m_planes.at(Maths::coord::y).normal = { 0.0f, 1.0f, 0.0f };
+	m_planes.at(Maths::coord::z).normal = { 0.0f, 0.0f, 1.0f };
 
 	// Loop through each plane and check each vertex to find the planes near and far values
-	for (auto& plane : planes)
+	for (auto& plane : m_planes)
 	{
 		for (auto & vert : vertex_buffer)
 		{
@@ -30,13 +30,13 @@ void BoundingBox::AABB::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 		}
 	}
 
-	bounds.min = { planes.at(Maths::coord::x).near, planes.at(Maths::coord::y).near, planes.at(Maths::coord::z).near };
-	bounds.max = { planes.at(Maths::coord::x).far, planes.at(Maths::coord::y).far, planes.at(Maths::coord::z).far };
+	m_bounds.min = { m_planes.at(Maths::coord::x).near, m_planes.at(Maths::coord::y).near, m_planes.at(Maths::coord::z).near };
+	m_bounds.max = { m_planes.at(Maths::coord::x).far, m_planes.at(Maths::coord::y).far, m_planes.at(Maths::coord::z).far };
 
 	// Create centroid of bounding box
-	centroid.setX(0.5f * bounds.min.getX() + 0.5f * bounds.max.getX());
-	centroid.setY(0.5f * bounds.min.getY() + 0.5f * bounds.max.getY());
-	centroid.setZ(0.5f * bounds.min.getZ() + 0.5f * bounds.max.getZ());
+	m_centroid.setX(0.5f * m_bounds.min.getX() + 0.5f * m_bounds.max.getX());
+	m_centroid.setY(0.5f * m_bounds.min.getY() + 0.5f * m_bounds.max.getY());
+	m_centroid.setZ(0.5f * m_bounds.min.getZ() + 0.5f * m_bounds.max.getZ());
 }
 
 void BoundingBox::AABB::generateBoundingBox(const std::vector<Triangle>& triangles)
@@ -68,13 +68,13 @@ void BoundingBox::AABB::generateBoundingBox(const std::vector<Triangle>& triangl
 		}
 	}
 
-	bounds.min = { x_min, y_min, z_min };
-	bounds.max = { x_max, y_max, z_max };
+	m_bounds.min = { x_min, y_min, z_min };
+	m_bounds.max = { x_max, y_max, z_max };
 
 	// Create centroid of bounding box
-	centroid.setX(0.5f * bounds.min.getX() + 0.5f * bounds.max.getX());
-	centroid.setY(0.5f * bounds.min.getY() + 0.5f * bounds.max.getY());
-	centroid.setZ(0.5f * bounds.min.getZ() + 0.5f * bounds.max.getZ());
+	m_centroid.setX(0.5f * m_bounds.min.getX() + 0.5f * m_bounds.max.getX());
+	m_centroid.setY(0.5f * m_bounds.min.getY() + 0.5f * m_bounds.max.getY());
+	m_centroid.setZ(0.5f * m_bounds.min.getZ() + 0.5f * m_bounds.max.getZ());
 }
 
 BoundingBox::Bounds BoundingBox::AABB::combineBounds(AABB& b1, AABB& b2)
@@ -83,30 +83,30 @@ BoundingBox::Bounds BoundingBox::AABB::combineBounds(AABB& b1, AABB& b2)
 	// https://raytracing.github.io/books/RayTracingTheNextWeek.html#boundingvolumehierarchies
 	
 	BoundingBox::Bounds bounds;
-	bounds.min.setX(std::min(b1.bounds.min.getX(), b2.bounds.min.getX()));
-	bounds.min.setY(std::min(b1.bounds.min.getY(), b2.bounds.min.getY()));
-	bounds.min.setZ(std::min(b1.bounds.min.getZ(), b2.bounds.min.getZ()));
+	bounds.min.setX(std::min(b1.m_bounds.min.getX(), b2.m_bounds.min.getX()));
+	bounds.min.setY(std::min(b1.m_bounds.min.getY(), b2.m_bounds.min.getY()));
+	bounds.min.setZ(std::min(b1.m_bounds.min.getZ(), b2.m_bounds.min.getZ()));
 
-	bounds.max.setX(std::max(b1.bounds.max.getX(), b2.bounds.max.getX()));
-	bounds.max.setY(std::max(b1.bounds.max.getY(), b2.bounds.max.getY()));
-	bounds.max.setZ(std::max(b1.bounds.max.getZ(), b2.bounds.max.getZ()));
+	bounds.max.setX(std::max(b1.m_bounds.max.getX(), b2.m_bounds.max.getX()));
+	bounds.max.setY(std::max(b1.m_bounds.max.getY(), b2.m_bounds.max.getY()));
+	bounds.max.setZ(std::max(b1.m_bounds.max.getZ(), b2.m_bounds.max.getZ()));
 	
-	b1.bounds = bounds;
+	b1.m_bounds = bounds;
 	// Create centroid of bounding box
-	b1.centroid.setX(0.5f * bounds.min.getX() + 0.5f * bounds.max.getX());
-	b1.centroid.setY(0.5f * bounds.min.getY() + 0.5f * bounds.max.getY());
-	b1.centroid.setZ(0.5f * bounds.min.getZ() + 0.5f * bounds.max.getZ());
+	b1.m_centroid.setX(0.5f * bounds.min.getX() + 0.5f * bounds.max.getX());
+	b1.m_centroid.setY(0.5f * bounds.min.getY() + 0.5f * bounds.max.getY());
+	b1.m_centroid.setZ(0.5f * bounds.min.getZ() + 0.5f * bounds.max.getZ());
 
 	return bounds;
 }
 
 void BoundingBox::AABB::setBounds(const Bounds extent)
 {
-	bounds = extent;
+	m_bounds = extent;
 }
 
 void BoundingBox::AABB::setBounds(const Vector3 min, const Vector3 max)
 {
-	bounds.min = min;
-	bounds.max = max;
+	m_bounds.min = min;
+	m_bounds.max = max;
 }

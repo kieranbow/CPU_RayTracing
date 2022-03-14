@@ -11,7 +11,6 @@ class Vector3
 	public:
 		Vector3();
 		Vector3(float _x, float _y, float _z) : m_value{_x, _y, _z} {}
-
 		~Vector3() = default;
 		
 		// Assignment Operators

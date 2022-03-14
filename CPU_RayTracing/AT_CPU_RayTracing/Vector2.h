@@ -12,7 +12,6 @@ class Vector2
 	public:
 		Vector2();
 		Vector2(float _x, float _y) : m_value{_x, _y} {}
-
 		~Vector2() = default;
 
 		// Assignment Operators

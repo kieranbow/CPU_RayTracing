@@ -6,6 +6,7 @@
 class Vector3;
 struct Triangle;
 
+// A namespace containing a set of intersection function used for ray-tracing
 namespace Intersection
 {
 	// Calculates a triangle and tests if a ray has intersected it

@@ -28,22 +28,22 @@ class Primitive
 		void setRotation(Vector3 rotation);
 		void setScale(Vector3 scale);
 
-		const Vector3& getPosition() const { return ws_position; }
-		const Vector3& getRotation() const { return rotation; }
-		const Vector3& getScale() const { return scale; }
-		const std::vector<Vertex>& getVertices() const { return vertex_buffer; }
-		const std::vector<Indices>& getIndices() const { return index_buffer; }
-		const BoundingBox::AABB& getBoundingBox() const { return boundingBox; }
+		const Vector3& getPosition() const { return m_position; }
+		const Vector3& getRotation() const { return m_rotation; }
+		const Vector3& getScale() const { return m_scale; }
+		const std::vector<Vertex>& getVertices() const { return m_vertexBuffer; }
+		const std::vector<Indices>& getIndices() const { return m_indexBuffer; }
+		const BoundingBox::AABB& getBoundingBox() const { return m_boundingBox; }
 
 	private:
 		// Mesh data
-		std::vector<Vertex> vertex_buffer;
-		std::vector<Indices> index_buffer;
+		std::vector<Vertex> m_vertexBuffer;
+		std::vector<Indices> m_indexBuffer;
 
-		BoundingBox::AABB boundingBox;
+		BoundingBox::AABB m_boundingBox;
 
 		// Transformation
-		Vector3 ws_position = { 0.0f, 0.0f, 0.0f }; // World origin
-		Vector3 rotation = { 0.0f, 0.0f, 0.0f };
-		Vector3 scale = { 1.0f, 1.0f, 1.0f };
+		Vector3 m_position	= { 0.0f, 0.0f, 0.0f }; // World origin
+		Vector3 m_rotation	= { 0.0f, 0.0f, 0.0f };
+		Vector3 m_scale		= { 1.0f, 1.0f, 1.0f };
 };

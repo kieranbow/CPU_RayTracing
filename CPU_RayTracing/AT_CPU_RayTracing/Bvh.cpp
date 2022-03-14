@@ -240,6 +240,7 @@ void BVH::Object::Accelerator::buildRecursivePrimitive(const std::vector<Triangl
 			Vector3 vert1 = tri.vert1.position;
 			Vector3 vert2 = tri.vert2.position;
 
+			// https://www.quora.com/How-do-I-find-centre-of-a-triangle
 			Vector3 tri_centroid;
 			tri_centroid.setX((vert0.getX() + vert1.getX() + vert2.getX()) / 3);
 			tri_centroid.setY((vert0.getY() + vert1.getY() + vert2.getY()) / 3);

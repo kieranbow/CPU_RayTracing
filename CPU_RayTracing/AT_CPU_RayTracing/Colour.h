@@ -56,11 +56,11 @@ class Colour
 		friend Colour operator/(const float& _lhs, const Colour& _rhs);
 
 		// Getters
-		const float& getRed() const { return this->colour.at(0); }
-		const float& getGreen() const { return this->colour.at(1); }
-		const float& getBlue() const { return this->colour.at(2); }
-		const std::array<float, 3>& getColour() const { return colour; }
+		const float& getRed() const { return this->m_colour.at(0); }
+		const float& getGreen() const { return this->m_colour.at(1); }
+		const float& getBlue() const { return this->m_colour.at(2); }
+		const std::array<float, 3>& getColour() const { return m_colour; }
 
 	private:
-		std::array<float, 3> colour;
+		std::array<float, 3> m_colour;
 };

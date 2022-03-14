@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "Primitive.h"
+#include "Intersection.h"
 
 Camera::Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float _fov)
 {
@@ -63,6 +64,27 @@ void Camera::Render(/*std::vector<Primitive> primitives, */std::vector<Pixel>& b
 			//{
 			//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
 			//}
+
+
+			//for(auto& prim : primitives)
+			//{
+			//	//if (prim.intersectedBoundingBoxDebug(primary_rayWS))
+			//	//{
+			//	//	buffer.at(iter).colour = Colour(1.0f, 1.0f, 1.0f);
+			//	//}
+
+			//	float tn = -Maths::special::infinity;
+			//	float tf = Maths::special::infinity;
+
+			//	if (Intersection::minMaxBounds(primary_rayWS, prim.getBoundingBox()))
+			//	{
+			//		buffer.at(iter).colour = primary_rayWS.data.normal;
+			//	}
+			//	else
+			//	{
+			//		buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
+			//	}
+			//}
 			iter++;
 		}
 	}
@@ -78,20 +100,3 @@ bool Camera::intersect(RayTrace::Ray& ray, Vector3 center, float radius)
 
 	return (distriminant > 0.0f);
 }
-
-//for(auto& prim : primitives)
-//{
-//	//if (prim.intersectedBoundingBoxDebug(primary_rayWS))
-//	//{
-//	//	buffer.at(iter).colour = Colour(1.0f, 1.0f, 1.0f);
-//	//}
-
-//	if (prim.intersected(primary_rayWS))
-//	{
-//		buffer.at(iter).colour = primary_rayWS.data.normal;
-//	}
-//	//else
-//	//{
-//	//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
-//	//}
-//}
