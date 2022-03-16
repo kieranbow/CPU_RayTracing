@@ -92,14 +92,14 @@ namespace BVH
 		};
 	}
 
-
 	class Builder
 	{
 		public:
 			void build(std::vector<Primitive>& primitives);
-			bool hit(RayTrace::Ray& ray, std::vector<Primitive>& primitives);
+			bool hit(RayTrace::Ray& ray, std::vector<Primitive>& primitives, float& tnear);
 
 		private:
-			BVH::Scene::Accelerator test;
+			BVH::Scene::Accelerator m_sceneBVH;
+			std::vector<BVH::Object::Accelerator> m_objBVH;
 	};
 }

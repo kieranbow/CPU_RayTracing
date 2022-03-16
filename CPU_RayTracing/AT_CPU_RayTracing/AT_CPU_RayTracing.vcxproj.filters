@@ -37,6 +37,12 @@
     <Filter Include="Source Files\Geometry">
       <UniqueIdentifier>{93a61030-fad6-4836-9f2b-5b6774775d73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Lighting">
+      <UniqueIdentifier>{9228c7b6-a018-4773-a3d1-1a3e99274143}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Shaders">
+      <UniqueIdentifier>{1075fcd0-a586-48d3-a59b-b4dfe0e48250}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -124,6 +130,12 @@
     </ClInclude>
     <ClInclude Include="Intersection.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\Shaders</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

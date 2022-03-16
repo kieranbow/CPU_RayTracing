@@ -18,7 +18,7 @@ Camera::Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float 
 	scale = tan(deg2rad(fov) * 0.5f);
 }
 
-void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Builder bvh)
+void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Builder bvh, Light::DirectionLight light)
 {
 	int iter = 0;
 	for (int y = 0; y < static_cast<int>(size.getY()); ++y)
@@ -44,9 +44,18 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 			primary_rayWS.origin = ws_position;
 			primary_rayWS.direction = Vector3::normalize(pixelPosWS - primary_rayWS.origin);
 
-			if (bvh.hit(primary_rayWS, primitives))
+			float tnear = Maths::special::infinity;
+
+			if (bvh.hit(primary_rayWS, primitives, tnear))
 			{
-				buffer.at(iter).colour = primary_rayWS.data.normal;
+				//buffer.at(iter).colour = primary_rayWS.data.normal;
+
+				Colour albedo = { 1.0f, 1.0f, 1.0f };
+
+				Vector3 L = { 0.5f, 0.0f, 1.0f };
+				Vector3 N = primary_rayWS.data.normal;
+
+				buffer.at(iter).colour = albedo / Maths::special::pi * light.m_data.m_intensity * light.m_data.m_colour * std::max(0.0f, Vector3::dot(L, N));
 			}
 			else
 			{

@@ -27,8 +27,6 @@ void BVH::Scene::Accelerator::buildRecursiveScene(const std::vector<Primitive>& 
 	{ 
 		node->m_leaf = true;
 		node->m_primitive = primitive;
-
-		// Logger::PrintDebug("Here be leaf");
 	}
 	else
 	{
@@ -58,14 +56,9 @@ void BVH::Scene::Accelerator::buildRecursiveScene(const std::vector<Primitive>& 
 		Vector3 midpoint = Vector3::findMidPoint(max, min);
 		int axis = getGreatestAxis(midpoint);
 
-		// Logger::PrintDebug("Here be node");
-
 		// Create Left node and Right node
 		node->sp_leftNode = std::make_shared<Node>();
 		node->sp_rightNode = std::make_shared<Node>();
-
-		//Logger::PrintDebug("Here be left node");
-		//Logger::PrintDebug("Here be right node");
 
 		// Create two list of primitives and split them based on their position and the splits position
 		std::vector<Primitive> left_list;
@@ -154,45 +147,6 @@ bool BVH::Scene::Accelerator::hitRecursive(RayTrace::Ray& ray, std::shared_ptr<B
 	return false;
 }
 
-int BVH::getGreatestAxis(Vector3 vec)
-{
-	if (vec.getX() > vec.getY() && vec.getX() > vec.getZ()) return Maths::coord::x;
-	else if (vec.getY() > vec.getZ()) return Maths::coord::y;
-	else return Maths::coord::z;
-}
-
-void BVH::Builder::build(std::vector<Primitive>& primitives)
-{
-	// First, get every object within the scene and build a bvh out of its vertices and indices
-	for (auto& prim : primitives)
-	{
-		BVH::Object::Accelerator bvh_builder;
-		bvh_builder.buildBVHPrimitive(prim.getVertices(), prim.getIndices());
-		prim.bvh = bvh_builder;
-	}
-
-	// Second, using the objects within the scene again, build a bvh for the scene.
-	test.buildBVHScene(primitives);
-}
-
-bool BVH::Builder::hit(RayTrace::Ray& ray, std::vector<Primitive>& primitives)
-{
-	// Check if ray hits any bb in scene
-	if (test.hit(ray))
-	{
-		// Loop through primitives within scene and check if bb
-		// hit primitive triangle
-		for (auto& prim : primitives)
-		{
-			if (prim.bvh.hitPrimitive(ray))
-			{
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
 void BVH::Object::Accelerator::buildBVHPrimitive(const std::vector<Vertex>& vertex_buffer, const std::vector<Indices>& index_buffer)
 {
 	if (index_buffer.empty() || vertex_buffer.empty()  /*prim.getIndices().empty()*/)
@@ -244,13 +198,6 @@ void BVH::Object::Accelerator::buildRecursivePrimitive(const std::vector<Triangl
 	{
 		// Generate a bounding box around all the triangles
 		BoundingBox::AABB node_bounds;
-		//node_bounds.setBoundsMinX(Maths::special::infinity);
-		//node_bounds.setBoundsMinY(Maths::special::infinity);
-		//node_bounds.setBoundsMinZ(Maths::special::infinity);
-
-		//node_bounds.setBoundsMaxX(-Maths::special::infinity);
-		//node_bounds.setBoundsMaxY(-Maths::special::infinity);
-		//node_bounds.setBoundsMaxZ(-Maths::special::infinity);
 
 		BoundingBox::AABB box;
 		box.generateBoundingBox(triangles);
@@ -327,10 +274,14 @@ bool BVH::Object::Accelerator::hitRecursivePrimitive(RayTrace::Ray& ray, std::sh
 	// both the bounding box and triangles.
 	if (parentNode->m_leaf)
 	{
+		float tnear = Maths::special::infinity;
+
 		for (auto& tri : parentNode->m_triangles)
 		{
-			if (Intersection::MollerTrumbore(ray, tri))
+			if (Intersection::MollerTrumbore(ray, tri) && ray.t < tnear)
 			{
+				tnear = ray.t;
+
 				Vector3 vert0_normal = tri.vert0.normal;
 				Vector3 vert1_normal = tri.vert1.normal;
 				Vector3 vert2_normal = tri.vert2.normal;
@@ -362,5 +313,55 @@ bool BVH::Object::Accelerator::hitRecursivePrimitive(RayTrace::Ray& ray, std::sh
 	}
 
 	// If none of the checks return true, return false since nothing was hit
+	return false;
+}
+
+
+int BVH::getGreatestAxis(Vector3 vec)
+{
+	if (vec.getX() > vec.getY() && vec.getX() > vec.getZ()) return Maths::coord::x;
+	else if (vec.getY() > vec.getZ()) return Maths::coord::y;
+	else return Maths::coord::z;
+}
+
+void BVH::Builder::build(std::vector<Primitive>& primitives)
+{
+	// First, get every object within the scene and build a bvh out of its vertices and indices
+	for (auto& prim : primitives)
+	{
+		BVH::Object::Accelerator objBVH;
+		objBVH.buildBVHPrimitive(prim.getVertices(), prim.getIndices());
+		m_objBVH.push_back(objBVH);
+	}
+
+	// Second, using the objects within the scene again, build a bvh for the scene.
+	// m_sceneBVH.buildBVHScene(primitives);
+}
+
+bool BVH::Builder::hit(RayTrace::Ray& ray, std::vector<Primitive>& primitives, float& tnear)
+{
+	// Check if ray hits any bb in scene
+	//if (m_sceneBVH.hit(ray))
+	//{
+	//	// Loop through primitives within scene and check if bb
+	//	// hit primitive triangle
+	//	for (auto& prim : primitives)
+	//	{
+	//		if (prim.bvh.hitPrimitive(ray))
+	//		{
+	//			return true;
+	//		}
+	//	}
+	//}
+
+	for (auto& objBVH : m_objBVH)
+	{
+		if (objBVH.hitPrimitive(ray) && ray.t < tnear)
+		{
+			tnear = ray.t;
+
+			return true;
+		}
+	}
 	return false;
 }

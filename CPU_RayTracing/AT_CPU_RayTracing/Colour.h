@@ -55,6 +55,8 @@ class Colour
 		friend Colour operator*(const float& _lhs, const Colour& _rhs);
 		friend Colour operator/(const float& _lhs, const Colour& _rhs);
 
+		friend Colour operator/(const Colour& _lhs, const float& _rhs);
+		friend Colour operator*(const Colour& _lhs, const float& _rhs);
 		// Getters
 		const float& getRed() const { return this->m_colour.at(0); }
 		const float& getGreen() const { return this->m_colour.at(1); }

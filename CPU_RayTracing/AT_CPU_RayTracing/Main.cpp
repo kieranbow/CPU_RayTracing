@@ -23,6 +23,8 @@
 
 #include "Bvh.h"
 
+#include "Light.h"
+
 // https://stackoverflow.com/questions/695043/how-does-one-convert-world-coordinates-to-camera-coordinates
 // https://en.wikipedia.org/wiki/Rotation_matrix#Basic_rotations
 // https://www.3dgep.com/understanding-the-view-matrix/
@@ -54,23 +56,27 @@ int main()
 	// Right handed Cartesian coordinate systems
 	// X+, y+, Z-
 
+	Matrix4x4 lightMatrix;
+	Light::DirectionLight dirLight(lightMatrix, 1.0f, { 1.0f, 1.0f, 1.0f }, {0.0f, 0.0f, -1.0f});
+
 	Primitive cube;
 	cube.setPosition({ 1.0f, 0.0f, -10.0f });
 
-	Primitive sphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
-	sphere.setPosition({-1.0f, 1.0f, -15.0f }); // -1.0f, 1.0f, -15.0f
+	Primitive sphere("Assets\\helmet.obj", { 0.0f, 0.0f, 0.0f });
+	sphere.setPosition({-1.0f, 1.0f, -15.0f });
 
-	Primitive triangle("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	Primitive triangle("Assets\\helmet.obj", { 0.0f, 0.0f, 0.0f });
 	triangle.setPosition({ 0.0f, 1.0f, -5.0f });
 
-	Primitive cone("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	Primitive cone("Assets\\helmet.obj", { 0.0f, 0.0f, 0.0f });
 	cone.setPosition({ -0.5f, -1.0f, -8.0f });
 
 	std::vector<Primitive> primitives;
-	primitives.push_back(cube);
-	primitives.push_back(sphere);
 	primitives.push_back(triangle);
 	primitives.push_back(cone);
+	primitives.push_back(cube);
+	primitives.push_back(sphere);
+	
 
 	// Split scene primitives into bounding boxes using a BVH accelerator
 	//BVH::Scene::Accelerator bvh_scene;
@@ -101,7 +107,7 @@ int main()
 	render_timer.StartTimer();
 
 	// Render what the camera sees in the frame buffer
-	camera.Render(primitives, framebuffer, bvh);
+	camera.Render(primitives, framebuffer, bvh, dirLight);
 
 	// End timer
 	render_timer.EndTimer();

@@ -122,6 +122,15 @@ bool Vector3::operator!=(const Vector3& _rhs)
 	return (this->m_value.at(Maths::coord::x) != _rhs.m_value.at(Maths::coord::x) && this->m_value.at(Maths::coord::y) != _rhs.m_value.at(Maths::coord::y) && this->m_value.at(Maths::coord::x) != _rhs.m_value.at(Maths::coord::x));
 }
 
+Vector3 Vector3::operator-()
+{
+	Vector3 v;
+	v.setX(-v.getX());
+	v.setY(-v.getY());
+	v.setY(-v.getY());
+	return v;
+}
+
 Vector3 Vector3::cross(const Vector3& _lhs, const Vector3& _rhs)
 {
 	float x = (_lhs.m_value.at(Maths::coord::y) * _rhs.m_value.at(Maths::coord::z)) - (_lhs.m_value.at(Maths::coord::z) * _rhs.m_value.at(Maths::coord::y));
@@ -156,6 +165,14 @@ Vector3 Vector3::findMidPoint(Vector3 vec1, Vector3 vec2)
 	return Vector3(mid_x, mid_y, mid_z);
 }
 
+float Vector3::distance(Vector3 a, Vector3 b)
+{
+	//float x = (b.getX() - a.getX()) * (b.getX() - a.getX());
+	//float y = (b.getY() - a.getY()) * (b.getY() - a.getY());
+	//float z = (b.getZ() - a.getZ()) * (b.getZ() - a.getZ());
+	return std::sqrtf(Vector3::magnitude(b) + Vector3::magnitude(a));
+}
+
 Vector3 operator+(const float& _lhs, const Vector3& _rhs)
 {
 	return Vector3(_rhs.getX() + _lhs, _rhs.getY() + _lhs, _rhs.getZ() + _lhs);
@@ -171,12 +188,12 @@ Vector3 operator*(const float& _lhs, const Vector3& _rhs)
 	return Vector3(_rhs.getX() * _lhs, _rhs.getY() * _lhs, _rhs.getZ() * _lhs);
 }
 
+Vector3 operator*(const Vector3& _lhs, const float& _rhs)
+{
+	return Vector3(_lhs.getX() * _rhs, _lhs.getY() * _rhs, _lhs.getZ() * _rhs);
+}
+
 Vector3 operator/(const float& _lhs, const Vector3& _rhs)
 {
 	return Vector3(_rhs.getX() / _lhs, _rhs.getY() / _lhs, _rhs.getZ() / _lhs);
-}
-
-Vector3 operator-(const Vector3& _lhs, const float& _rhs)
-{
-	return Vector3(_lhs.getX() / _rhs, _lhs.getY() / _rhs, _lhs.getZ() / _rhs);
 }

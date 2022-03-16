@@ -229,3 +229,13 @@ Colour operator/(const float& _lhs, const Colour& _rhs)
 {
 	return Colour(_rhs.getRed() / _lhs, _rhs.getGreen() / _lhs, _rhs.getBlue() / _lhs);
 }
+
+Colour operator/(const Colour& _lhs, const float& _rhs)
+{
+	return Colour(_lhs.getRed() / _rhs, _lhs.getGreen() / _rhs, _lhs.getBlue() / _rhs);
+}
+
+Colour operator*(const Colour& _lhs, const float& _rhs)
+{
+	return Colour(_lhs.getRed() * _rhs, _lhs.getGreen() * _rhs, _lhs.getBlue() * _rhs);
+}
