@@ -26,7 +26,7 @@ namespace RayTrace
 			hitData data;
 
 			float t = Maths::special::infinity;
-			float t_near = -Maths::special::infinity; // 0.01f
+			float t_near = Maths::special::infinity; // 0.01f
 			float t_far = Maths::special::infinity; // 1000.0f
 	};
 }

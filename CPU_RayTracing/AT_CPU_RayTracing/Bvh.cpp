@@ -2,6 +2,7 @@
 #include "Logger.h"
 #include "Colour.h"
 #include "Intersection.h"
+#include "Primitive.h"
 
 void BVH::Scene::Accelerator::buildBVHScene(const std::vector<Primitive>& primitive)
 {
@@ -114,10 +115,18 @@ bool BVH::Scene::Accelerator::hitRecursive(RayTrace::Ray& ray, std::shared_ptr<B
 	{
 		for (auto& prim : parentNode->m_primitive)
 		{
-			if (prim.triangleIntersected(ray))
+			float tn = -Maths::special::infinity;
+			float tf = Maths::special::infinity;
+
+			if (Intersection::slab(ray, prim.getBoundingBox(), tn ,tf))
 			{
 				return true;
 			}
+
+			//if (prim.triangleIntersected(ray))
+			//{
+			//	return true;
+			//}
 		}
 	}
 
@@ -152,34 +161,66 @@ int BVH::getGreatestAxis(Vector3 vec)
 	else return Maths::coord::z;
 }
 
-void BVH::Object::Accelerator::buildBVHPrimitive(Primitive& prim)
+void BVH::Builder::build(std::vector<Primitive>& primitives)
 {
-	if (prim.getIndices().empty())
+	// First, get every object within the scene and build a bvh out of its vertices and indices
+	for (auto& prim : primitives)
 	{
-		Logger::PrintWarning("No indices in the mesh to build the BVH from");
+		BVH::Object::Accelerator bvh_builder;
+		bvh_builder.buildBVHPrimitive(prim.getVertices(), prim.getIndices());
+		prim.bvh = bvh_builder;
+	}
+
+	// Second, using the objects within the scene again, build a bvh for the scene.
+	test.buildBVHScene(primitives);
+}
+
+bool BVH::Builder::hit(RayTrace::Ray& ray, std::vector<Primitive>& primitives)
+{
+	// Check if ray hits any bb in scene
+	if (test.hit(ray))
+	{
+		// Loop through primitives within scene and check if bb
+		// hit primitive triangle
+		for (auto& prim : primitives)
+		{
+			if (prim.bvh.hitPrimitive(ray))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void BVH::Object::Accelerator::buildBVHPrimitive(const std::vector<Vertex>& vertex_buffer, const std::vector<Indices>& index_buffer)
+{
+	if (index_buffer.empty() || vertex_buffer.empty()  /*prim.getIndices().empty()*/)
+	{
+		Logger::PrintWarning("No indices or vertices in the mesh to build the BVH from");
 		return;
 	}
 
 	// Loop through the primitives indices and re-create the triangles and push them
 	// in the vector of triangles
-	for (int i = 0; i < prim.getIndices().size(); i += 3)
+	for (int i = 0; i < index_buffer.size()/*prim.getIndices().size()*/; i += 3)
 	{
-		int vertex_idx_1 = prim.getIndices().at(i);
-		int vertex_idx_2 = prim.getIndices().at(i + 1);
-		int vertex_idx_3 = prim.getIndices().at(i + 2);
+		//int vertex_idx_1 = ; //prim.getIndices().at(i);
+		//int vertex_idx_2 = index_buffer.at(i + 1); //prim.getIndices().at(i + 1);
+		//int vertex_idx_3 = index_buffer.at(i + 2); //prim.getIndices().at(i + 2);
 
 		Triangle triangle;
-		triangle.vert0.position	= prim.getVertices().at(vertex_idx_1).position;
-		triangle.vert0.normal	= prim.getVertices().at(vertex_idx_1).normal;
-		triangle.vert0.texcoord	= prim.getVertices().at(vertex_idx_1).texcoord;
+		triangle.vert0.position = vertex_buffer.at(index_buffer.at(i)).position; //prim.getVertices().at(vertex_idx_1).position;
+		triangle.vert0.normal	= vertex_buffer.at(index_buffer.at(i)).normal; //prim.getVertices().at(vertex_idx_1).normal;
+		triangle.vert0.texcoord	= vertex_buffer.at(index_buffer.at(i)).texcoord; //prim.getVertices().at(vertex_idx_1).texcoord;
 
-		triangle.vert1.position	= prim.getVertices().at(vertex_idx_2).position;
-		triangle.vert1.normal	= prim.getVertices().at(vertex_idx_2).normal;
-		triangle.vert1.texcoord	= prim.getVertices().at(vertex_idx_2).texcoord;
+		triangle.vert1.position	= vertex_buffer.at(index_buffer.at(i + 1)).position; //prim.getVertices().at(vertex_idx_2).position;
+		triangle.vert1.normal	= vertex_buffer.at(index_buffer.at(i + 1)).normal; //prim.getVertices().at(vertex_idx_2).normal;
+		triangle.vert1.texcoord	= vertex_buffer.at(index_buffer.at(i + 1)).texcoord; //prim.getVertices().at(vertex_idx_2).texcoord;
 
-		triangle.vert2.position	= prim.getVertices().at(vertex_idx_3).position;
-		triangle.vert2.normal	= prim.getVertices().at(vertex_idx_3).normal;
-		triangle.vert2.texcoord	= prim.getVertices().at(vertex_idx_3).texcoord;
+		triangle.vert2.position	= vertex_buffer.at(index_buffer.at(i + 2)).position; //prim.getVertices().at(vertex_idx_3).position;
+		triangle.vert2.normal	= vertex_buffer.at(index_buffer.at(i + 2)).normal; //prim.getVertices().at(vertex_idx_3).normal;
+		triangle.vert2.texcoord	= vertex_buffer.at(index_buffer.at(i + 2)).texcoord; //prim.getVertices().at(vertex_idx_3).texcoord;
 		
 		m_triangles.push_back(triangle);
 	}
@@ -191,7 +232,7 @@ void BVH::Object::Accelerator::buildBVHPrimitive(Primitive& prim)
 	buildRecursivePrimitive(m_triangles, sp_root, 0, m_max_depth);
 }
 
-void BVH::Object::Accelerator::buildRecursivePrimitive(const std::vector<Triangle>& triangles, std::shared_ptr<BVH::Object::Node> node, int depth, int maxDepth)
+void BVH::Object::Accelerator::buildRecursivePrimitive(const std::vector<Triangle>& triangles, const std::shared_ptr<BVH::Object::Node> node, int depth, const int maxDepth)
 {
 	// Make a leaf node if the number of triangles is less than an arbitrary number
 	if (triangles.size() <= m_numOfTris || depth >= maxDepth)

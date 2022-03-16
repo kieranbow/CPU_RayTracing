@@ -5,6 +5,7 @@
 #include "MeshLoader.h"
 #include "BoundingBox.h"
 #include "Ray.h"
+#include "Bvh.h"
 
 class Colour;
 
@@ -34,6 +35,10 @@ class Primitive
 		const std::vector<Vertex>& getVertices() const { return m_vertexBuffer; }
 		const std::vector<Indices>& getIndices() const { return m_indexBuffer; }
 		const BoundingBox::AABB& getBoundingBox() const { return m_boundingBox; }
+
+		BVH::Object::Accelerator bvh;
+
+		BVH::Object::Accelerator test;
 
 	private:
 		// Mesh data

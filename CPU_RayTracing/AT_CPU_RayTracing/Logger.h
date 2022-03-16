@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 
+#define NOMINMAX
 #include <Windows.h>
 
 // Logger class that outputs msg related to error, warning and standard msg with colour

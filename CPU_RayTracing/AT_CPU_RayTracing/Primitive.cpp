@@ -126,8 +126,6 @@ void Primitive::setPosition(Vector3 position)
 		vert.position += m_position;
 	}
 
-
-
 	// boundingBox.generateBoundingBox(vertex_buffer);
 	m_boundingBox.generateBoundingBox(m_vertexBuffer);
 }
