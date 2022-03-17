@@ -86,8 +86,8 @@ bool Primitive::triangleIntersected(RayTrace::Ray& ray)
 				//ray.getHitData().colour = Colour(1.0f, 1.0f, 1.0f);
 				//ray.getHitData().normal = { 0.5f, 0.5f, 1.0f }; //ray.getSmoothNormalFromTri(triangle);
 
-				ray.setHitpoint(ray);
-				ray.setHitData(ray.getHitPoint(), { 1.0f, 1.0f, 1.0f }, ray.getSmoothNormalFromTri(triangle), ray.getHitData().uv);
+				//ray.setHitpoint(ray);
+				//ray.setHitData(ray.getHitPoint(), { 1.0f, 1.0f, 1.0f }, ray.getSmoothNormalFromTri(triangle), ray.getHitData().uv);
 
 				return true;
 			}

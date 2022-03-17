@@ -48,17 +48,16 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 
 			if (bvh.hit(primary_rayWS, primitives, tnear))
 			{
-				//buffer.at(iter).colour = primary_rayWS.data.normal;
-
 				Colour albedo = { 1.0f, 1.0f, 1.0f };
 
-				Vector3 L = { 0.5f, 0.0f, 1.0f }; //{ 0.5f, 0.0f, 1.0f };
+				Vector3 L = { 0.0f, 1.0f, 0.0f }; //{ 0.5f, 0.0f, 1.0f };
 				Vector3 N = primary_rayWS.getHitData().normal;
 
-				primary_rayWS.setOrigin(primary_rayWS.getOrigin() + N);
+				Vector3 hitpoint = primary_rayWS.getHitPoint();
+				primary_rayWS.setOrigin(hitpoint + N);
 
-				// bool visible = !bvh.hit(primary_rayWS, primitives, tnear);
-				buffer.at(iter).colour = albedo / Maths::special::pi * light.m_data.m_intensity * light.m_data.m_colour * std::max(0.0f, Vector3::dot(L, N));
+				bool visible = !bvh.hit(primary_rayWS, primitives, tnear);
+				buffer.at(iter).colour = visible * albedo / Maths::special::pi * light.getIntensity() * light.getColour() * std::max(0.0f, Vector3::dot(L, N));
 			}
 			else
 			{

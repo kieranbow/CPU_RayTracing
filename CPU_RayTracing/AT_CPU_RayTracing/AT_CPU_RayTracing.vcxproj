@@ -170,6 +170,7 @@
     <ClInclude Include="Intersection.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Matrix4x4.h" />
     <ClInclude Include="MeshLoader.h" />
     <ClInclude Include="Maths.h" />

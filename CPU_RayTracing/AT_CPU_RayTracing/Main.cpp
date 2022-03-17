@@ -57,7 +57,7 @@ int main()
 	// X+, y+, Z-
 
 	Matrix4x4 lightMatrix;
-	Light::DirectionLight dirLight(lightMatrix, 1.0f, { 1.0f, 1.0f, 1.0f }, {0.5f, 1.0f, 1.0f});
+	Light::DirectionLight dirLight(Maths::special::pi, { 1.0f, 1.0f, 1.0f }, {0.5f, 1.0f, 1.0f});
 
 	Primitive cube;
 	cube.setPosition({ 1.0f, 0.0f, -10.0f });
@@ -71,11 +71,15 @@ int main()
 	Primitive cone("Assets\\helmet.obj", { 0.0f, 0.0f, 0.0f });
 	cone.setPosition({ -0.5f, -1.0f, -8.0f });
 
+	Primitive plane("Assets\\plane.obj", { 0.0f, 0.0f, 0.0f });
+	plane.setPosition({ 0.0f, -2.0f, -20.0f });
+
 	std::vector<Primitive> primitives;
 	primitives.push_back(triangle);
 	primitives.push_back(cone);
 	primitives.push_back(cube);
 	primitives.push_back(sphere);
+	primitives.push_back(plane);
 	
 
 	// Split scene primitives into bounding boxes using a BVH accelerator

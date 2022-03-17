@@ -98,12 +98,12 @@ namespace Intern        {
         // new/delete overload
         void *operator new    ( size_t num_bytes) /* throw( std::bad_alloc ) */;
         void *operator new    ( size_t num_bytes, const std::nothrow_t& ) throw();
-        void  operator delete ( void* m_data);
+        void  operator delete ( void* m_propertices);
 
         // array new/delete overload
         void *operator new[]    ( size_t num_bytes) /* throw( std::bad_alloc ) */;
         void *operator new[]    ( size_t num_bytes, const std::nothrow_t& )  throw();
-        void  operator delete[] ( void* m_data);
+        void  operator delete[] ( void* m_propertices);
 
     }; // struct AllocateFromAssimpHeap
 #endif
@@ -265,11 +265,11 @@ struct aiString
     /** Default constructor, the string is set to have zero length */
     aiString() AI_NO_EXCEPT
     : length( 0 ) {
-        m_data[0] = '\0';
+        m_propertices[0] = '\0';
 
 #ifdef ASSIMP_BUILD_DEBUG
         // Debug build: overwrite the string on its full length with ESC (27)
-        memset(m_data+1,27,MAXLEN-1);
+        memset(m_propertices+1,27,MAXLEN-1);
 #endif
     }
 
@@ -279,8 +279,8 @@ struct aiString
     {
         // Crop the string to the maximum length
         length = length>=MAXLEN?MAXLEN-1:length;
-        memcpy( m_data, rOther.m_data, length);
-        m_data[length] = '\0';
+        memcpy( m_propertices, rOther.m_propertices, length);
+        m_propertices[length] = '\0';
     }
 
     /** Constructor from std::string */
@@ -288,8 +288,8 @@ struct aiString
         length( (ai_uint32) pString.length())
     {
         length = length>=MAXLEN?MAXLEN-1:length;
-        memcpy( m_data, pString.c_str(), length);
-        m_data[length] = '\0';
+        memcpy( m_propertices, pString.c_str(), length);
+        m_propertices[length] = '\0';
     }
 
     /** Copy a std::string to the aiString */
@@ -298,8 +298,8 @@ struct aiString
             return;
         }
         length = (ai_uint32)pString.length();
-        memcpy( m_data, pString.c_str(), length);
-        m_data[length] = 0;
+        memcpy( m_propertices, pString.c_str(), length);
+        m_propertices[length] = 0;
     }
 
     /** Copy a const char* to the aiString */
@@ -309,8 +309,8 @@ struct aiString
             return;
         }
         length = len;
-        memcpy( m_data, sz, len);
-        m_data[len] = 0;
+        memcpy( m_propertices, sz, len);
+        m_propertices[len] = 0;
     }
 
 
@@ -321,8 +321,8 @@ struct aiString
         }
 
         length = rOther.length;;
-        memcpy( m_data, rOther.m_data, length);
-        m_data[length] = '\0';
+        memcpy( m_propertices, rOther.m_propertices, length);
+        m_propertices[length] = '\0';
         return *this;
     }
 
@@ -341,12 +341,12 @@ struct aiString
 
     /** Comparison operator */
     bool operator==(const aiString& other) const {
-        return  (length == other.length && 0 == memcmp(m_data,other.m_data,length));
+        return  (length == other.length && 0 == memcmp(m_propertices,other.m_propertices,length));
     }
 
     /** Inverse comparison operator */
     bool operator!=(const aiString& other) const {
-        return  (length != other.length || 0 != memcmp(m_data,other.m_data,length));
+        return  (length != other.length || 0 != memcmp(m_propertices,other.m_propertices,length));
     }
 
     /** Append a string to the string */
@@ -359,24 +359,24 @@ struct aiString
             return;
         }
 
-        memcpy(&m_data[length],app,len+1);
+        memcpy(&m_propertices[length],app,len+1);
         length += len;
     }
 
     /** Clear the string - reset its length to zero */
     void Clear ()   {
         length  = 0;
-        m_data[0] = '\0';
+        m_propertices[0] = '\0';
 
 #ifdef ASSIMP_BUILD_DEBUG
         // Debug build: overwrite the string on its full length with ESC (27)
-        memset(m_data+1,27,MAXLEN-1);
+        memset(m_propertices+1,27,MAXLEN-1);
 #endif
     }
 
     /** Returns a pointer to the underlying zero-terminated array of characters */
     const char* C_Str() const {
-        return m_data;
+        return m_propertices;
     }
 
 #endif // !__cplusplus
@@ -387,7 +387,7 @@ struct aiString
     ai_uint32 length;
 
     /** String buffer. Size limit is MAXLEN */
-    char m_data[MAXLEN];
+    char m_propertices[MAXLEN];
 } ;  // !struct aiString
 
 
