@@ -12,7 +12,7 @@ bool Intersection::MollerTrumbore(RayTrace::Ray& ray, Triangle triangle)
 	Vector3 v0v2 = triangle.vert2.position - triangle.vert0.position;
 
 	// Begin calculating determinant - also used to calculate U parameter
-	Vector3 pvec = Vector3::cross(ray.direction, v0v2);
+	Vector3 pvec = Vector3::cross(ray.getDirection(), v0v2);
 
 	float det = Vector3::dot(pvec, v0v1);
 
@@ -22,21 +22,21 @@ bool Intersection::MollerTrumbore(RayTrace::Ray& ray, Triangle triangle)
 	float invDet = 1.0f / det;
 
 	// Calculate distance from vert0 to ray's origin
-	Vector3 tvec = ray.origin - triangle.vert0.position;
+	Vector3 tvec = ray.getOrigin() - triangle.vert0.position;
 
 	// Calculate U parameter and test bounds
-	ray.data.uv.setX(Vector3::dot(tvec, pvec) * invDet);
-	if (ray.data.uv.getX() < 0.0f || ray.data.uv.getX() > 1.0f) return false;
+	ray.getHitData().uv.setX(Vector3::dot(tvec, pvec) * invDet);
+	if (ray.getHitData().uv.getX() < 0.0f || ray.getHitData().uv.getX() > 1.0f) return false;
 
 	// Prepare to test V parameter
 	Vector3 qvec = Vector3::cross(tvec, v0v1);
 
 	// Calculate V parameter and test bounds
-	ray.data.uv.setY(Vector3::dot(ray.direction, qvec) * invDet);
-	if (ray.data.uv.getY() < 0.0f || ray.data.uv.getX() + ray.data.uv.getY() > 1.0f) return false; // u + v should never be greater than 1
+	ray.getHitData().uv.setY(Vector3::dot(ray.getDirection(), qvec) * invDet);
+	if (ray.getHitData().uv.getY() < 0.0f || ray.getHitData().uv.getX() + ray.getHitData().uv.getY() > 1.0f) return false; // u + v should never be greater than 1
 
 	// Calculate t, ray intersection triangle
-	ray.t = Vector3::dot(v0v2, qvec) * invDet;
+	ray.setT(Vector3::dot(v0v2, qvec) * invDet);
 
 	return true;
 }
@@ -49,8 +49,8 @@ bool Intersection::slab(RayTrace::Ray& ray, BoundingBox::AABB aabb, float& tnear
 	{
 		// Instead of following what scratchapixel does and precompute the numerator and demoninator
 		// Its easier just to compute them on the fly.
-		float numerator = Vector3::dot(aabb.getPlanes().at(i).normal, ray.origin);
-		float demoninator = Vector3::dot(aabb.getPlanes().at(i).normal, ray.direction);
+		float numerator = Vector3::dot(aabb.getPlanes().at(i).normal, ray.getOrigin());
+		float demoninator = Vector3::dot(aabb.getPlanes().at(i).normal, ray.getDirection());
 
 		float tn = (aabb.getPlanes().at(i).near - numerator) / demoninator;
 		float tf = (aabb.getPlanes().at(i).far - numerator) / demoninator;
@@ -67,13 +67,13 @@ bool Intersection::minMaxBounds(RayTrace::Ray& ray, BoundingBox::AABB bounds)
 {
 	// https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
 	
-	float tmin_x = (bounds.getBounds().min.getX() - ray.origin.getX()) / ray.direction.getX();
-	float tmax_x = (bounds.getBounds().max.getX() - ray.origin.getX()) / ray.direction.getX();
+	float tmin_x = (bounds.getBounds().min.getX() - ray.getOrigin().getX()) / ray.getDirection().getX();
+	float tmax_x = (bounds.getBounds().max.getX() - ray.getOrigin().getX()) / ray.getDirection().getX();
 
 	if (tmin_x > tmax_x) std::swap(tmin_x, tmax_x);
 
-	float tmin_y = (bounds.getBounds().min.getY() - ray.origin.getY()) / ray.direction.getY();
-	float tmax_y = (bounds.getBounds().max.getY() - ray.origin.getY()) / ray.direction.getY();
+	float tmin_y = (bounds.getBounds().min.getY() - ray.getOrigin().getY()) / ray.getDirection().getY();
+	float tmax_y = (bounds.getBounds().max.getY() - ray.getOrigin().getY()) / ray.getDirection().getY();
 
 	if (tmin_y > tmax_y) std::swap(tmin_y, tmax_y);
 
@@ -81,8 +81,8 @@ bool Intersection::minMaxBounds(RayTrace::Ray& ray, BoundingBox::AABB bounds)
 	if (tmin_y > tmin_x) tmin_x = tmin_y;
 	if (tmax_y < tmax_x) tmax_x = tmax_y;
 
-	float tmin_z = (bounds.getBounds().min.getZ() - ray.origin.getZ()) / ray.direction.getZ();
-	float tmax_z = (bounds.getBounds().max.getZ() - ray.origin.getZ()) / ray.direction.getZ();
+	float tmin_z = (bounds.getBounds().min.getZ() - ray.getOrigin().getZ()) / ray.getDirection().getZ();
+	float tmax_z = (bounds.getBounds().max.getZ() - ray.getOrigin().getZ()) / ray.getDirection().getZ();
 
 	if (tmin_z > tmax_z) std::swap(tmin_z, tmax_z);
 

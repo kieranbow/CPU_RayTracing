@@ -83,9 +83,12 @@ bool Primitive::triangleIntersected(RayTrace::Ray& ray)
 			// Construct a triangle and test if ray hits that triangle
 			if (Intersection::MollerTrumbore(ray, triangle))
 			{
-				ray.data.colour = Colour(1.0f, 1.0f, 1.0f);
-				ray.data.normal = Vector3::normalize((1.0f - ray.data.uv.getX() - ray.data.uv.getY()) * triangle.vert0.normal + ray.data.uv.getX() * triangle.vert1.normal + ray.data.uv.getY() * triangle.vert2.normal);
-				//ray.data.normal = Vector3::normalize(Vector3::cross(vert1 - vert0, vert2 - vert0));
+				//ray.getHitData().colour = Colour(1.0f, 1.0f, 1.0f);
+				//ray.getHitData().normal = { 0.5f, 0.5f, 1.0f }; //ray.getSmoothNormalFromTri(triangle);
+
+				ray.setHitpoint(ray);
+				ray.setHitData(ray.getHitPoint(), { 1.0f, 1.0f, 1.0f }, ray.getSmoothNormalFromTri(triangle), ray.getHitData().uv);
+
 				return true;
 			}
 		}

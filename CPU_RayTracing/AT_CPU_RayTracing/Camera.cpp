@@ -41,8 +41,8 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 
 			// Create ray that's origin is the camera and it's direction towards the pixel
 			RayTrace::Ray primary_rayWS;
-			primary_rayWS.origin = ws_position;
-			primary_rayWS.direction = Vector3::normalize(pixelPosWS - primary_rayWS.origin);
+			primary_rayWS.setOrigin(ws_position);
+			primary_rayWS.setDirection(Vector3::normalize(pixelPosWS - primary_rayWS.getOrigin()));
 
 			float tnear = Maths::special::infinity;
 
@@ -52,9 +52,12 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 
 				Colour albedo = { 1.0f, 1.0f, 1.0f };
 
-				Vector3 L = light.m_direction; //{ 0.5f, 0.0f, 1.0f };
-				Vector3 N = primary_rayWS.data.normal;
+				Vector3 L = { 0.5f, 0.0f, 1.0f }; //{ 0.5f, 0.0f, 1.0f };
+				Vector3 N = primary_rayWS.getHitData().normal;
 
+				primary_rayWS.setOrigin(primary_rayWS.getOrigin() + N);
+
+				// bool visible = !bvh.hit(primary_rayWS, primitives, tnear);
 				buffer.at(iter).colour = albedo / Maths::special::pi * light.m_data.m_intensity * light.m_data.m_colour * std::max(0.0f, Vector3::dot(L, N));
 			}
 			else
@@ -109,13 +112,13 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 	}
 }
 
-bool Camera::intersect(RayTrace::Ray& ray, Vector3 center, float radius)
-{
-	Vector3 oc = ray.origin - center;
-	float a = Vector3::dot(ray.direction, ray.direction);
-	float b = 2.0f * Vector3::dot(oc, ray.direction);
-	float c = Vector3::dot(oc, oc) - radius * radius;
-	float distriminant = b * b - 4 * a * c;
-
-	return (distriminant > 0.0f);
-}
+//bool Camera::intersect(RayTrace::Ray& ray, Vector3 center, float radius)
+//{
+//	Vector3 oc = ray.m_origin - center;
+//	float a = Vector3::dot(ray.m_direction, ray.m_direction);
+//	float b = 2.0f * Vector3::dot(oc, ray.m_direction);
+//	float c = Vector3::dot(oc, oc) - radius * radius;
+//	float distriminant = b * b - 4 * a * c;
+//
+//	return (distriminant > 0.0f);
+//}

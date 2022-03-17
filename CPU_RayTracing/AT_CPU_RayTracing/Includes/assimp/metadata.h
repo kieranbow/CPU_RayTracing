@@ -207,28 +207,28 @@ struct aiMetadata {
         if (mValues) {
             // Delete each metadata entry
             for (unsigned i=0; i<mNumProperties; ++i) {
-                void* data = mValues[i].mData;
+                void* m_data = mValues[i].mData;
                 switch (mValues[i].mType) {
                 case AI_BOOL:
-                    delete static_cast< bool* >( data );
+                    delete static_cast< bool* >( m_data );
                     break;
                 case AI_INT32:
-                    delete static_cast< int32_t* >( data );
+                    delete static_cast< int32_t* >( m_data );
                     break;
                 case AI_UINT64:
-                    delete static_cast< uint64_t* >( data );
+                    delete static_cast< uint64_t* >( m_data );
                     break;
                 case AI_FLOAT:
-                    delete static_cast< float* >( data );
+                    delete static_cast< float* >( m_data );
                     break;
                 case AI_DOUBLE:
-                    delete static_cast< double* >( data );
+                    delete static_cast< double* >( m_data );
                     break;
                 case AI_AISTRING:
-                    delete static_cast< aiString* >( data );
+                    delete static_cast< aiString* >( m_data );
                     break;
                 case AI_AIVECTOR3D:
-                    delete static_cast< aiVector3D* >( data );
+                    delete static_cast< aiVector3D* >( m_data );
                     break;
 #ifndef SWIG
                 case FORCE_32BIT:
@@ -254,12 +254,12 @@ struct aiMetadata {
             return nullptr;
         }
 
-        aiMetadata *data = new aiMetadata;
-        data->mNumProperties = numProperties;
-        data->mKeys = new aiString[ data->mNumProperties ]();
-        data->mValues = new aiMetadataEntry[ data->mNumProperties ]();
+        aiMetadata *m_data = new aiMetadata;
+        m_data->mNumProperties = numProperties;
+        m_data->mKeys = new aiString[ m_data->mNumProperties ]();
+        m_data->mValues = new aiMetadataEntry[ m_data->mNumProperties ]();
 
-        return data;
+        return m_data;
     }
 
     /**

@@ -149,12 +149,12 @@ struct ASSIMP_API aiNode
      */
     inline 
     const aiNode* FindNode(const aiString& name) const {
-        return FindNode(name.data);
+        return FindNode(name.m_data);
     }
 
     inline 
     aiNode* FindNode(const aiString& name) {
-        return FindNode(name.data);
+        return FindNode(name.m_data);
     }
 
     const aiNode* FindNode(const char* name) const;

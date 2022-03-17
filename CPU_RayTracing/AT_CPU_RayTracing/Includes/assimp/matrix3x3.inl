@@ -236,13 +236,13 @@ inline aiMatrix3x3t<TReal>& aiMatrix3x3t<TReal>::RotationZ(TReal a, aiMatrix3x3t
 template <typename TReal>
 inline aiMatrix3x3t<TReal>& aiMatrix3x3t<TReal>::Rotation( TReal a, const aiVector3t<TReal>& axis, aiMatrix3x3t<TReal>& out)
 {
-  TReal c = std::cos( a), s = std::sin( a), t = 1 - c;
+  TReal c = std::cos( a), s = std::sin( a), m_t = 1 - c;
   TReal x = axis.x, y = axis.y, z = axis.z;
 
   // Many thanks to MathWorld and Wikipedia
-  out.a1 = t*x*x + c;   out.a2 = t*x*y - s*z; out.a3 = t*x*z + s*y;
-  out.b1 = t*x*y + s*z; out.b2 = t*y*y + c;   out.b3 = t*y*z - s*x;
-  out.c1 = t*x*z - s*y; out.c2 = t*y*z + s*x; out.c3 = t*z*z + c;
+  out.a1 = m_t*x*x + c;   out.a2 = m_t*x*y - s*z; out.a3 = m_t*x*z + s*y;
+  out.b1 = m_t*x*y + s*z; out.b2 = m_t*y*y + c;   out.b3 = m_t*y*z - s*x;
+  out.c1 = m_t*x*z - s*y; out.c2 = m_t*y*z + s*x; out.c3 = m_t*z*z + c;
 
   return out;
 }

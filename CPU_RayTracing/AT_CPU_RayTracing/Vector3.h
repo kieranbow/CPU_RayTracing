@@ -73,6 +73,9 @@ class Vector3
 		// Returns the distance between two vectors3
 		static float distance(Vector3 a, Vector3 b);
 
+		// Returns the length of the vector3
+		static float length(Vector3 a);
+
 		// Setters
 		void setX(float _x) { m_value.at(Maths::coord::x) = _x; }
 		void setY(float _y) { m_value.at(Maths::coord::y) = _y; }

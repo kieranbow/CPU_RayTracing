@@ -44,6 +44,6 @@ class Camera
 		// Converts degress to radians
 		float deg2rad(const float& deg) { return deg * Maths::special::pi / 180.0f; }
 
-		bool intersect(RayTrace::Ray& ray, Vector3 center, float radius);
+		// bool intersect(RayTrace::Ray& ray, Vector3 center, float radius);
 };
 

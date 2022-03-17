@@ -82,12 +82,12 @@ inline bool aiQuaterniont<TReal>::Equal(const aiQuaterniont& o, TReal epsilon) c
 template<typename TReal>
 inline aiQuaterniont<TReal>::aiQuaterniont( const aiMatrix3x3t<TReal> &pRotMatrix)
 {
-    TReal t = pRotMatrix.a1 + pRotMatrix.b2 + pRotMatrix.c3;
+    TReal m_t = pRotMatrix.a1 + pRotMatrix.b2 + pRotMatrix.c3;
 
     // large enough
-    if( t > static_cast<TReal>(0))
+    if( m_t > static_cast<TReal>(0))
     {
-        TReal s = std::sqrt(1 + t) * static_cast<TReal>(2.0);
+        TReal s = std::sqrt(1 + m_t) * static_cast<TReal>(2.0);
         x = (pRotMatrix.c2 - pRotMatrix.b3) / s;
         y = (pRotMatrix.a3 - pRotMatrix.c1) / s;
         z = (pRotMatrix.b1 - pRotMatrix.a2) / s;
@@ -182,12 +182,12 @@ inline aiQuaterniont<TReal>::aiQuaterniont( aiVector3t<TReal> normalized)
     y = normalized.y;
     z = normalized.z;
 
-    const TReal t = static_cast<TReal>(1.0) - (x*x) - (y*y) - (z*z);
+    const TReal m_t = static_cast<TReal>(1.0) - (x*x) - (y*y) - (z*z);
 
-    if (t < static_cast<TReal>(0.0)) {
+    if (m_t < static_cast<TReal>(0.0)) {
         w = static_cast<TReal>(0.0);
     }
-    else w = std::sqrt (t);
+    else w = std::sqrt (m_t);
 }
 
 // ---------------------------------------------------------------------------
@@ -253,12 +253,12 @@ inline aiQuaterniont<TReal>& aiQuaterniont<TReal>::Normalize()
 
 // ---------------------------------------------------------------------------
 template<typename TReal>
-inline aiQuaterniont<TReal> aiQuaterniont<TReal>::operator* (const aiQuaterniont& t) const
+inline aiQuaterniont<TReal> aiQuaterniont<TReal>::operator* (const aiQuaterniont& m_t) const
 {
-    return aiQuaterniont(w*t.w - x*t.x - y*t.y - z*t.z,
-        w*t.x + x*t.w + y*t.z - z*t.y,
-        w*t.y + y*t.w + z*t.x - x*t.z,
-        w*t.z + z*t.w + x*t.y - y*t.x);
+    return aiQuaterniont(w*m_t.w - x*m_t.x - y*m_t.y - z*m_t.z,
+        w*m_t.x + x*m_t.w + y*m_t.z - z*m_t.y,
+        w*m_t.y + y*m_t.w + z*m_t.x - x*m_t.z,
+        w*m_t.z + z*m_t.w + x*m_t.y - y*m_t.x);
 }
 
 // ---------------------------------------------------------------------------

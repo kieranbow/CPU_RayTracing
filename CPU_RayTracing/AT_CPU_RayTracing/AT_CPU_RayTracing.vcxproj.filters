@@ -140,5 +140,8 @@
     <ClInclude Include="ShaderMaths.h">
       <Filter>Header Files\Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderFunc.h">
+      <Filter>Header Files\Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

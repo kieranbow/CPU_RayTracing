@@ -48,8 +48,6 @@
 // https://computergraphics.stackexchange.com/questions/1976/how-to-determine-the-object-to-world-matrix
 // http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/#translation-matrices
 
-#include "ShaderMaths.h"
-
 int main()
 {
 	Logger::PrintMsg("Started program");

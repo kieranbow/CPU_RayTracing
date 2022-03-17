@@ -3,6 +3,7 @@
 #include "Colour.h"
 #include "Intersection.h"
 #include "Primitive.h"
+#include "ShaderFunc.h"
 
 void BVH::Scene::Accelerator::buildBVHScene(const std::vector<Primitive>& primitive)
 {
@@ -278,15 +279,9 @@ bool BVH::Object::Accelerator::hitRecursivePrimitive(RayTrace::Ray& ray, std::sh
 
 		for (auto& tri : parentNode->m_triangles)
 		{
-			if (Intersection::MollerTrumbore(ray, tri) && ray.t < tnear)
+			if (Intersection::MollerTrumbore(ray, tri) && ray.getT() < tnear)
 			{
-				tnear = ray.t;
-
-				Vector3 vert0_normal = tri.vert0.normal;
-				Vector3 vert1_normal = tri.vert1.normal;
-				Vector3 vert2_normal = tri.vert2.normal;
-
-				ray.data.normal = Vector3::normalize((1.0f - ray.data.uv.getX() - ray.data.uv.getY()) * vert0_normal + ray.data.uv.getX() * vert1_normal + ray.data.uv.getY() * vert2_normal);
+				ray.getHitData().normal = Shaders::Functions::getSmoothNormalFromTri(tri, ray.getHitData());
 				return true;
 			}
 		}
@@ -356,9 +351,10 @@ bool BVH::Builder::hit(RayTrace::Ray& ray, std::vector<Primitive>& primitives, f
 
 	for (auto& objBVH : m_objBVH)
 	{
-		if (objBVH.hitPrimitive(ray) && ray.t < tnear)
+		if (objBVH.hitPrimitive(ray) && ray.getT() < tnear)
 		{
-			tnear = ray.t;
+			tnear = ray.getT();
+			ray.setHitpoint(ray);
 
 			return true;
 		}

@@ -33,13 +33,13 @@ namespace Light
 	class DirectionLight
 	{
 		public:
-			DirectionLight(const Matrix4x4& lightToWorld, float intensity, Colour colour, Vector3 direction)
+			DirectionLight(const Matrix4x4& lightToWorld, float intensity, Colour colour, Vector3 m_direction)
 			{
 				m_lightToMatrix = lightToWorld;
 				m_data.m_intensity = intensity;
 				m_data.m_colour = colour;
 				//m_direction = m_lightToMatrix.multDirByMatrix4x4(Vector3(0.0f, 0.0f, 0.0f), direction);
-				m_direction = direction;
+				m_direction = m_direction;
 			}
 			~DirectionLight() = default;
 

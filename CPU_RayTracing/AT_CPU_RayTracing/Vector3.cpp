@@ -170,6 +170,11 @@ float Vector3::distance(Vector3 a, Vector3 b)
 	return std::sqrtf(Vector3::magnitude(b) + Vector3::magnitude(a));
 }
 
+float Vector3::length(Vector3 a)
+{
+	return std::sqrtf(Vector3::dot(a, a));
+}
+
 Vector3 operator+(const float& _lhs, const Vector3& _rhs)
 {
 	return Vector3(_rhs.getX() + _lhs, _rhs.getY() + _lhs, _rhs.getZ() + _lhs);

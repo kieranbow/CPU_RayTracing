@@ -70,10 +70,10 @@ IntegerType gcd( IntegerType a, IntegerType b ) {
 template < typename IntegerType >
 inline
 IntegerType lcm( IntegerType a, IntegerType b ) {
-	const IntegerType t = gcd (a,b);
-	if (!t)
-        return t;
-	return a / t * b;
+	const IntegerType m_t = gcd (a,b);
+	if (!m_t)
+        return m_t;
+	return a / m_t * b;
 }
 
 template<class T>
