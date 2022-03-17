@@ -48,6 +48,8 @@
 // https://computergraphics.stackexchange.com/questions/1976/how-to-determine-the-object-to-world-matrix
 // http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/#translation-matrices
 
+#include "ShaderMaths.h"
+
 int main()
 {
 	Logger::PrintMsg("Started program");
@@ -57,7 +59,7 @@ int main()
 	// X+, y+, Z-
 
 	Matrix4x4 lightMatrix;
-	Light::DirectionLight dirLight(lightMatrix, 1.0f, { 1.0f, 1.0f, 1.0f }, {0.0f, 0.0f, -1.0f});
+	Light::DirectionLight dirLight(lightMatrix, 1.0f, { 1.0f, 1.0f, 1.0f }, {0.5f, 1.0f, 1.0f});
 
 	Primitive cube;
 	cube.setPosition({ 1.0f, 0.0f, -10.0f });

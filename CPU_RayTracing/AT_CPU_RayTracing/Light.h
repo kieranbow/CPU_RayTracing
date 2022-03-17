@@ -38,7 +38,8 @@ namespace Light
 				m_lightToMatrix = lightToWorld;
 				m_data.m_intensity = intensity;
 				m_data.m_colour = colour;
-				m_direction = m_lightToMatrix.multDirByMatrix4x4(Vector3(0.0f, 0.0f, 0.0f), direction);
+				//m_direction = m_lightToMatrix.multDirByMatrix4x4(Vector3(0.0f, 0.0f, 0.0f), direction);
+				m_direction = direction;
 			}
 			~DirectionLight() = default;
 

@@ -52,7 +52,7 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 
 				Colour albedo = { 1.0f, 1.0f, 1.0f };
 
-				Vector3 L = { 0.5f, 0.0f, 1.0f };
+				Vector3 L = light.m_direction; //{ 0.5f, 0.0f, 1.0f };
 				Vector3 N = primary_rayWS.data.normal;
 
 				buffer.at(iter).colour = albedo / Maths::special::pi * light.m_data.m_intensity * light.m_data.m_colour * std::max(0.0f, Vector3::dot(L, N));

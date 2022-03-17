@@ -37,11 +37,15 @@ class Vector3
 		
 		// Friend Operators
 		friend Vector3 operator+(const float& _lhs, const Vector3& _rhs);
+		friend Vector3 operator+(const Vector3& _lhs, const float& _rhs);
 		friend Vector3 operator-(const float& _lhs, const Vector3& _rhs);
+		friend Vector3 operator-(const Vector3& _lhs, const float& _rhs);
 		friend Vector3 operator*(const float& _lhs, const Vector3& _rhs);
-		friend Vector3 operator* (const Vector3& _lhs, const float& _rhs);
+		friend Vector3 operator*(const Vector3& _lhs, const float& _rhs);
 		friend Vector3 operator/(const float& _lhs, const Vector3& _rhs);
+		friend Vector3 operator/(const Vector3& _lhs, const float& _rhs);
 
+		// Uniary
 		Vector3 operator-();
 
 		// Mainly used for debugging
@@ -66,6 +70,7 @@ class Vector3
 		// Find a vector3 midpoint between two vectors3
 		static Vector3 findMidPoint(Vector3 vec1, Vector3 vec2);
 
+		// Returns the distance between two vectors3
 		static float distance(Vector3 a, Vector3 b);
 
 		// Setters
