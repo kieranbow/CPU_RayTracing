@@ -131,9 +131,14 @@ int main()
 
 		for(auto& pixel : framebuffer)
 		{
-			int ir = static_cast<int>(255.999 * pixel.colour.getRed());
-			int ig = static_cast<int>(255.999 * pixel.colour.getGreen());
-			int ib = static_cast<int>(255.999 * pixel.colour.getBlue());
+			// Gamma correction
+			float r = std::sqrtf(pixel.colour.getRed());
+			float g = std::sqrtf(pixel.colour.getGreen());
+			float b = std::sqrtf(pixel.colour.getBlue());
+
+			int ir = static_cast<int>(255.999 * r);
+			int ig = static_cast<int>(255.999 * g);
+			int ib = static_cast<int>(255.999 * b);
 
 			file << ir << ' ' << ig << ' ' << ib << '\n';
 		}

@@ -20,95 +20,106 @@ Camera::Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float 
 
 void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Builder bvh, Light::DirectionLight light)
 {
-	int iter = 0;
-	for (int y = 0; y < static_cast<int>(size.getY()); ++y)
+	const int tilesize = 64;
+	const int numXtile = size.getX() / tilesize;
+	const int numYtile = size.getY() / tilesize;
+	const int numTiles = numXtile * numYtile;
+
+	for (int tile = 0; tile < numTiles; tile++)
 	{
-		for (int x = 0; x < static_cast<int>(size.getX()); ++x)
+		const int offset_x = tilesize * (tile % numXtile);
+		const int offset_y = tilesize * (tile / numXtile);
+
+		for (int y = 0; y < tilesize; y++)
 		{
-			// Create a pixel
-			Pixel pixel;
-
-			// Convert pixel from raster space to camera space
-			float Px = (2.0f * ((x + 0.5f) / size.getX()) - 1.0f) * tan(fov / 2.0f * Maths::special::pi / 180.0f) * aspect_ratio * scale;
-			float Py = (1.0f - 2.0f * ((y + 0.5f) / size.getY()) * tan(fov / 2.0f * Maths::special::pi / 180.0f));
-			pixel.position.setX(Px);
-			pixel.position.setY(Py);
-
-			// Convert pixel camera space to world space
-			Vector3 pixelPosWS;
-			cam_to_world.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), ws_direction.getZ() /*-1.0f*/), pixelPosWS);
-			Vector3::normalize(pixelPosWS);
-
-			// Create ray that's origin is the camera and it's direction towards the pixel
-			RayTrace::Ray primary_rayWS;
-			primary_rayWS.setOrigin(ws_position);
-			primary_rayWS.setDirection(Vector3::normalize(pixelPosWS - primary_rayWS.getOrigin()));
-
-			float tnear = Maths::special::infinity;
-
-			if (bvh.hit(primary_rayWS, primitives, tnear))
+			for (int x = 0; x < tilesize; x++)
 			{
-				Colour albedo = { 1.0f, 1.0f, 1.0f };
+				// Create a pixel
+				Pixel pixel;
 
-				Vector3 L = { 0.0f, 1.0f, 0.0f }; //{ 0.5f, 0.0f, 1.0f };
-				Vector3 N = primary_rayWS.getHitData().normal;
+				// Convert pixel from raster space to camera space
+				float Px = (2.0f * (((offset_x + x) + 0.5f) / size.getX()) - 1.0f) * tan(fov / 2.0f * Maths::special::pi / 180.0f) * aspect_ratio * scale;
+				float Py = (1.0f - 2.0f * (((offset_y + y) + 0.5f) / size.getY()) * tan(fov / 2.0f * Maths::special::pi / 180.0f));
+				pixel.position.setX(Px);
+				pixel.position.setY(Py);
 
-				Vector3 hitpoint = primary_rayWS.getHitPoint();
-				primary_rayWS.setOrigin(hitpoint + N);
+				// Convert pixel camera space to world space
+				Vector3 pixelPosWS;
+				cam_to_world.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), ws_direction.getZ() /*-1.0f*/), pixelPosWS);
+				Vector3::normalize(pixelPosWS);
 
-				bool visible = !bvh.hit(primary_rayWS, primitives, tnear);
-				buffer.at(iter).colour = visible * albedo / Maths::special::pi * light.getIntensity() * light.getColour() * std::max(0.0f, Vector3::dot(L, N));
+				// Create ray that's origin is the camera and it's direction towards the pixel
+				RayTrace::Ray primary_rayWS;
+				primary_rayWS.setOrigin(ws_position);
+				primary_rayWS.setDirection(Vector3::normalize(pixelPosWS - primary_rayWS.getOrigin()));
+
+				float tnear = Maths::special::infinity;
+
+				if (bvh.hit(primary_rayWS, primitives, tnear))
+				{
+					Colour albedo = { 1.0f, 1.0f, 1.0f };
+
+					Vector3 L = { 0.0f, 1.0f, 0.0f }; //{ 0.5f, 0.0f, 1.0f };
+					Vector3 N = primary_rayWS.getHitData().normal;
+
+					Vector3 hitpoint = primary_rayWS.getHitPoint();
+					primary_rayWS.setOrigin(hitpoint + N);
+
+					bool visible = !bvh.hit(primary_rayWS, primitives, tnear);
+					buffer.at(size.getX() * (offset_y + y) + (offset_x + x)).colour = visible * albedo / Maths::special::pi * light.getIntensity() * light.getColour() * std::max(0.0f, Vector3::dot(L, N));
+				}
+				else
+				{
+					buffer.at(size.getX() * (offset_y + y) + (offset_x + x)).colour = Colour(0.5f, 0.5f, 1.0f);
+				}
+
+
+				//if (bvh.hitPrimitive(primary_rayWS))
+				//{
+				//	buffer.at(iter).colour = primary_rayWS.data.normal;
+				//}
+				//else
+				//{
+				//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
+				//}
+
+				//if (bvh.hit(primary_rayWS))
+				//{
+				//	if (primary_rayWS.t >= primary_rayWS.t_near && primary_rayWS.t <= primary_rayWS.t_far)
+				//	{
+				//		buffer.at(iter).colour = primary_rayWS.data.normal;
+				//	}
+				//}
+				//else
+				//{
+				//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
+				//}
+
+
+				//for(auto& prim : primitives)
+				//{
+				//	//if (prim.intersectedBoundingBoxDebug(primary_rayWS))
+				//	//{
+				//	//	buffer.at(iter).colour = Colour(1.0f, 1.0f, 1.0f);
+				//	//}
+
+				//	float tn = -Maths::special::infinity;
+				//	float tf = Maths::special::infinity;
+
+				//	if (Intersection::minMaxBounds(primary_rayWS, prim.getBoundingBox()))
+				//	{
+				//		buffer.at(iter).colour = primary_rayWS.data.normal;
+				//	}
+				//	else
+				//	{
+				//		buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
+				//	}
+				//}
 			}
-			else
-			{
-				buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
-			}
-
-
-			//if (bvh.hitPrimitive(primary_rayWS))
-			//{
-			//	buffer.at(iter).colour = primary_rayWS.data.normal;
-			//}
-			//else
-			//{
-			//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
-			//}
-
-			//if (bvh.hit(primary_rayWS))
-			//{
-			//	if (primary_rayWS.t >= primary_rayWS.t_near && primary_rayWS.t <= primary_rayWS.t_far)
-			//	{
-			//		buffer.at(iter).colour = primary_rayWS.data.normal;
-			//	}
-			//}
-			//else
-			//{
-			//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
-			//}
-
-
-			//for(auto& prim : primitives)
-			//{
-			//	//if (prim.intersectedBoundingBoxDebug(primary_rayWS))
-			//	//{
-			//	//	buffer.at(iter).colour = Colour(1.0f, 1.0f, 1.0f);
-			//	//}
-
-			//	float tn = -Maths::special::infinity;
-			//	float tf = Maths::special::infinity;
-
-			//	if (Intersection::minMaxBounds(primary_rayWS, prim.getBoundingBox()))
-			//	{
-			//		buffer.at(iter).colour = primary_rayWS.data.normal;
-			//	}
-			//	else
-			//	{
-			//		buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
-			//	}
-			//}
-			iter++;
 		}
 	}
+
+
 }
 
 //bool Camera::intersect(RayTrace::Ray& ray, Vector3 center, float radius)
