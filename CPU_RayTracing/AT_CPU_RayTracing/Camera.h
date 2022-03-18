@@ -40,9 +40,4 @@ class Camera
 		float fov			= 0.0f;
 		float aspect_ratio	= 0.0f;
 		float scale			= 0.0f;
-
-		Colour castRay(RayTrace::Ray& ray, BVH::Builder bvh, Light::DirectionLight light);
-
-		// bool intersect(RayTrace::Ray& ray, Vector3 center, float radius);
 };
-

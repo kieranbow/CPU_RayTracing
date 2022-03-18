@@ -21,15 +21,17 @@ class Matrix4x4
 		static void multVecByMatrix4x4(const Matrix4x4& _lhs, Vector3& _rhs);
 		static void multDirByMatrix4x4(const Matrix4x4 _mat, const Vector3& _lhs, Vector3& _rhs);
 		
-		Vector3 multVecByMatrix4x4(Vector3 position);
+		void multVecMatrix(const Vector3& src, Vector3& dst);
+
+		Vector3 multVecByMatrix4x4(Vector3 m_position);
 		Vector3 multDirByMatrix4x4(const Vector3& _lhs, Vector3& _rhs);
 
 		// https://stackoverflow.com/questions/1148309/inverting-a-4x4-matrix
 		void InvertMatrix();
 
 
-		Vector3 translation(Vector3 position);
-		Vector3 scale(Vector3 scale, Vector3 position);
+		Vector3 translation(Vector3 m_position);
+		Vector3 scale(Vector3 scale, Vector3 m_position);
 		Vector3 rotation();
 
 	private:

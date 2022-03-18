@@ -92,3 +92,13 @@ bool Intersection::minMaxBounds(RayTrace::Ray& ray, BoundingBox::AABB bounds)
 
 	return true;
 }
+
+bool Intersection::inplicitSphere(RayTrace::Ray& ray, Vector3 center, float radius)
+{
+	Vector3 oc = ray.getOrigin() - center;
+	float a = Vector3::dot(ray.getDirection(), ray.getDirection());
+	float b = 2.0f * Vector3::dot(oc, ray.getDirection());
+	float c = Vector3::dot(oc, oc) - Maths::helperFunction::sqr(radius);
+	float distriminant = b * b - 4 * a * c;
+	return (distriminant > 0.0f);
+}

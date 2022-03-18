@@ -59,9 +59,11 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 
 				if (bvh.hit(primary_ray))
 				{
-					Vector3 hitpoint = primary_ray.getHitData().hitPoint;
+					//Vector3 hitpoint = primary_ray.getHitData().hitPoint;
+					Vector3 hitpoint = primary_ray.getOrigin() + primary_ray.getDirection() * primary_ray.getHitData().tnear;
 
-					Vector3 L = { 0.0f, 5.0f, 0.0f }; //{ 0.5f, 0.0f, 1.0f };
+
+					Vector3 L = light.getDirection(); //{ 0.0f, 5.0f, 0.0f }; //{ 0.5f, 0.0f, 1.0f };
 					Vector3 N = primary_ray.getHitData().normal;
 
 					RayTrace::Ray shadowRay;
@@ -89,17 +91,6 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 		}
 	}
 }
-
-//bool Camera::intersect(RayTrace::Ray& ray, Vector3 center, float radius)
-//{
-//	Vector3 oc = ray.m_origin - center;
-//	float a = Vector3::dot(ray.m_direction, ray.m_direction);
-//	float b = 2.0f * Vector3::dot(oc, ray.m_direction);
-//	float c = Vector3::dot(oc, oc) - radius * radius;
-//	float distriminant = b * b - 4 * a * c;
-//
-//	return (distriminant > 0.0f);
-//}
 
 				//if (bvh.hitPrimitive(primary_rayWS))
 				//{

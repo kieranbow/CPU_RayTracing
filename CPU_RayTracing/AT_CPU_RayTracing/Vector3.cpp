@@ -165,9 +165,9 @@ Vector3 operator/(const Vector3& _lhs, const float& _rhs)
 Vector3 Vector3::operator-()
 {
 	Vector3 v;
-	v.setX(-v.m_value.at(Maths::coord::x));
-	v.setY(-v.m_value.at(Maths::coord::y));
-	v.setY(-v.m_value.at(Maths::coord::x));
+	v.setX(-this->m_value.at(Maths::coord::x));
+	v.setY(-this->m_value.at(Maths::coord::y));
+	v.setZ(-this->m_value.at(Maths::coord::z));
 	return v;
 }
 

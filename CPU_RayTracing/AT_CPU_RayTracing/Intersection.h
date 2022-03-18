@@ -17,4 +17,6 @@ namespace Intersection
 
 	// Checks if a ray has intersected the two min and max points of a bounding box
 	bool minMaxBounds(RayTrace::Ray& ray, BoundingBox::AABB bounds);
+
+	bool inplicitSphere(RayTrace::Ray& ray, Vector3 center, float radius);
 }

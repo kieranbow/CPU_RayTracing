@@ -45,7 +45,7 @@ class Vector3
 		friend Vector3 operator/(const float& _lhs, const Vector3& _rhs);
 		friend Vector3 operator/(const Vector3& _lhs, const float& _rhs);
 
-		// Uniary
+		// unary operator
 		Vector3 operator-();
 
 		// Mainly used for debugging

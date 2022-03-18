@@ -86,20 +86,34 @@ void Matrix4x4::multDirByMatrix4x4(const Matrix4x4 _mat, const Vector3& _lhs, Ve
 	_rhs.setZ(_lhs.getX() * _mat.m_elements.at(c::c20) + _lhs.getY() * _mat.m_elements.at(c::c21) + _lhs.getZ() * _mat.m_elements.at(c::c22));
 }
 
-Vector3 Matrix4x4::multVecByMatrix4x4(Vector3 position)
+void Matrix4x4::multVecMatrix(const Vector3& src, Vector3& dst)
+{
+	dst.setX(src.getX() * m_elements.at(c::c00) + src.getY() * m_elements.at(c::c01) + src.getZ() * m_elements.at(c::c02) + m_elements.at(c::c03));
+	dst.setY(src.getX() * m_elements.at(c::c10) + src.getY() * m_elements.at(c::c11) + src.getZ() * m_elements.at(c::c12) + m_elements.at(c::c13));
+	dst.setZ(src.getX() * m_elements.at(c::c20) + src.getY() * m_elements.at(c::c21) + src.getZ() * m_elements.at(c::c22) + m_elements.at(c::c23));
+	float w = src.getX() * m_elements.at(c::c30) + src.getY() * m_elements.at(c::c31) + src.getZ() * m_elements.at(c::c32) + m_elements.at(c::c33);
+	if (w != 1.0f && w != 0.0f)
+	{
+		dst.setX(src.getX() / w);
+		dst.setY(src.getY() / w);
+		dst.setZ(src.getZ() / w);
+	}
+}
+
+Vector3 Matrix4x4::multVecByMatrix4x4(Vector3 m_position)
 {
 	Vector3 vector;
 	// Column major
-	vector.setX(position.getX() * m_elements.at(c::c00) + position.getY() * m_elements.at(c::c01) + position.getZ() * m_elements.at(c::c02) + m_elements.at(c::c03));
-	vector.setY(position.getX() * m_elements.at(c::c10) + position.getY() * m_elements.at(c::c11) + position.getZ() * m_elements.at(c::c12) + m_elements.at(c::c13));
-	vector.setZ(position.getX() * m_elements.at(c::c20) + position.getY() * m_elements.at(c::c21) + position.getZ() * m_elements.at(c::c22) + m_elements.at(c::c23));
-	float w = position.getX() * m_elements.at(c::c30) + position.getY() * m_elements.at(c::c31) + position.getZ() * m_elements.at(c::c32) + m_elements.at(c::c33);
+	vector.setX(m_position.getX() * m_elements.at(c::c00) + m_position.getY() * m_elements.at(c::c01) + m_position.getZ() * m_elements.at(c::c02) + m_elements.at(c::c03));
+	vector.setY(m_position.getX() * m_elements.at(c::c10) + m_position.getY() * m_elements.at(c::c11) + m_position.getZ() * m_elements.at(c::c12) + m_elements.at(c::c13));
+	vector.setZ(m_position.getX() * m_elements.at(c::c20) + m_position.getY() * m_elements.at(c::c21) + m_position.getZ() * m_elements.at(c::c22) + m_elements.at(c::c23));
+	float w = m_position.getX() * m_elements.at(c::c30) + m_position.getY() * m_elements.at(c::c31) + m_position.getZ() * m_elements.at(c::c32) + m_elements.at(c::c33);
 
 	if (w != 1.0f)
 	{
-		vector.setX(position.getX() / w);
-		vector.setY(position.getY() / w);
-		vector.setZ(position.getZ() / w);
+		vector.setX(m_position.getX() / w);
+		vector.setY(m_position.getY() / w);
+		vector.setZ(m_position.getZ() / w);
 	}
 	return vector;
 }
@@ -127,7 +141,7 @@ Vector3 Matrix4x4::translation(Vector3 _rhs)
 	return _rhs;
 }
 
-Vector3 Matrix4x4::scale(Vector3 scale, Vector3 position)
+Vector3 Matrix4x4::scale(Vector3 scale, Vector3 m_position)
 {
 	// Defines a scaled idenity matrix
 	this->m_elements.at(c::c00) = scale.getX();
@@ -135,9 +149,9 @@ Vector3 Matrix4x4::scale(Vector3 scale, Vector3 position)
 	this->m_elements.at(c::c22) = scale.getZ();
 
 	// Column major
-	position.setX(m_elements.at(c::c00) * position.getX() + m_elements.at(c::c01) * position.getY() + m_elements.at(c::c02) * position.getZ() + m_elements.at(c::c03) * 0.0f);
-	position.setY(m_elements.at(c::c10) * position.getX() + m_elements.at(c::c11) * position.getY() + m_elements.at(c::c12) * position.getZ() + m_elements.at(c::c31) * 0.0f);
-	position.setZ(m_elements.at(c::c20) * position.getX() + m_elements.at(c::c21) * position.getY() + m_elements.at(c::c22) * position.getZ() + m_elements.at(c::c32) * 0.0f);
+	m_position.setX(m_elements.at(c::c00) * m_position.getX() + m_elements.at(c::c01) * m_position.getY() + m_elements.at(c::c02) * m_position.getZ() + m_elements.at(c::c03) * 0.0f);
+	m_position.setY(m_elements.at(c::c10) * m_position.getX() + m_elements.at(c::c11) * m_position.getY() + m_elements.at(c::c12) * m_position.getZ() + m_elements.at(c::c31) * 0.0f);
+	m_position.setZ(m_elements.at(c::c20) * m_position.getX() + m_elements.at(c::c21) * m_position.getY() + m_elements.at(c::c22) * m_position.getZ() + m_elements.at(c::c32) * 0.0f);
 
-	return position;
+	return m_position;
 }
