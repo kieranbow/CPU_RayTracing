@@ -23,15 +23,15 @@ class Camera
 		void setPositionWS(Vector3 positionWS);
 		void setDirectionWS(Vector3 directionWS);
 
-		Vector3& getPosition() { return ws_position; }
+		Vector3& getPosition() { return m_position; }
 		const Matrix4x4& getMatrix() const { return cam_to_world; }
 
 	private:
-		Vector3 ws_position		= { 0.0f, 0.0f, 0.0f };
-		Vector3 forward			= { 0.0f, 0.0f, -1.0f };
-		Vector3 up				= { 0.0f, 1.0f, 0.0f };
-		Vector3 right			= { 0.0f, 0.0f, 0.0f };
-		Vector3 ws_direction	= { 0.0f, 0.0f, 0.0f };
+		Vector3 m_position	= { 0.0f, 0.0f, 0.0f };
+		Vector3 m_forward	= { 0.0f, 0.0f, -1.0f };
+		Vector3 m_up		= { 0.0f, 1.0f, 0.0f };
+		Vector3 m_right		= { 0.0f, 0.0f, 0.0f };
+		Vector3 m_direction	= { 0.0f, 0.0f, 0.0f };
 
 		Matrix4x4 cam_to_world;
 
@@ -41,8 +41,7 @@ class Camera
 		float aspect_ratio	= 0.0f;
 		float scale			= 0.0f;
 
-		// Converts degress to radians
-		float deg2rad(const float& deg) { return deg * Maths::special::pi / 180.0f; }
+		Colour castRay(RayTrace::Ray& ray, BVH::Builder bvh, Light::DirectionLight light);
 
 		// bool intersect(RayTrace::Ray& ray, Vector3 center, float radius);
 };

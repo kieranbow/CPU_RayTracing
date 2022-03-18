@@ -59,26 +59,27 @@ int main()
 	Matrix4x4 lightMatrix;
 	Light::DirectionLight dirLight(Maths::special::pi, { 1.0f, 1.0f, 1.0f }, {0.5f, 1.0f, 1.0f});
 
-	//Primitive cube;
-	//cube.setPosition({ 1.0f, 0.0f, -10.0f });
+	Primitive cube;
+	cube.setPosition({ 1.0f, 0.0f, -10.0f });
 
-	//Primitive sphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
-	//sphere.setPosition({-1.0f, 1.0f, -15.0f });
+	Primitive sphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	sphere.setPosition({-1.0f, 1.0f, -15.0f });
 
 	Primitive triangle("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
-	triangle.setPosition({ 0.0f, 0.0f, -5.0f });
+	triangle.setPosition({ 0.0f, 1.0f, -5.0f });
 
-	//Primitive cone("Assets\\helmet.obj", { 0.0f, 0.0f, 0.0f });
-	//cone.setPosition({ -0.5f, -1.0f, -8.0f });
+	Primitive cone("Assets\\helmet.obj", { 0.0f, 0.0f, 0.0f });
+	cone.setPosition({ -0.5f, -1.0f, -8.0f });
 
 	Primitive plane("Assets\\plane.obj", { 0.0f, 0.0f, 0.0f });
-	plane.setPosition({ 0.0f, -1.0f, -5.0f });
+	plane.setPosition({ 0.0f, -1.0f, -10.0f });
 
 	std::vector<Primitive> primitives;
+
 	primitives.push_back(triangle);
-	//primitives.push_back(cone);
-	//primitives.push_back(cube);
-	//primitives.push_back(sphere);
+	primitives.push_back(cone);
+	primitives.push_back(cube);
+	primitives.push_back(sphere);
 	primitives.push_back(plane);
 	
 

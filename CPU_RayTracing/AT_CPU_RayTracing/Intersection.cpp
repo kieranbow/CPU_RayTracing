@@ -38,7 +38,7 @@ bool Intersection::MollerTrumbore(RayTrace::Ray& ray, Triangle triangle)
 	// Calculate t, ray intersection triangle
 	ray.setT(Vector3::dot(v0v2, qvec) * invDet);
 
-	return true;
+	return (ray.getT() > 0.0f) ? true : false;
 }
 
 bool Intersection::slab(RayTrace::Ray& ray, BoundingBox::AABB aabb, float& tnear, float& tfar)

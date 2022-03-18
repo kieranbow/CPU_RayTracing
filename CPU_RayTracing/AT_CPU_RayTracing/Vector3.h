@@ -82,9 +82,9 @@ class Vector3
 		void setZ(float _z) { m_value.at(Maths::coord::z) = _z; }
 
 		// Getters
-		const float& getX() const { return m_value.at(0); }
-		const float& getY() const { return m_value.at(1); }
-		const float& getZ() const { return m_value.at(2); }
+		const float& getX() const { return m_value.at(Maths::coord::x); }
+		const float& getY() const { return m_value.at(Maths::coord::y); }
+		const float& getZ() const { return m_value.at(Maths::coord::z); }
 		const std::array<float, 3>& getValue() const{ return m_value; }
 
 	private:

@@ -13,5 +13,13 @@ namespace Maths
 		// Enum to help identify axis in code
 		enum axis { x, y, z };
 	}
+	namespace helperFunction
+	{
+		// Multiply x by itself
+		inline float sqr(float x) { return x * x; }
+
+		// Converts degress to radians
+		inline float deg2rad(const float& deg) { return deg * Maths::special::pi / 180.0f; }
+	}
 }
 

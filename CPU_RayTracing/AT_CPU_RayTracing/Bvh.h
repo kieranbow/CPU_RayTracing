@@ -75,7 +75,7 @@ namespace BVH
 				void buildBVHPrimitive(const std::vector<Vertex>& vertex_buffer, const std::vector<Indices>& index_buffer);
 
 				// Checks if a ray has hit any of the bvh bounding boxes
-				bool hitPrimitive(RayTrace::Ray& ray);
+				bool hitPrimitive(RayTrace::Ray& ray, float& tnear);
 
 			private:
 				static constexpr size_t m_numOfTris = 4;
@@ -88,7 +88,7 @@ namespace BVH
 
 				// Another recursive function that loops throught the tree finding and intersecting with
 				// any bounding boxes. This function stops when its found a leaf and intersected with the triangles.
-				bool hitRecursivePrimitive(RayTrace::Ray& ray, std::shared_ptr<BVH::Object::Node> parentNode);
+				bool hitRecursivePrimitive(RayTrace::Ray& ray, std::shared_ptr<BVH::Object::Node> parentNode, float& tnear);
 		};
 	}
 
@@ -96,7 +96,7 @@ namespace BVH
 	{
 		public:
 			void build(std::vector<Primitive>& primitives);
-			bool hit(RayTrace::Ray& ray, std::vector<Primitive>& primitives, float& tnear);
+			bool hit(RayTrace::Ray& ray /*std::vector<Primitive>& primitives,*/);
 
 		private:
 			BVH::Scene::Accelerator m_sceneBVH;

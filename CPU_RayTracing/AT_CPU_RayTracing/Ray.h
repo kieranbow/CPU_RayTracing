@@ -13,6 +13,7 @@ namespace RayTrace
 		Colour colour		= { 0.0f, 0.0f, 0.0f }; // Colour from the primitives surface
 		Vector3 normal		= { 0.0f, 0.0f, 0.0f }; // Primitive vertex normal
 		Vector2 uv			= { 0.0f, 0.0f };		// -------
+		float tnear = Maths::special::infinity;
 	};
 
 	class Ray
@@ -28,8 +29,7 @@ namespace RayTrace
 
 			// Sets the hitpoint using origin + direction * t
 			void setHitpoint(Ray& ray) { ray.m_origin = ray.m_origin + ray.m_direction * m_t; }
-			void setHitData(Vector3 hitpoint, Colour colour, Vector3 normal, Vector2 uv) 
-			{ m_propertices.hitPoint = hitpoint; m_propertices.colour = colour; m_propertices.normal = normal; m_propertices.uv = uv; }
+			void setHitData(Vector3 hitpoint, Colour colour, Vector3 normal, Vector2 uv) { m_propertices.hitPoint = hitpoint; m_propertices.colour = colour; m_propertices.normal = normal; m_propertices.uv = uv; }
 
 			Vector3 getHitPoint() { return m_origin + m_direction * m_t; }
 			Vector3& getOrigin() { return m_origin; }
@@ -37,13 +37,15 @@ namespace RayTrace
 			float& getT() { return m_t; }
 			hitData& getHitData() { return m_propertices; }
 
+			float m_tNear = -Maths::special::infinity; // 0.01f
+			float m_tFar = Maths::special::infinity; // 1000.0f
+
 		private:
 			Vector3 m_origin	= { 0.0f, 0.0f, 0.0f };
 			Vector3 m_direction	= { 0.0f, 0.0f, 0.0f };
 			hitData m_propertices;
 
 			float m_t		= Maths::special::infinity;
-			float m_tNear	= -Maths::special::infinity; // 0.01f
-			float m_tFar	= Maths::special::infinity; // 1000.0f
+
 	};
 }

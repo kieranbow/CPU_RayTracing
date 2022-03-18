@@ -255,13 +255,13 @@ void BVH::Object::Accelerator::buildRecursivePrimitive(const std::vector<Triangl
 	}
 }
 
-bool BVH::Object::Accelerator::hitPrimitive(RayTrace::Ray& ray)
+bool BVH::Object::Accelerator::hitPrimitive(RayTrace::Ray& ray, float& tnear)
 {
 	// If a ray hits the root node's bounding box, begin the recusion and step through
 	// the bvh tree until a primitive is hit
 	if (Intersection::minMaxBounds(ray, sp_root->m_boundingBox))
 	{
-		if (hitRecursivePrimitive(ray, sp_root))
+		if (hitRecursivePrimitive(ray, sp_root, tnear))
 		{
 			return true;
 		}
@@ -269,18 +269,18 @@ bool BVH::Object::Accelerator::hitPrimitive(RayTrace::Ray& ray)
 	return false;
 }
 
-bool BVH::Object::Accelerator::hitRecursivePrimitive(RayTrace::Ray& ray, std::shared_ptr<BVH::Object::Node> parentNode)
+bool BVH::Object::Accelerator::hitRecursivePrimitive(RayTrace::Ray& ray, std::shared_ptr<BVH::Object::Node> parentNode, float& tnear)
 {
 	// If the node is a leaf, loop through all its primitives and test if the ray has hit
 	// both the bounding box and triangles.
 	if (parentNode->m_leaf)
 	{
-		float tnear = Maths::special::infinity;
-
 		for (auto& tri : parentNode->m_triangles)
 		{
-			if (Intersection::MollerTrumbore(ray, tri))
+			if (Intersection::MollerTrumbore(ray, tri) && ray.getT() < tnear)
 			{
+				tnear = ray.getT();
+
 				ray.getHitData().normal = Shaders::Functions::getSmoothNormalFromTri(tri, ray.getHitData());
 				ray.getHitData().hitPoint = (ray.getOrigin() + ray.getDirection() * ray.getT()) + ray.getHitData().normal;
 				return true;
@@ -292,17 +292,16 @@ bool BVH::Object::Accelerator::hitRecursivePrimitive(RayTrace::Ray& ray, std::sh
 	// and any intersection checks can be skipped.
 	// If either sp_leftNode or sp_rightNode are not NULL, check that both it's bounding box
 	// and hitRecusive are true.
-
 	if (parentNode->sp_leftNode != nullptr)
 	{
-		if (Intersection::minMaxBounds(ray, parentNode->sp_leftNode->m_boundingBox) && hitRecursivePrimitive(ray, parentNode->sp_leftNode))
+		if (Intersection::minMaxBounds(ray, parentNode->sp_leftNode->m_boundingBox) && hitRecursivePrimitive(ray, parentNode->sp_leftNode, tnear))
 		{
 			return true;
 		}
 	}
 	if (parentNode->sp_rightNode != nullptr)
 	{
-		if (Intersection::minMaxBounds(ray, parentNode->sp_rightNode->m_boundingBox) && hitRecursivePrimitive(ray, parentNode->sp_rightNode))
+		if (Intersection::minMaxBounds(ray, parentNode->sp_rightNode->m_boundingBox) && hitRecursivePrimitive(ray, parentNode->sp_rightNode, tnear))
 		{
 			return true;
 		}
@@ -334,7 +333,7 @@ void BVH::Builder::build(std::vector<Primitive>& primitives)
 	// m_sceneBVH.buildBVHScene(primitives);
 }
 
-bool BVH::Builder::hit(RayTrace::Ray& ray, std::vector<Primitive>& primitives, float& tnear)
+bool BVH::Builder::hit(RayTrace::Ray& ray)
 {
 	// Check if ray hits any bb in scene
 	//if (m_sceneBVH.hit(ray))
@@ -352,10 +351,9 @@ bool BVH::Builder::hit(RayTrace::Ray& ray, std::vector<Primitive>& primitives, f
 
 	for (auto& objBVH : m_objBVH)
 	{
-		if (objBVH.hitPrimitive(ray) /* && ray.getT() < tnear*/)
+		if (float tnear = Maths::special::infinity; objBVH.hitPrimitive(ray, tnear) && tnear < ray.getHitData().tnear)
 		{
-			//tnear = ray.getT();
-			//ray.setHitpoint(ray);
+			ray.getHitData().tnear = tnear;
 			return true;
 		}
 	}
