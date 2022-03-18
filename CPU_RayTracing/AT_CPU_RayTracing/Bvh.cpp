@@ -279,9 +279,10 @@ bool BVH::Object::Accelerator::hitRecursivePrimitive(RayTrace::Ray& ray, std::sh
 
 		for (auto& tri : parentNode->m_triangles)
 		{
-			if (Intersection::MollerTrumbore(ray, tri) && ray.getT() < tnear)
+			if (Intersection::MollerTrumbore(ray, tri))
 			{
 				ray.getHitData().normal = Shaders::Functions::getSmoothNormalFromTri(tri, ray.getHitData());
+				ray.getHitData().hitPoint = (ray.getOrigin() + ray.getDirection() * ray.getT()) + ray.getHitData().normal;
 				return true;
 			}
 		}
@@ -351,11 +352,10 @@ bool BVH::Builder::hit(RayTrace::Ray& ray, std::vector<Primitive>& primitives, f
 
 	for (auto& objBVH : m_objBVH)
 	{
-		if (objBVH.hitPrimitive(ray) && ray.getT() < tnear)
+		if (objBVH.hitPrimitive(ray) /* && ray.getT() < tnear*/)
 		{
-			tnear = ray.getT();
-			ray.setHitpoint(ray);
-
+			//tnear = ray.getT();
+			//ray.setHitpoint(ray);
 			return true;
 		}
 	}

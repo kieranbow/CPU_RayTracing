@@ -125,9 +125,9 @@ bool Vector3::operator!=(const Vector3& _rhs)
 Vector3 Vector3::operator-()
 {
 	Vector3 v;
-	v.setX(-v.getX());
-	v.setY(-v.getY());
-	v.setY(-v.getY());
+	v.setX(-v.m_value.at(0));
+	v.setY(-v.m_value.at(1));
+	v.setY(-v.m_value.at(2));
 	return v;
 }
 

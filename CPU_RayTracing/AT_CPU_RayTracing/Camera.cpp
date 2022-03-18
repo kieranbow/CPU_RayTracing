@@ -20,28 +20,37 @@ Camera::Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float 
 
 void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Builder bvh, Light::DirectionLight light)
 {
-	const int tilesize = 64;
-	const int numXtile = size.getX() / tilesize;
-	const int numYtile = size.getY() / tilesize;
+	// https://www.iquilezles.org/www/articles/cputiles/cputiles.htm
+	const int tilesize = 16;
+	const int numXtile = static_cast<int>(size.getX()) / tilesize;
+	const int numYtile = static_cast<int>(size.getY()) / tilesize;
 	const int numTiles = numXtile * numYtile;
 
 	for (int tile = 0; tile < numTiles; tile++)
 	{
-		const int offset_x = tilesize * (tile % numXtile);
-		const int offset_y = tilesize * (tile / numXtile);
+		const float offset_x = static_cast<float>(tilesize * (tile % numXtile));
+		const float offset_y = static_cast<float>(tilesize * (tile / numXtile));
 
 		for (int y = 0; y < tilesize; y++)
 		{
 			for (int x = 0; x < tilesize; x++)
 			{
+				const float x_iter = offset_x + static_cast<float>(x);
+				const float y_iter = offset_y + static_cast<float>(y);
+
 				// Create a pixel
 				Pixel pixel;
 
 				// Convert pixel from raster space to camera space
-				float Px = (2.0f * (((offset_x + x) + 0.5f) / size.getX()) - 1.0f) * tan(fov / 2.0f * Maths::special::pi / 180.0f) * aspect_ratio * scale;
-				float Py = (1.0f - 2.0f * (((offset_y + y) + 0.5f) / size.getY()) * tan(fov / 2.0f * Maths::special::pi / 180.0f));
+				float Px = (2.0f * (((x_iter)+0.5f) / size.getX()) - 1.0f) * tan(fov / 2.0f * Maths::special::pi / 180.0f) * aspect_ratio * scale;
+				float Py = (1.0f - 2.0f * (((y_iter)+0.5f) / size.getY()) * tan(fov / 2.0f * Maths::special::pi / 180.0f));
 				pixel.position.setX(Px);
 				pixel.position.setY(Py);
+
+
+				float tHit = Maths::special::infinity;
+				Vector3 hitpoint;
+
 
 				// Convert pixel camera space to world space
 				Vector3 pixelPosWS;
@@ -49,30 +58,49 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 				Vector3::normalize(pixelPosWS);
 
 				// Create ray that's origin is the camera and it's direction towards the pixel
-				RayTrace::Ray primary_rayWS;
-				primary_rayWS.setOrigin(ws_position);
-				primary_rayWS.setDirection(Vector3::normalize(pixelPosWS - primary_rayWS.getOrigin()));
+				RayTrace::Ray primary_ray;
+				primary_ray.setOrigin(ws_position);
+				primary_ray.setDirection(Vector3::normalize(pixelPosWS - primary_ray.getOrigin()));
 
-				float tnear = Maths::special::infinity;
-
-				if (bvh.hit(primary_rayWS, primitives, tnear))
+				if (bvh.hit(primary_ray, primitives, tHit))
 				{
+					hitpoint = primary_ray.getHitData().hitPoint;
+
+					Vector3 L = { 0.0f, 5.0f, 0.0f }; //{ 0.5f, 0.0f, 1.0f };
+					Vector3 L_mod = { 0.0f, -5.0f, 0.0f };
+					Vector3 N = primary_ray.getHitData().normal;
+
+
+					RayTrace::Ray shadowRay;
+					shadowRay.setOrigin(hitpoint);
+					shadowRay.setDirection(Vector3::normalize(L - shadowRay.getOrigin()));
+
+					bool shadow = !bvh.hit(shadowRay, primitives, tHit);
+
 					Colour albedo = { 1.0f, 1.0f, 1.0f };
+					Colour diffuse = albedo / Maths::special::pi * light.getIntensity() * light.getColour() * std::max(0.0f, Vector3::dot(L, N));
 
-					Vector3 L = { 0.0f, 1.0f, 0.0f }; //{ 0.5f, 0.0f, 1.0f };
-					Vector3 N = primary_rayWS.getHitData().normal;
-
-					Vector3 hitpoint = primary_rayWS.getHitPoint();
-					primary_rayWS.setOrigin(hitpoint + N);
-
-					bool visible = !bvh.hit(primary_rayWS, primitives, tnear);
-					buffer.at(size.getX() * (offset_y + y) + (offset_x + x)).colour = visible * albedo / Maths::special::pi * light.getIntensity() * light.getColour() * std::max(0.0f, Vector3::dot(L, N));
+					buffer.at(static_cast<__int64>(size.getX() * (y_iter)+(x_iter))).colour = diffuse * shadow;
 				}
 				else
 				{
-					buffer.at(size.getX() * (offset_y + y) + (offset_x + x)).colour = Colour(0.5f, 0.5f, 1.0f);
+					buffer.at(static_cast<__int64>(size.getX() * (y_iter)+(x_iter))).colour = Colour(0.5f, 0.5f, 1.0f);
 				}
+			}
+		}
+	}
+}
 
+//bool Camera::intersect(RayTrace::Ray& ray, Vector3 center, float radius)
+//{
+//	Vector3 oc = ray.m_origin - center;
+//	float a = Vector3::dot(ray.m_direction, ray.m_direction);
+//	float b = 2.0f * Vector3::dot(oc, ray.m_direction);
+//	float c = Vector3::dot(oc, oc) - radius * radius;
+//	float distriminant = b * b - 4 * a * c;
+//
+//	return (distriminant > 0.0f);
+//}
 
 				//if (bvh.hitPrimitive(primary_rayWS))
 				//{
@@ -94,41 +122,3 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 				//{
 				//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
 				//}
-
-
-				//for(auto& prim : primitives)
-				//{
-				//	//if (prim.intersectedBoundingBoxDebug(primary_rayWS))
-				//	//{
-				//	//	buffer.at(iter).colour = Colour(1.0f, 1.0f, 1.0f);
-				//	//}
-
-				//	float tn = -Maths::special::infinity;
-				//	float tf = Maths::special::infinity;
-
-				//	if (Intersection::minMaxBounds(primary_rayWS, prim.getBoundingBox()))
-				//	{
-				//		buffer.at(iter).colour = primary_rayWS.data.normal;
-				//	}
-				//	else
-				//	{
-				//		buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
-				//	}
-				//}
-			}
-		}
-	}
-
-
-}
-
-//bool Camera::intersect(RayTrace::Ray& ray, Vector3 center, float radius)
-//{
-//	Vector3 oc = ray.m_origin - center;
-//	float a = Vector3::dot(ray.m_direction, ray.m_direction);
-//	float b = 2.0f * Vector3::dot(oc, ray.m_direction);
-//	float c = Vector3::dot(oc, oc) - radius * radius;
-//	float distriminant = b * b - 4 * a * c;
-//
-//	return (distriminant > 0.0f);
-//}

@@ -48,7 +48,7 @@ namespace Light
 
 			const float& getIntensity() const { return m_propertices.m_intensity; }
 			const Colour& getColour() const { return m_propertices.m_colour; }
-			const Vector3& getDirection() const { return m_direction; }
+			Vector3& getDirection() { return m_direction; }
 			const LightPropertices& getPropertices() const { return m_propertices; }
 
 		private:
