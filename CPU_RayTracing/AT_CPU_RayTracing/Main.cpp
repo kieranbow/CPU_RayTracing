@@ -25,6 +25,8 @@
 
 #include "Light.h"
 
+#include "ShaderFunc.h"
+
 // https://stackoverflow.com/questions/695043/how-does-one-convert-world-coordinates-to-camera-coordinates
 // https://en.wikipedia.org/wiki/Rotation_matrix#Basic_rotations
 // https://www.3dgep.com/understanding-the-view-matrix/
@@ -56,6 +58,15 @@ int main()
 	// Right handed Cartesian coordinate systems
 	// X+, y+, Z-
 
+	Vector2 image_size = { 640, 480 };
+	int samplePerPixel = 50;
+	int depth = 0;
+
+	// https://stackoverflow.com/questions/13078243/how-to-move-a-camera-using-in-a-ray-tracer
+	// Camera
+	Camera camera(Vector3(0.0f, 0.0f, 10.0f), Vector3(0.0f, 0.0f, -1.0f), image_size, 90.0f);
+	Matrix4x4::multVecByMatrix4x4(camera.getMatrix(), camera.getPosition());
+
 	Light::DirectionLight dirLight(Maths::special::pi, { 1.0f, 1.0f, 1.0f }, { 0.0f, 5.0f, 0.0f });
 
 	Primitive cube;
@@ -80,7 +91,6 @@ int main()
 	primitives.push_back(cube);
 	primitives.push_back(sphere);
 	primitives.push_back(plane);
-	
 
 	// Split scene primitives into bounding boxes using a BVH accelerator
 	//BVH::Scene::Accelerator bvh_scene;
@@ -92,16 +102,7 @@ int main()
 	//// Once the bvh has finished, clear all primitive data since that data now lives inside the bvh
 	//primitives.clear();
 
-
-	// Image in pixels
-	Vector2 image_size = { 640, 480 };
-
-	// https://stackoverflow.com/questions/13078243/how-to-move-a-camera-using-in-a-ray-tracer
-	// Camera
-	Camera camera(Vector3(0.0f, 0.0f, 10.0f), Vector3(0.0f, 0.0f, -1.0f), image_size, 90.0f);
-	Matrix4x4::multVecByMatrix4x4(camera.getMatrix(), camera.getPosition());
-
-	// Create framebuffer and set it to black
+	// Create a framebuffer and set it to black
 	std::vector<Pixel> framebuffer;
 	framebuffer.resize(static_cast<size_t>(image_size.getX() * image_size.getY()));
 	std::fill(framebuffer.begin(), framebuffer.end(), Pixel());
@@ -111,7 +112,7 @@ int main()
 	render_timer.StartTimer();
 
 	// Render what the camera sees in the frame buffer
-	camera.Render(primitives, framebuffer, bvh, dirLight);
+	camera.Render(primitives, framebuffer, bvh, dirLight, depth);
 
 	// End timer
 	render_timer.EndTimer();
@@ -132,13 +133,11 @@ int main()
 		for(auto& pixel : framebuffer)
 		{
 			// Gamma correction
-			float r = std::sqrtf(pixel.colour.getRed());
-			float g = std::sqrtf(pixel.colour.getGreen());
-			float b = std::sqrtf(pixel.colour.getBlue());
+			Colour colour = Shaders::Functions::gammaCorrect(pixel.colour);
 
-			int ir = static_cast<int>(255.999 * r);
-			int ig = static_cast<int>(255.999 * g);
-			int ib = static_cast<int>(255.999 * b);
+			int ir = static_cast<int>(255.999 * colour.getRed());
+			int ig = static_cast<int>(255.999 * colour.getGreen());
+			int ib = static_cast<int>(255.999 * colour.getBlue());
 
 			file << ir << ' ' << ig << ' ' << ib << '\n';
 		}

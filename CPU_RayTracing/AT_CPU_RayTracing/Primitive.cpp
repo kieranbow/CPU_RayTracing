@@ -128,7 +128,7 @@ bool Primitive::intersectedBoundingBoxDebug(RayTrace::Ray& ray)
 	float tn = -Maths::special::infinity;
 	float tf = Maths::special::infinity;
 
-	if (Intersection::slab(ray, m_boundingBox, tn ,tf))
+	if (Intersection::slab(ray, m_boundingBox, tn,tf))
 	{
 		return true;
 	}

@@ -11,4 +11,3 @@ struct Material
 	float metallic			= 0.0f;
 	float ambientOcculsion	= 1.0f;
 };
-

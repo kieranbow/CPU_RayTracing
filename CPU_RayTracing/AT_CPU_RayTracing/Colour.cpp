@@ -239,3 +239,12 @@ Colour operator*(const Colour& _lhs, const float& _rhs)
 {
 	return Colour(_lhs.getRed() * _rhs, _lhs.getGreen() * _rhs, _lhs.getBlue() * _rhs);
 }
+
+Colour operator/=(Colour& _lhs, const float& _rhs)
+{
+	Colour colour;
+	colour.colour.at(0) = _lhs.colour.at(0) /= _rhs;
+	colour.colour.at(1) = _lhs.colour.at(1) /= _rhs;
+	colour.colour.at(2) = _lhs.colour.at(2) /= _rhs;
+	return colour;
+}

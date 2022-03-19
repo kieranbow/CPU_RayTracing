@@ -67,6 +67,8 @@ namespace Shaders
 		inline Vector2 frac(Vector2 x) { return Vector2(x.getX() - std::floorf(x.getX()), x.getY() - std::floorf(x.getY())); }
 		inline Vector3 frac(Vector3 x) { return Vector3(std::abs(x.getX()), std::abs(x.getY()), std::abs(x.getZ())); }
 
+		inline Vector3 fresnel_schlick(float NdotL, Vector3 f0, float f90) { return f0 + (f90 - f0) * std::powf(1.0f - NdotL, 5.0f); }
+
 		inline float lerp(float a, float b, float f) { return (a * (1.0f - f)) + (b * f); }
 		//inline Vector2 lerp(Vector2 a, Vector2 b, float f) { return (a * (1.0f - f)) + (b * f); }
 		inline Vector3 lerp(Vector3 a, Vector3 b, float f) { return (a * (1.0f - f)) + (b * f); }
@@ -83,8 +85,8 @@ namespace Shaders
 
 		// Returns the lowest value from x and y
 		inline float min(float x, float y) { return std::min(x, y); }
-		inline Vector2 max(Vector2 x, Vector2 y) { return Vector2(std::min(x.getX(), y.getX()), std::min(x.getY(), y.getY())); }
-		inline Vector3 max(Vector3 x, Vector3 y) { return Vector3(std::min(x.getX(), y.getX()), std::min(x.getY(), y.getY()), std::min(x.getZ(), y.getZ())); }
+		inline Vector2 min(Vector2 x, Vector2 y) { return Vector2(std::min(x.getX(), y.getX()), std::min(x.getY(), y.getY())); }
+		inline Vector3 min(Vector3 x, Vector3 y) { return Vector3(std::min(x.getX(), y.getX()), std::min(x.getY(), y.getY()), std::min(x.getZ(), y.getZ())); }
 
 		// Returns the specified value raised to the specified power
 		inline float pow(float x, float y) { return std::powf(x, y); }

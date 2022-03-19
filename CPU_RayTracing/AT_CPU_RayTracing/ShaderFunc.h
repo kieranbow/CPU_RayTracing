@@ -1,5 +1,6 @@
 #pragma once
 #include "Vector3.h"
+#include "Colour.h"
 #include "MeshData.h"
 #include "Ray.h"
 
@@ -18,6 +19,12 @@ namespace Shaders
 		inline Vector3 getHardNormalFromTri(Triangle triangle)
 		{
 			return Vector3::normalize(Vector3::cross(triangle.vert1.position - triangle.vert0.position, triangle.vert2.position - triangle.vert0.position));
+		}
+
+		// Returns a gamma correct colour
+		inline Colour gammaCorrect(Colour colour)
+		{
+			return Colour(std::sqrtf(colour.getRed()), std::sqrtf(colour.getGreen()), std::sqrtf(colour.getBlue()));
 		}
 	}
 }

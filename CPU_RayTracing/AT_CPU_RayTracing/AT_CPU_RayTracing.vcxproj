@@ -176,6 +176,7 @@
     <ClInclude Include="Maths.h" />
     <ClInclude Include="Pixel.h" />
     <ClInclude Include="Primitive.h" />
+    <ClInclude Include="Random.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderFunc.h" />

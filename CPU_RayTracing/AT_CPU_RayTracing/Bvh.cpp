@@ -112,7 +112,7 @@ bool BVH::Scene::Accelerator::hitRecursive(RayTrace::Ray& ray, std::shared_ptr<B
 			float tn = -Maths::special::infinity;
 			float tf = Maths::special::infinity;
 
-			if (Intersection::slab(ray, prim.getBoundingBox(), tn ,tf))
+			if (Intersection::slab(ray, prim.getBoundingBox(), tn,tf))
 			{
 				return true;
 			}

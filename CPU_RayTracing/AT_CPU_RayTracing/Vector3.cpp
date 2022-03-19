@@ -1,4 +1,5 @@
 #include "Vector3.h"
+#include "Random.h"
 
 Vector3::Vector3()
 {
@@ -207,13 +208,33 @@ Vector3 Vector3::findMidPoint(Vector3 vec1, Vector3 vec2)
 
 float Vector3::distance(Vector3 a, Vector3 b)
 {
-	float x = Maths::helperFunction::sqr(a.m_value.at(0) - b.m_value.at(0));
-	float y = Maths::helperFunction::sqr(a.m_value.at(1) - b.m_value.at(1));
-	float z = Maths::helperFunction::sqr(a.m_value.at(2) - b.m_value.at(2));
+	float x = Maths::sqr(a.m_value.at(0) - b.m_value.at(0));
+	float y = Maths::sqr(a.m_value.at(1) - b.m_value.at(1));
+	float z = Maths::sqr(a.m_value.at(2) - b.m_value.at(2));
 	return std::sqrtf(x + y + z);
 }
 
 float Vector3::length(Vector3 a)
 {
 	return std::sqrtf(Vector3::dot(a, a));
+}
+
+Vector3 Vector3::random()
+{
+	return Vector3(Maths::Random::randomFloat(), Maths::Random::randomFloat(), Maths::Random::randomFloat());
+}
+
+Vector3 Vector3::randomInRange(const float min, const float max)
+{
+	return Vector3(Maths::Random::randomFloatInRange(min, max), Maths::Random::randomFloatInRange(min, max), Maths::Random::randomFloatInRange(min, max));
+}
+
+Vector3 Vector3::randomUnitSphere()
+{
+	while (true)
+	{
+		Vector3 p = randomInRange(-1, 1);
+		if (Vector3::dot(p, p) >= 1.0f) continue;
+		return p;
+	}
 }

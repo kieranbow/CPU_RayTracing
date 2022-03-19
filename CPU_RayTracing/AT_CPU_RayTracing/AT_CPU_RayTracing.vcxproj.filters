@@ -43,6 +43,9 @@
     <Filter Include="Header Files\Shaders">
       <UniqueIdentifier>{1075fcd0-a586-48d3-a59b-b4dfe0e48250}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Shaders\Base">
+      <UniqueIdentifier>{6b7832da-e73b-4c52-9199-41ecb39c0bb8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -134,17 +137,20 @@
     <ClInclude Include="Light.h">
       <Filter>Header Files\Lighting</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderMaths.h">
-      <Filter>Header Files\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderFunc.h">
-      <Filter>Header Files\Shaders</Filter>
-    </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderMaths.h">
+      <Filter>Header Files\Shaders\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\Shaders\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderFunc.h">
+      <Filter>Header Files\Shaders\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Header Files\Utilities\Maths</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

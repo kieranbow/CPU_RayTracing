@@ -76,6 +76,12 @@ class Vector3
 		// Returns the length of the vector3
 		static float length(Vector3 a);
 
+		static Vector3 random();
+
+		static Vector3 randomInRange(const float min, const float max);
+
+		static Vector3 randomUnitSphere();
+
 		// Setters
 		void setX(float _x) { m_value.at(Maths::coord::x) = _x; }
 		void setY(float _y) { m_value.at(Maths::coord::y) = _y; }
