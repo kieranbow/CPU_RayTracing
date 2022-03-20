@@ -21,7 +21,7 @@ Camera::Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov)
 	m_scale = tan(Maths::deg2rad(m_fov) * 0.5f);
 }
 
-void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth)
+void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth)
 {
 	// https://www.iquilezles.org/www/articles/cputiles/cputiles.htm
 	const int tilesize = 32;
@@ -114,7 +114,7 @@ Colour Camera::castRay(RayTrace::Ray& ray, BVH::Builder& bvh, std::vector<std::u
 
 			bool shadow = !bvh.hit(shadowRay);
 
-			Colour albedo = { 1.0f, 1.0f, 1.0f };
+			Colour albedo = ray.getHitData().colour;
 			Colour diffuse = albedo / Maths::special::pi * lightColour * std::max(0.0f, Vector3::dot(lightDirection, N));
 
 			hitColour += diffuse * shadow;

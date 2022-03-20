@@ -9,9 +9,6 @@ class Primitive;
 
 namespace BVH
 {
-	// Finds the biggest axis from a Vector3
-	int getGreatestAxis(Vector3 vec);
-
 	namespace Scene
 	{
 		// A node that makes up the tree of a BVH
@@ -65,6 +62,8 @@ namespace BVH
 
 			// Node will only contain triangles when it is a leaf.
 			std::vector<Triangle> m_triangles;
+
+			Colour m_colour;
 		};
 
 		// Handles all the bvh buidling and collision testing
@@ -72,10 +71,12 @@ namespace BVH
 		{
 			public:
 				// Builds a bvh from the triangles of a primitives. This tree is top down
-				void buildBVHPrimitive(const std::vector<Vertex>& vertex_buffer, const std::vector<Indices>& index_buffer);
+				void buildBVHPrimitive(const std::vector<Vertex>& vertex_buffer, const std::vector<Indices>& index_buffer, Colour& colour);
 
 				// Checks if a ray has hit any of the bvh bounding boxes
 				bool hitPrimitive(RayTrace::Ray& ray, float& tnear);
+
+				Colour m_colour;
 
 			private:
 				static constexpr size_t m_numOfTris = 4;
@@ -84,7 +85,7 @@ namespace BVH
 				std::vector<Triangle> m_triangles;
 
 				// A recursive function that continues building the tree until a condition is met
-				void buildRecursivePrimitive(const std::vector<Triangle>& triangles, const std::shared_ptr<BVH::Object::Node> node, int depth, const int maxDepth);
+				void buildRecursivePrimitive(const std::vector<Triangle>& triangles, Colour& colour, const std::shared_ptr<BVH::Object::Node> node, int depth, const int& maxDepth);
 
 				// Another recursive function that loops throught the tree finding and intersecting with
 				// any bounding boxes. This function stops when its found a leaf and intersected with the triangles.

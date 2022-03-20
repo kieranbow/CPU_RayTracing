@@ -1,9 +1,13 @@
 #pragma once
+// C++
 #include <vector>
 
+// Maths
 #include "Vector3.h"
 #include "Vector2.h"
 #include "Matrix4x4.h"
+
+
 #include "Ray.h"
 #include "Pixel.h"
 #include "Bvh.h"
@@ -16,7 +20,7 @@ class Camera
 	public:
 		Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov);
 
-		void Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth);
+		void Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth);
 
 		void setPositionWS(Vector3 positionWS);
 		void setDirectionWS(Vector3 directionWS);
