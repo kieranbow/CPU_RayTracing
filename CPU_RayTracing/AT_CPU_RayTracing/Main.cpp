@@ -67,7 +67,9 @@ int main()
 	Camera camera(Vector3(0.0f, 0.0f, 10.0f), Vector3(0.0f, 0.0f, -1.0f), image_size, 90.0f);
 	Matrix4x4::multVecByMatrix4x4(camera.getMatrix(), camera.getPosition());
 
-	Light::DirectionLight dirLight(Maths::special::pi, { 1.0f, 1.0f, 1.0f }, { 0.0f, 5.0f, 0.0f });
+	std::vector<std::unique_ptr<Light::Light>> sceneLights;
+	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 5.0f, 0.0f))));
+	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 0.0f, 0.0f), Vector3(5.0f, 10.0f, 5.0f))));
 
 	Primitive cube;
 	cube.setPosition({ 1.0f, 0.0f, -10.0f });
@@ -112,7 +114,7 @@ int main()
 	render_timer.StartTimer();
 
 	// Render what the camera sees in the frame buffer
-	camera.Render(primitives, framebuffer, bvh, dirLight, depth);
+	camera.Render(primitives, framebuffer, bvh, sceneLights, depth);
 
 	// End timer
 	render_timer.EndTimer();
@@ -135,9 +137,9 @@ int main()
 			// Gamma correction
 			Colour colour = Shaders::Functions::gammaCorrect(pixel.colour);
 
-			int ir = static_cast<int>(255.999 * colour.getRed());
-			int ig = static_cast<int>(255.999 * colour.getGreen());
-			int ib = static_cast<int>(255.999 * colour.getBlue());
+			int ir = static_cast<int>(256 * std::clamp(colour.getRed(), 0.0f, 0.999f));
+			int ig = static_cast<int>(256 * std::clamp(colour.getGreen(), 0.0f, 0.999f));
+			int ib = static_cast<int>(256 * std::clamp(colour.getBlue(), 0.0f, 0.999f));
 
 			file << ir << ' ' << ig << ' ' << ib << '\n';
 		}

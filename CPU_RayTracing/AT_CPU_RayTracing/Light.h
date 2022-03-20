@@ -3,62 +3,67 @@
 #include "Vector3.h"
 #include "Matrix4x4.h"
 
+// Contains all the classes and logic for lights
 namespace Light
 {
-	// A struct which contains generic data about a light
-	struct LightPropertices
-	{
-		float intensity = 1.0f;
-		Colour colour = { 1.0f, 1.0f, 1.0f };
-		Vector3 m_position = { 0.0f, 0.0f, 0.0f };
-	};
-
-	class PointLight
+	// Base Light for different types of light to inherit
+	// Contains generic information like intensity and colour
+	class Light
 	{
 		public:
-			PointLight(float intensity, Colour colour, Vector3 m_position)
+			Light(float intensity, Colour colour) 
+				: m_intensity(intensity), m_colour(colour) {}
+			~Light() = default;
+
+			// Returns light information to parameters
+			virtual void illuminate(Vector3& point, Vector3&, Colour&, float&) = 0;
+
+			float m_intensity	= 1.0f;
+			Colour m_colour		= { 1.0f, 1.0f, 1.0f };
+	};
+
+	// The directional light acts like the sun and only emits light in one direction
+	class DirectionLight : public Light
+	{
+		public:
+			DirectionLight(float intensity, Colour colour, Vector3 direction) 
+				: Light(intensity, colour), m_direction(direction) {}
+
+			void illuminate(Vector3& point, Vector3& direction, Colour& colour, float& distance)
 			{
-				m_propertices.intensity = intensity;
-				m_propertices.colour = colour;
-				m_propertices.m_position = m_position;
-			}
-			~PointLight() = default;
-
-			void getDirection(Vector3 point) 
-			{ 
-				Vector3 lightDir = Vector3::normalize(m_propertices.m_position - point);
-				float r2 = Vector3::distance(m_propertices.m_position, point);
-
-				// m_propertices.intensity = m_propertices.intensity * m_propertices.colour / (4.0f * Maths::special::pi * r2);
+				direction = m_direction;
+				colour = m_colour * m_intensity;
+				distance = Maths::special::infinity;
 			}
 
 		private:
-			LightPropertices m_propertices;
+			Vector3 m_direction;
 	};
 
-	class DirectionLight
+	// A point light that emits light in all directions
+	class PointLight : public Light
 	{
 		public:
-			DirectionLight() = default;
-			DirectionLight(float intensity, Colour colour, Vector3 direction)
+			PointLight(float intensity, Colour colour, Vector3 position)
+				: Light(intensity, colour), m_position(position) {}
+
+			void illuminate(Vector3& point, Vector3& direction, Colour& colour, float& distance)
 			{
-				m_propertices.intensity = intensity;
-				m_propertices.colour = colour;
-				m_propertices.m_position = direction;
+				direction = point - m_position;
+				float r2 = Vector3::distance(m_position, point);
+				distance = std::sqrtf(r2);
+
+				float x = direction.getX();
+				float y = direction.getY();
+				float z = direction.getZ();
+
+				x /= distance;
+				y /= distance;
+				z /= distance;
+
+				colour = m_colour * m_intensity / (4.0f * Maths::special::pi * r2);
 			}
-			~DirectionLight() = default;
-
-			void setIntensity(float intensity) { m_propertices.intensity = intensity; }
-			void setColour(Colour colour) { m_propertices.colour = colour; }
-			void setDirection(Vector3 direction) { m_propertices.m_position = direction; }
-			void setPropertices(LightPropertices propertices) { m_propertices = propertices; }
-
-			const float& getIntensity() const { return m_propertices.intensity; }
-			const Colour& getColour() const { return m_propertices.colour; }
-			const Vector3& getDirection() const { return m_propertices.m_position; }
-			const LightPropertices& getPropertices() const { return m_propertices; }
-
 		private:
-			LightPropertices m_propertices;
+			Vector3 m_position;
 	};
 }

@@ -17,7 +17,7 @@ class Camera
 	public:
 		Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float _fov);
 
-		void Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Builder& bvh, Light::DirectionLight& light, int depth);
+		void Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth);
 
 		void setPositionWS(Vector3 positionWS);
 		void setDirectionWS(Vector3 directionWS);
@@ -42,5 +42,5 @@ class Camera
 
 		static constexpr int max_depth = 3;
 
-		Colour castRay(RayTrace::Ray& ray, BVH::Builder& bvh, Light::DirectionLight& light, int depth);
+		Colour castRay(RayTrace::Ray& ray, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth);
 };

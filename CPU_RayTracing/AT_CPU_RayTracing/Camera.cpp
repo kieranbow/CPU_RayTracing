@@ -20,7 +20,7 @@ Camera::Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float 
 	m_scale = tan(Maths::deg2rad(m_fov) * 0.5f);
 }
 
-void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Builder& bvh, Light::DirectionLight& light, int depth)
+void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth)
 {
 	// https://www.iquilezles.org/www/articles/cputiles/cputiles.htm
 	const int tilesize = 16;
@@ -28,6 +28,8 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 	const int numYtile = static_cast<int>(m_size.getY()) / tilesize;
 	const int numTiles = numXtile * numYtile;
 	const int maxDepth = 5;
+
+	int numOfSamples = 1;
 
 	for (int tile = 0; tile < numTiles; tile++)
 	{
@@ -40,81 +42,79 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 			{
 				const float x_iter = offset_x + static_cast<float>(x);
 				const float y_iter = offset_y + static_cast<float>(y);
-				const int iter = static_cast<int>(m_size.getX() * (y_iter) + (x_iter));
-				// Create a pixel
-				Pixel pixel;
+				const int iter = static_cast<int>(m_size.getX() * (y_iter)+(x_iter));
 
-				// Convert pixel from raster space to camera space
-				float Px = (2.0f * (((x_iter) + 0.5f) / m_size.getX()) - 1.0f) * m_aspectRatio * m_scale;	// * tan(fov / 2.0f * Maths::special::pi / 180.0f) * aspect_ratio * scale;
-				float Py = (1.0f - 2.0f * (((y_iter) + 0.5f) / m_size.getY()));	// * tan(fov / 2.0f * Maths::special::pi / 180.0f));
-				pixel.position.setX(Px);
-				pixel.position.setY(Py);
+				// The next 2 for loops are for Anti-aliasing
+				for (int aaX = 0; aaX < numOfSamples; ++aaX)
+				{
+					// Create a pixel
+					Pixel pixel;
 
-				// Convert pixel camera space to world space
-				Vector3 pixelPosWS;
-				m_camToWorld.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), m_direction.getZ()), pixelPosWS);
-				Vector3::normalize(pixelPosWS);
+					float tile_x = x_iter + 0.5f;
+					float tile_y = y_iter + 0.5f;
 
-				// Create ray that's origin is the camera and it's direction towards the pixel
-				RayTrace::Ray primary_ray;
-				primary_ray.setOrigin(m_position);
-				primary_ray.setDirection(Vector3::normalize(pixelPosWS - primary_ray.getOrigin()));
+					// Convert pixel from raster space to camera space
+					float Px = (2.0f * (tile_x + (aaX + Maths::Random::randomFloat()) / numOfSamples) / m_size.getX() - 1.0f) * m_aspectRatio * m_scale;	// * tan(fov / 2.0f * Maths::special::pi / 180.0f) * aspect_ratio * scale;
+					float Py = (1.0f - (tile_y + (aaX + Maths::Random::randomFloat()) / numOfSamples) / m_size.getY() * 2.0f) * m_scale;	// * tan(fov / 2.0f * Maths::special::pi / 180.0f));
+					pixel.position.setX(Px);
+					pixel.position.setY(Py);
 
-				buffer.at(iter).colour = castRay(primary_ray, bvh, light, depth);
+					// Convert pixel camera space to world space
+					Vector3 pixelPosWS;
+					m_camToWorld.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), m_direction.getZ()), pixelPosWS);
+					Vector3::normalize(pixelPosWS);
 
-				//if (bvh.hit(primary_ray))
-				//{
-				//	Vector3 hitpoint = primary_ray.getOrigin() + primary_ray.getDirection() * primary_ray.getHitData().tnear;
-				//	
-				//	Vector3 N = primary_ray.getHitData().normal;
-				//	Vector3 L = (hitpoint + N + Vector3::randomUnitSphere()) - hitpoint; //light.getDirection();
+					// Create ray that's origin is the camera and it's direction is towards the pixel
+					RayTrace::Ray primary_ray;
+					primary_ray.setOrigin(m_position);
+					primary_ray.setDirection(Vector3::normalize(pixelPosWS - primary_ray.getOrigin()));
 
+					// Cast the ray and return a colour to the buffer
+					buffer.at(iter).colour += castRay(primary_ray, bvh, sceneLights, depth);
+				}
+				float scale = 1.0f / numOfSamples;
 
-				//	RayTrace::Ray shadowRay;
-				//	shadowRay.setOrigin(hitpoint + N * 0.1f);
-				//	shadowRay.setDirection(Vector3::normalize(L - shadowRay.getOrigin()));
-
-				//	bool shadow = !bvh.hit(shadowRay);
-
-				//	Colour albedo = { 1.0f, 1.0f, 1.0f };
-				//	Colour diffuse = albedo / Maths::special::pi * light.getIntensity() * light.getColour() * std::max(0.0f, Vector3::dot(L, N));
-
-				//	buffer.at(iter).colour = diffuse * shadow;
-				//}
-				//else
-				//{
-				//	buffer.at(iter).colour = Colour(0.5f, 0.5f, 1.0f);
-				//}
+				buffer.at(iter).colour *= Colour(scale, scale, scale);
 			}
 		}
 	}
 }
 
-Colour Camera::castRay(RayTrace::Ray& ray, BVH::Builder& bvh, Light::DirectionLight& light, int depth)
+Colour Camera::castRay(RayTrace::Ray& ray, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth)
 {
+	Colour hitColour;
 	if (depth > max_depth) return Colour(0.5f, 0.5f, 1.0f);
 
 	if (bvh.hit(ray))
 	{
 		Vector3 hitpoint = ray.getOrigin() + ray.getDirection() * ray.getHitData().tnear;
 
-		Vector3 N = ray.getHitData().normal;
-		Vector3 L = light.getDirection();
+		for (auto& light : sceneLights)
+		{
+			Vector3 lightDirection;
+			Colour lightColour;
 
+			light->illuminate(hitpoint, lightDirection, lightColour, ray.getHitData().tnear);
 
-		RayTrace::Ray shadowRay;
-		shadowRay.setOrigin(hitpoint + N * 0.1f);
-		shadowRay.setDirection(Vector3::normalize(L - shadowRay.getOrigin()));
+			Vector3 N = ray.getHitData().normal;
+			Vector3 L = Vector3::normalize(lightDirection - hitpoint);
 
-		bool shadow = !bvh.hit(shadowRay);
+			RayTrace::Ray shadowRay;
+			shadowRay.setOrigin(hitpoint + N * 0.1f);
+			shadowRay.setDirection(L /*L - shadowRay.getOrigin()*/);
+			shadowRay.m_tNear = ray.getHitData().tnear;
 
-		Colour albedo = { 1.0f, 1.0f, 1.0f };
-		Colour diffuse = albedo / Maths::special::pi * light.getIntensity() * light.getColour() * std::max(0.0f, Vector3::dot(L, N));
+			bool shadow = !bvh.hit(shadowRay);
 
-		return diffuse * shadow;
+			Colour albedo = { 1.0f, 1.0f, 1.0f };
+			Colour diffuse = albedo / Maths::special::pi * lightColour * std::max(0.0f, Vector3::dot(L, N));
+
+			hitColour += diffuse * shadow;
+		}
 	}
 	else
 	{
-		return Colour(0.5f, 0.5f, 1.0f);
+		hitColour = Colour(0.5f, 0.5f, 1.0f);
 	}
+	return hitColour;
 }
