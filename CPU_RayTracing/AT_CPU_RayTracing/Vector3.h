@@ -82,6 +82,9 @@ class Vector3
 
 		static Vector3 randomUnitSphere();
 
+		// Finds the biggest axis from a Vector3
+		static int getGreatestAxis(Vector3 vec);
+
 		// Setters
 		void setX(float _x) { m_value.at(Maths::coord::x) = _x; }
 		void setY(float _y) { m_value.at(Maths::coord::y) = _y; }

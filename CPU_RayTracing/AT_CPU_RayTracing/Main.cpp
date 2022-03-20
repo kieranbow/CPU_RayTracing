@@ -68,23 +68,29 @@ int main()
 	Matrix4x4::multVecByMatrix4x4(camera.getMatrix(), camera.getPosition());
 
 	std::vector<std::unique_ptr<Light::Light>> sceneLights;
-	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 5.0f, 0.0f))));
-	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 0.0f, 0.0f), Vector3(5.0f, 10.0f, 5.0f))));
+	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.5f, 1.0f))));
+	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 0.0f, 0.0f), Vector3(5.0f, 10.0f, 5.0f))));
+	//sceneLights.push_back(std::unique_ptr<Light::PointLight>(new Light::PointLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 1.0f, -8.0f))));
 
 	Primitive cube;
 	cube.setPosition({ 1.0f, 0.0f, -10.0f });
+	cube.colour = Colour(1.0f, 0.0f, 0.0f);
 
 	Primitive sphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
 	sphere.setPosition({-1.0f, 1.0f, -15.0f });
+	sphere.colour = Colour(0.0f, 1.0f, 0.0f);
 
 	Primitive triangle("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
 	triangle.setPosition({ 0.0f, 1.0f, -5.0f });
+	triangle.colour = Colour(0.0f, 0.0f, 1.0f);
 
 	Primitive cone("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
 	cone.setPosition({ -0.5f, -1.0f, -8.0f });
+	cone.colour = Colour(0.5f, 1.0f, 0.5f);
 
 	Primitive plane("Assets\\plane.obj", { 0.0f, 0.0f, 0.0f });
 	plane.setPosition({ 0.0f, -1.0f, -10.0f });
+	plane.colour = Colour(1.0f, 0.5f, 0.0f);
 
 	std::vector<Primitive> primitives;
 

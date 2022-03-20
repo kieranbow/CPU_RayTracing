@@ -26,7 +26,7 @@ class Primitive
 		bool generateBoundingBox();
 
 		void setPosition(Vector3 position);
-		void setRotation(Vector3 rotation);
+		//void setRotation(Vector3 rotation);
 		void setScale(Vector3 scale);
 
 		const Vector3& getPosition() const { return m_position; }
@@ -36,9 +36,7 @@ class Primitive
 		const std::vector<Indices>& getIndices() const { return m_indexBuffer; }
 		const BoundingBox::AABB& getBoundingBox() const { return m_boundingBox; }
 
-		BVH::Object::Accelerator bvh;
-
-		BVH::Object::Accelerator test;
+		Colour colour;
 
 	private:
 		// Mesh data
@@ -48,7 +46,7 @@ class Primitive
 		BoundingBox::AABB m_boundingBox;
 
 		// Transformation
-		Vector3 m_position	= { 0.0f, 0.0f, 0.0f }; // World origin
+		Vector3 m_position	= { 0.0f, 0.0f, 0.0f };
 		Vector3 m_rotation	= { 0.0f, 0.0f, 0.0f };
 		Vector3 m_scale		= { 1.0f, 1.0f, 1.0f };
 };

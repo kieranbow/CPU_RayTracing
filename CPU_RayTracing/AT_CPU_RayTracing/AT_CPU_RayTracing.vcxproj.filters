@@ -46,6 +46,12 @@
     <Filter Include="Header Files\Shaders\Base">
       <UniqueIdentifier>{6b7832da-e73b-4c52-9199-41ecb39c0bb8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\BVH">
+      <UniqueIdentifier>{b2672e10-f9f4-4f50-a05c-dd47151877d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\BVH">
+      <UniqueIdentifier>{f5225f21-0f2a-47f0-beda-2433ae787033}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -75,14 +81,14 @@
     <ClCompile Include="BoundingBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Bvh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Primitive.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="Intersection.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bvh.cpp">
+      <Filter>Source Files\BVH</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -125,9 +131,6 @@
     <ClInclude Include="BoundingBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Bvh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Primitive.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
@@ -151,6 +154,9 @@
     </ClInclude>
     <ClInclude Include="Random.h">
       <Filter>Header Files\Utilities\Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="Bvh.h">
+      <Filter>Header Files\BVH</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

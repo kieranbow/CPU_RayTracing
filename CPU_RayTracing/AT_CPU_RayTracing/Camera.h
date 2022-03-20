@@ -13,9 +13,8 @@ class Primitive;
 
 class Camera
 {
-	// https://raytracing.github.io/books/RayTracingInOneWeekend.html#positionablecamera
 	public:
-		Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float _fov);
+		Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov);
 
 		void Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth);
 
@@ -31,7 +30,7 @@ class Camera
 		
 		//Vector3 m_forward	= { 0.0f, 0.0f, -1.0f };
 		//Vector3 m_up		= { 0.0f, 1.0f, 0.0f };
-		//Vector3 m_right		= { 0.0f, 0.0f, 0.0f };
+		//Vector3 m_right	= { 0.0f, 0.0f, 0.0f };
 
 		Matrix4x4 m_camToWorld;
 		Vector2 m_size;

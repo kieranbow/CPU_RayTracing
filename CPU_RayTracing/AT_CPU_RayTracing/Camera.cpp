@@ -4,16 +4,17 @@
 #include "ShaderMaths.h"
 #include "Random.h"
 
-Camera::Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float _fov)
+Camera::Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov)
 {
 	// Set world space position and direction
-	m_position = m_camToWorld.multVecByMatrix4x4(positionWS);
-	m_direction = directionWS;
+	m_position = m_camToWorld.multVecByMatrix4x4(position);
+	m_direction = direction;
 
 	// Set the dimension of the camera
 	m_size = cam_size;
 
-	m_fov = _fov;
+	// Sets the field of view
+	m_fov = fov;
 
 	// Set the aspect ratio based on camera size
 	m_aspectRatio = m_size.getX() / m_size.getY();
@@ -23,7 +24,7 @@ Camera::Camera(Vector3 positionWS, Vector3 directionWS, Vector2 cam_size, float 
 void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth)
 {
 	// https://www.iquilezles.org/www/articles/cputiles/cputiles.htm
-	const int tilesize = 16;
+	const int tilesize = 32;
 	const int numXtile = static_cast<int>(m_size.getX()) / tilesize;
 	const int numYtile = static_cast<int>(m_size.getY()) / tilesize;
 	const int numTiles = numXtile * numYtile;
@@ -31,11 +32,13 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 
 	int numOfSamples = 1;
 
+	// Loop through each tile
 	for (int tile = 0; tile < numTiles; tile++)
 	{
 		const float offset_x = static_cast<float>(tilesize * (tile % numXtile));
 		const float offset_y = static_cast<float>(tilesize * (tile / numXtile));
 
+		// Loop through the tiles width and height in pixels
 		for (int y = 0; y < tilesize; y++)
 		{
 			for (int x = 0; x < tilesize; x++)
@@ -44,14 +47,16 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 				const float y_iter = offset_y + static_cast<float>(y);
 				const int iter = static_cast<int>(m_size.getX() * (y_iter)+(x_iter));
 
-				// The next 2 for loops are for Anti-aliasing
+				// Loop through all the Anti-aliasing samples.
+				// This is the main render loop where the rays are cast into the scene
+				// returing a colour if it has or has not hit anything
 				for (int aaX = 0; aaX < numOfSamples; ++aaX)
 				{
-					// Create a pixel
-					Pixel pixel;
-
 					float tile_x = x_iter + 0.5f;
 					float tile_y = y_iter + 0.5f;
+
+					// Create a pixel
+					Pixel pixel;
 
 					// Convert pixel from raster space to camera space
 					float Px = (2.0f * (tile_x + (aaX + Maths::Random::randomFloat()) / numOfSamples) / m_size.getX() - 1.0f) * m_aspectRatio * m_scale;	// * tan(fov / 2.0f * Maths::special::pi / 180.0f) * aspect_ratio * scale;
@@ -72,6 +77,8 @@ void Camera::Render(std::vector<Primitive> primitives, std::vector<Pixel>& buffe
 					// Cast the ray and return a colour to the buffer
 					buffer.at(iter).colour += castRay(primary_ray, bvh, sceneLights, depth);
 				}
+
+				// Once render loop is complete. Take the current pixel and apply anti-aliasing
 				float scale = 1.0f / numOfSamples;
 
 				buffer.at(iter).colour *= Colour(scale, scale, scale);
@@ -89,6 +96,7 @@ Colour Camera::castRay(RayTrace::Ray& ray, BVH::Builder& bvh, std::vector<std::u
 	{
 		Vector3 hitpoint = ray.getOrigin() + ray.getDirection() * ray.getHitData().tnear;
 
+		// Loop through all the lights in the scene and add them linearly 
 		for (auto& light : sceneLights)
 		{
 			Vector3 lightDirection;
@@ -100,14 +108,14 @@ Colour Camera::castRay(RayTrace::Ray& ray, BVH::Builder& bvh, std::vector<std::u
 			Vector3 L = Vector3::normalize(lightDirection - hitpoint);
 
 			RayTrace::Ray shadowRay;
-			shadowRay.setOrigin(hitpoint + N * 0.1f);
-			shadowRay.setDirection(L /*L - shadowRay.getOrigin()*/);
+			shadowRay.setOrigin(hitpoint + N * 0.1f); /* + N * 0.1f*/
+			shadowRay.setDirection(lightDirection); /*L - shadowRay.getOrigin()*/
 			shadowRay.m_tNear = ray.getHitData().tnear;
 
 			bool shadow = !bvh.hit(shadowRay);
 
 			Colour albedo = { 1.0f, 1.0f, 1.0f };
-			Colour diffuse = albedo / Maths::special::pi * lightColour * std::max(0.0f, Vector3::dot(L, N));
+			Colour diffuse = albedo / Maths::special::pi * lightColour * std::max(0.0f, Vector3::dot(lightDirection, N));
 
 			hitColour += diffuse * shadow;
 		}

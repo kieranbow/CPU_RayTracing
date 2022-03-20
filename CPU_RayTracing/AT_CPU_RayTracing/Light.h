@@ -27,7 +27,7 @@ namespace Light
 	{
 		public:
 			DirectionLight(float intensity, Colour colour, Vector3 direction) 
-				: Light(intensity, colour), m_direction(direction) {}
+				: Light(intensity, colour), m_direction(Vector3::normalize(direction)) {}
 
 			void illuminate(Vector3& point, Vector3& direction, Colour& colour, float& distance)
 			{

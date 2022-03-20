@@ -3,17 +3,12 @@
 
 namespace Shaders
 {
-	struct pixelData
-	{
-		
-	};
-
 	class Shader
 	{
 		public:
 			Shader() = default;
 			virtual ~Shader() = default;
 
-			virtual Colour pixelShader() = 0;
+			virtual Colour computeShader() = 0;
 	};
 }

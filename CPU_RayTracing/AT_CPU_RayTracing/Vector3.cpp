@@ -238,3 +238,10 @@ Vector3 Vector3::randomUnitSphere()
 		return p;
 	}
 }
+
+int Vector3::getGreatestAxis(Vector3 vec)
+{
+	if (vec.getX() > vec.getY() && vec.getX() > vec.getZ()) return Maths::coord::x;
+	else if (vec.getY() > vec.getZ()) return Maths::coord::y;
+	else return Maths::coord::z;
+}
