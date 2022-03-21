@@ -24,6 +24,13 @@
 #include "Logger.h"
 #include "ShaderFunc.h"
 
+struct Options
+{
+	float width = 0.0f;
+	float height = 0.0f;
+	int aaAmount = 1;
+};
+
 int main()
 {
 	Logger::PrintMsg("Started program");
@@ -32,19 +39,40 @@ int main()
 	// Right handed Cartesian coordinate systems
 	// X+, y+, Z-
 
-	Vector2 image_size = { 640, 480 };
+	//float width;
+	//float height;
+	//int amount;
+
+	//Logger::PrintMsg("Input image width");
+	//std::cin >> width;
+	//
+	//Logger::PrintMsg("Input image height");
+	//std::cin >> height;
+
+	//Logger::PrintMsg("Input Anti-aliasing amount");
+	//std::cin >> amount;
+
+	Options options;
+	//options.width = width;
+	//options.height = height;
+	//options.aaAmount = amount;
+	options.width = 640;
+	options.height = 480;
+	options.aaAmount = 4;
+
+	Vector2 image_size = { options.width, options.height };
 	int depth = 0;
 
 	// https://stackoverflow.com/questions/13078243/how-to-move-a-camera-using-in-a-ray-tracer
 	// Define the scene camera
-	Camera camera(Vector3(0.0f, 0.0f, 10.0f), Vector3(0.0f, 0.0f, -1.0f), image_size, 90.0f);
+	Camera camera(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), image_size, 45.0f);
 	Matrix4x4::multVecByMatrix4x4(camera.getMatrix(), camera.getPosition());
 
 	// Create the scenes lights
 	std::vector<std::unique_ptr<Light::Light>> sceneLights;
 	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.5f, 1.0f))));
-	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 0.0f, 0.0f), Vector3(5.0f, 10.0f, 5.0f))));
-	//sceneLights.push_back(std::unique_ptr<Light::PointLight>(new Light::PointLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 1.0f, -8.0f))));
+	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 0.0f))));
+	//sceneLights.push_back(std::unique_ptr<Light::PointLight>(new Light::PointLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 2.0f, -8.0f))));
 
 	// Create the scene's primitives
 	Primitive cube;
@@ -93,7 +121,7 @@ int main()
 	render_timer.StartTimer();
 
 	// Render what the camera sees into the frame buffer
-	camera.Render(framebuffer, bvh, sceneLights, depth);
+	camera.Render(framebuffer, bvh, sceneLights, depth, options.aaAmount);
 
 	// End render timer
 	render_timer.EndTimer();

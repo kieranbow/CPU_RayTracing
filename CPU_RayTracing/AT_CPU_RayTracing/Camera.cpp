@@ -18,10 +18,12 @@ Camera::Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov)
 
 	// Set the aspect ratio based on camera size
 	m_aspectRatio = m_size.getX() / m_size.getY();
-	m_scale = tan(Maths::deg2rad(m_fov) * 0.5f);
+	m_cameraScale = tan(Maths::deg2rad(m_fov) * 0.5f);
+
+	m_camToWorld.multVecMatrix(Vector3(0.0f, 0.0f, 0.0f), position);
 }
 
-void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth)
+void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth, int antiAliasingSamples)
 {
 	// https://www.iquilezles.org/www/articles/cputiles/cputiles.htm
 	const int tilesize = 32;
@@ -29,8 +31,6 @@ void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<s
 	const int numYtile = static_cast<int>(m_size.getY()) / tilesize;
 	const int numTiles = numXtile * numYtile;
 	const int maxDepth = 5;
-
-	int numOfSamples = 1;
 
 	// Loop through each tile
 	for (int tile = 0; tile < numTiles; tile++)
@@ -50,38 +50,48 @@ void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<s
 				// Loop through all the Anti-aliasing samples.
 				// This is the main render loop where the rays are cast into the scene
 				// returing a colour if it has or has not hit anything
-				for (int aaX = 0; aaX < numOfSamples; ++aaX)
-				{
-					float tile_x = x_iter + 0.5f;
-					float tile_y = y_iter + 0.5f;
+				float tile_x = x_iter + 0.5f;
+				float tile_y = y_iter + 0.5f;
 
-					// Create a pixel
-					Pixel pixel;
+				// Create a pixel
+				Pixel pixel;
 
-					// Convert pixel from raster space to camera space
-					float Px = (2.0f * (tile_x + (aaX + Maths::Random::randomFloat()) / numOfSamples) / m_size.getX() - 1.0f) * m_aspectRatio * m_scale;	// * tan(fov / 2.0f * Maths::special::pi / 180.0f) * aspect_ratio * scale;
-					float Py = (1.0f - (tile_y + (aaX + Maths::Random::randomFloat()) / numOfSamples) / m_size.getY() * 2.0f) * m_scale;	// * tan(fov / 2.0f * Maths::special::pi / 180.0f));
-					pixel.position.setX(Px);
-					pixel.position.setY(Py);
+				// Convert pixel from raster space to camera space
+				//float Px = (2.0f * (tile_x + (aaX + Maths::Random::randomFloat()) / antiAliasingSamples) / m_size.getX() - 1.0f) * m_aspectRatio * m_scale;	// * tan(fov / 2.0f * Maths::special::pi / 180.0f) * aspect_ratio * scale;
+				//float Py = (1.0f - (tile_y + (aaX + Maths::Random::randomFloat()) / antiAliasingSamples) / m_size.getY() * 2.0f) * m_scale;	// * tan(fov / 2.0f * Maths::special::pi / 180.0f));
 
-					// Convert pixel camera space to world space
-					Vector3 pixelPosWS;
-					m_camToWorld.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), m_direction.getZ()), pixelPosWS);
-					Vector3::normalize(pixelPosWS);
+				float Px = (2.0f * (tile_x + 0.5f) / m_size.getX() - 1.0f) * m_aspectRatio * m_cameraScale;
+				float Py = (1.0f - 2.0f * (tile_y + 0.5f) / m_size.getY()) * m_cameraScale;
 
-					// Create ray that's origin is the camera and it's direction is towards the pixel
-					RayTrace::Ray primary_ray;
-					primary_ray.setOrigin(m_position);
-					primary_ray.setDirection(Vector3::normalize(pixelPosWS - primary_ray.getOrigin()));
+				pixel.position.setX(Px);
+				pixel.position.setY(Py);
 
-					// Cast the ray and return a colour to the buffer
-					buffer.at(iter).colour += castRay(primary_ray, bvh, sceneLights, depth);
-				}
+				// Convert pixel camera space to world space
+				Vector3 pixelPosWS;
+				m_camToWorld.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), m_direction.getZ()), pixelPosWS);
+				Vector3::normalize(pixelPosWS);
 
-				// Once render loop is complete. Take the current pixel and apply anti-aliasing
-				float scale = 1.0f / numOfSamples;
+				// Create ray that's origin is the camera and it's direction is towards the pixel
+				RayTrace::Ray primary_ray;
+				primary_ray.setOrigin(m_position);
+				primary_ray.setDirection(Vector3::normalize(pixelPosWS/* - primary_ray.getOrigin()*/));
 
-				buffer.at(iter).colour *= Colour(scale, scale, scale);
+				// Cast the ray and return a colour to the buffer
+				buffer.at(iter).colour += castRay(primary_ray, bvh, sceneLights, depth);
+
+
+				//for (int aaX = 0; aaX < antiAliasingSamples; ++aaX)
+				//{
+				//	for (int aaY = 0; aaY < antiAliasingSamples; aaY++)
+				//	{
+
+				//	}
+				//	
+				//}
+				//// Once render loop is complete. Take the current pixel and apply anti-aliasing
+				//float scale = 1.0f / antiAliasingSamples;
+
+				//buffer.at(iter).colour /= Colour(scale, scale, scale);
 			}
 		}
 	}

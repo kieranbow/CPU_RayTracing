@@ -20,7 +20,7 @@ class Camera
 	public:
 		Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov);
 
-		void Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth);
+		void Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth, int antiAliasingSamples);
 
 		void setPositionWS(Vector3 positionWS);
 		void setDirectionWS(Vector3 directionWS);
@@ -31,17 +31,12 @@ class Camera
 	private:
 		Vector3 m_position	= { 0.0f, 0.0f, 0.0f };
 		Vector3 m_direction = { 0.0f, 0.0f, 0.0f };
-		
-		//Vector3 m_forward	= { 0.0f, 0.0f, -1.0f };
-		//Vector3 m_up		= { 0.0f, 1.0f, 0.0f };
-		//Vector3 m_right	= { 0.0f, 0.0f, 0.0f };
-
 		Matrix4x4 m_camToWorld;
 		Vector2 m_size;
 
 		float m_fov			= 0.0f;
 		float m_aspectRatio	= 0.0f;
-		float m_scale		= 0.0f;
+		float m_cameraScale	= 0.0f;
 
 		static constexpr int max_depth = 3;
 
