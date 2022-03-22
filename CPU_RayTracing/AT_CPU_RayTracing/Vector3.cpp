@@ -235,7 +235,7 @@ Vector3 Vector3::randomUnitSphere()
 	{
 		Vector3 p = randomInRange(-1, 1);
 		if (Vector3::dot(p, p) >= 1.0f) continue;
-		return p;
+		return Vector3::normalize(p);
 	}
 }
 

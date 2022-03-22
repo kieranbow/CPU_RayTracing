@@ -7,6 +7,7 @@
 #include "ShaderFunc.h"
 #include "Random.h"
 #include "Logger.h"
+#include "Random.h"
 
 Camera::Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov)
 {
@@ -22,7 +23,7 @@ Camera::Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov)
 
 	// Set the aspect ratio based on camera size
 	m_aspectRatio = m_size.getX() / m_size.getY();
-	m_cameraScale = tan(Maths::deg2rad(m_fov) * 0.5f);
+	m_cameraScale = std::tan(Maths::deg2rad(m_fov) * 0.5f);
 
 	m_camToWorld.multVecMatrix(Vector3(0.0f, 0.0f, 0.0f), position);
 }
@@ -103,19 +104,23 @@ void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<s
 
 Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth)
 {
+	using namespace Shaders::Math;
+
 	Colour hitColour;
 	if (depth > max_depth) return Colour(0.5f, 0.5f, 1.0f);
 
 	if (bvh.hit(ray))
 	{
-		Vector3 hitpoint = ray.getOrigin() + ray.getDirection() * ray.getHitData().tnear;
-		Vector3 N = ray.getHitData().material.normal;
+		Vector3 hitpoint	= ray.getOrigin() + ray.getDirection() * ray.getHitData().tnear;
+		Vector3 N			= ray.getHitData().material.normal;
+		Colour albedo		= ray.getHitData().material.albedo;
+		float roughness		= ray.getHitData().material.roughness;
+		float metallic		= ray.getHitData().material.metallic;
 
 		// Rendering of multiple materials is based off Whitted Light-Transport Algorithm 
 		switch (ray.getHitData().material.type)
 		{
 			// Render the pixel based off the type of material that the ray hits.
-
 			default:
 			{
 				// If the hit data doesn't contain a valid type of material, return the colour pink
@@ -126,30 +131,36 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 
 			case Material::Types::Reflective:
 			{
-				//Vector3 R = Shaders::Maths::reflect(ray.getDirection(), N);
-
-				//RayTrace::Ray reflectionRay;
-				//reflectionRay.setOrigin(hitpoint + N * 0.1f);
-				//reflectionRay.setDirection(R);
-
-				//hitColour += 0.8f * castRay(reflectionRay, bvh, sceneLights, depth + 1);
-
-
 				float kr = 0.0f;
 				Shaders::Functions::fresnel(ray.getDirection(), N, 1.5, kr);
-				Vector3 reflectionDir = Shaders::Maths::reflect(ray.getDirection(), N);
-				Vector3 reflectionOrigin = (Vector3::dot(reflectionDir, N) < 0.0f) ? hitpoint + N * 0.1f : hitpoint - N * 0.1f;
+				Vector3 reflectionDir = reflect(ray.getDirection(), N);
+				Vector3 reflectionOrigin = (dot(reflectionDir, N) < 0.0f) ? hitpoint + N * 0.1f : hitpoint - N * 0.1f;
 
 				Raycast::Ray reflectionRay;
 				reflectionRay.setOrigin(reflectionOrigin);
 				reflectionRay.setDirection(reflectionDir);
 
-				hitColour = castRay(reflectionRay, bvh, sceneLights, depth + 1) * kr;
+				hitColour = albedo * castRay(reflectionRay, bvh, sceneLights, depth + 1);// * kr;
 			}
 			break;
 
 			case Material::Types::Refractive:
-				break;
+			{
+				Vector3 refractiveDir = normalize(refract(ray.getDirection(), N, 1.3f));
+				Vector3 refractiveOrigin = (dot(refractiveDir, N) < 0.0f) ? hitpoint - N * 0.1f : hitpoint + N * 0.1f;
+				
+				float kr = 0.0f;
+				Shaders::Functions::fresnel(ray.getDirection(), N, 1.3f, kr);
+
+				Raycast::Ray refractiveRay;
+				refractiveRay.setOrigin(refractiveOrigin);
+				refractiveRay.setDirection(refractiveDir);
+
+				Colour refractColour = castRay(refractiveRay, bvh, sceneLights, depth + 1);
+
+				hitColour = refractColour * (1.0f - kr);
+			}
+			break;
 
 			case Material::Types::Conductive:
 				break;
@@ -162,20 +173,46 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 					Vector3 lightDirection;
 					Colour lightColour;
 
+					// Get lighting information
 					light->illuminate(hitpoint, lightDirection, lightColour, ray.getHitData().tnear);
-					Vector3 L = Vector3::normalize(lightDirection - hitpoint);
+					
+					Vector3 V = normalize(ray.getDirection());
+					//Vector3 halfVector = normalize(-V + lightDirection);
+
+					float NdotL = saturate(dot(N, lightDirection));
+					//float NdotH = saturate(dot(N, halfVector));
+					//float NdotV = saturate(dot(N, -V));
+					//float LdotH = saturate(dot(lightDirection, halfVector));
+
+					//Colour f0 = Colour(0.04f, 0.04f, 0.04f);
+					//f0 = lerp(f0, pow(albedo, 2.2f), metallic);
+
+					//float d = Shaders::BRDF::trowbridge_reitz_ggx(NdotH, roughness);
+					//float g = Shaders::BRDF::geometry_smith(NdotV, NdotL, roughness) * Shaders::BRDF::geometry_smith(NdotV, NdotL, roughness);
+					//Colour f = Shaders::BRDF::fresnel_schlick(NdotL, f0, 1.0f);
+
+					//Colour ks = f;
+					//Colour kd = 1.0f - ks;
+					//kd *= Colour(1.0f, 1.0f, 1.0f) - metallic;
+
+					//Colour specular = Shaders::BRDF::cookTorranceBRDF(f, d, g, NdotV, NdotL) * light->m_intensity * 0.5f;
+					//Colour outgoing_radiance = albedo + specular.getRed() * NdotL;
+
 
 					// Shoot shadow rays into scene
 					Raycast::Ray shadowRay;
 					shadowRay.setOrigin(hitpoint + N * 0.1f);
-					shadowRay.setDirection(lightDirection); /*L - shadowRay.getOrigin()*/
+					shadowRay.setDirection(lightDirection);
 					shadowRay.m_tNear = ray.getHitData().tnear;
 
 					bool shadow = !bvh.hit(shadowRay);
 
-					Colour albedo = ray.getHitData().material.albedo;
-					Colour diffuse = albedo / Maths::special::pi * lightColour * std::max(0.0f, Vector3::dot(lightDirection, N));
-					hitColour += diffuse * shadow;
+					Colour diffuse = Shaders::Functions::lambertCosineLaw(NdotL, lightColour, albedo);
+
+
+					// Colour albedo = ray.getHitData().material.albedo;
+					// Colour diffuse = albedo / Maths::special::pi * lightColour * std::max(0.0f, Vector3::dot(lightDirection, N));
+					hitColour += diffuse * shadow; //outgoing_radiance * shadow;
 				}
 				return hitColour;
 			}

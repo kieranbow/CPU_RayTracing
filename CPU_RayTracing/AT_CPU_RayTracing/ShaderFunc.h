@@ -3,6 +3,7 @@
 #include "Colour.h"
 #include "MeshData.h"
 #include "Ray.h"
+#include "Maths.h"
 
 namespace Shaders
 {
@@ -47,6 +48,11 @@ namespace Shaders
 				kr = (rs * rs + rp * rp) / 2.0f;
 			}
 		}
+
+		inline Colour lambertCosineLaw(const float NdotL, const Colour lightColour, const Colour albedo)
+		{
+			return albedo / Maths::special::pi * lightColour * NdotL;
+		}
 	}
 
 	namespace Tonemapping
@@ -74,5 +80,54 @@ namespace Shaders
 			Colour white_scale = Colour(1.0f, 1.0f, 1.0f) / uncharted2_tonemap_partial(W);
 			return curr * white_scale;
 		}
+	}
+
+	namespace BRDF
+	{
+		// Dinsey's remapping of roughness
+		inline float disney_roughness(const float roughness)
+		{
+			return (roughness + 1.0f);
+		}
+
+		inline float trowbridge_reitz_ggx(const float NdotH, const float roughness)
+		{
+			const float a = roughness * roughness;
+			const float a2 = a * a;
+			const float n_dot_h2 = NdotH * NdotH;
+
+			const float num = a2;
+			float de_nom = (n_dot_h2 * (a2 - 1.0f) + 1.0f);
+			de_nom = Maths::special::pi * de_nom * de_nom;
+
+			return num / de_nom;
+		}
+
+		inline float geometry_schlick_ggx(const float NdotV, const float roughness)
+		{
+			const float r = disney_roughness(roughness); // Disney modification to remap roughness to reduce roughness 'Hotness'
+			const float k = r * r / 8.0f;
+
+			const float num = NdotV;
+			const float de_nom = NdotV * (1.0f - k) + k;
+
+			return num / de_nom;
+		}
+
+		inline float geometry_smith(const float n_dot_v, const float n_dot_l, const float roughness)
+		{
+			const float ggx1 = geometry_schlick_ggx(n_dot_v, roughness);
+			const float ggx2 = geometry_schlick_ggx(n_dot_l, roughness);
+
+			return ggx1 * ggx2;
+		}
+
+		inline Colour fresnel_schlick(float NdotL, Colour f0, float f90) { return f0 + (f90 - f0) * std::powf(1.0f - NdotL, 5.0f); }
+
+		inline Colour cookTorranceBRDF(const Colour f, const float d, const float g, const float NdotV, const float NdotL)
+		{
+			return (f * d * g) / (4.0f * NdotV * NdotL + 0.0001f);
+		}
+
 	}
 }

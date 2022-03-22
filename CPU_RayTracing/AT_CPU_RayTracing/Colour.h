@@ -22,7 +22,7 @@ class Colour
 		Colour operator-=(const Colour& _rhs);
 		Colour operator/=(const Colour& _rhs);
 		Colour operator*=(const Colour& _rhs);
-		
+
 		// Vector3 Assignment Operators
 		Colour& operator=(const Vector3& _rhs);
 		Colour operator+=(const Vector3& _rhs);
@@ -58,6 +58,8 @@ class Colour
 		friend Colour operator*(const Colour& _lhs, const float& _rhs);
 
 		friend Colour operator/=(Colour& _lhs, const float& _rhs);
+
+		static Colour toColour(const Vector3& _rhs);
 
 		// Getters
 		const float& getRed() const { return this->colour.at(0); }

@@ -7,6 +7,7 @@
 #include "Ray.h"
 #include "Bvh.h"
 #include "Material.h"
+#include "Shader.h"
 
 class Colour;
 
@@ -31,6 +32,7 @@ class Primitive
 		void setScale(Vector3 scale);
 
 		void setMaterial(const Material::Data& material) { m_material = material; }
+		void setShader(std::shared_ptr<Shaders::Shader> shader) { sp_shader = shader; }
 
 		const Vector3& getPosition() const { return m_position; }
 		const Vector3& getRotation() const { return m_rotation; }
@@ -50,6 +52,8 @@ class Primitive
 
 		// Primitives material
 		Material::Data m_material;
+
+		std::shared_ptr<Shaders::Shader> sp_shader;
 
 		// Transformation
 		Vector3 m_position	= { 0.0f, 0.0f, 0.0f };

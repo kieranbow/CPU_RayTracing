@@ -11,12 +11,10 @@ namespace Raycast
 	struct hitData
 	{
 		Vector3 hitPoint	= { 0.0f, 0.0f, 0.0f }; // Point in space where the ray hits the primitive
-		Colour colour		= { 0.0f, 0.0f, 0.0f }; // Colour from the primitives surface
 		Vector3 normal		= { 0.0f, 0.0f, 0.0f }; // Primitive vertex normal
 		Vector2 uv			= { 0.0f, 0.0f };		// -------
-		float tnear = Maths::special::infinity;
-		
 		Material::Data material; // Primitives material
+		float tnear = Maths::special::infinity;
 	};
 
 	class Ray

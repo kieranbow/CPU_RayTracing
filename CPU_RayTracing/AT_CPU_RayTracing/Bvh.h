@@ -65,6 +65,7 @@ namespace BVH
 			std::vector<Triangle> m_triangles;
 
 			Material::Data m_material;
+
 		};
 
 		// Handles all the bvh buidling and collision testing

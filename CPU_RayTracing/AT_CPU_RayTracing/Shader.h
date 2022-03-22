@@ -21,14 +21,4 @@ namespace Shaders
 				return Colour();
 			}
 	};
-
-	class Unlit : public Shader
-	{
-		public:
-			Colour computeShader(Vector3&, Vector3&, Colour& lightColour, Vector3&)
-			{
-				return Colour();
-			}
-	};
-
 }

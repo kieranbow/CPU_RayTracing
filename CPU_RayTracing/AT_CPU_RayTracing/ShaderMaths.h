@@ -13,7 +13,7 @@ namespace Shaders
 	// Function can be found here: 
 	// https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-intrinsic-functions
 	// https://developer.download.nvidia.com/cg/index_stdlib.html
-	namespace Maths
+	namespace Math
 	{
 		// Returns the absolute value from input
 		inline float abs(float x) { return std::abs(x); }
@@ -67,11 +67,10 @@ namespace Shaders
 		inline Vector2 frac(Vector2 x) { return Vector2(x.getX() - std::floorf(x.getX()), x.getY() - std::floorf(x.getY())); }
 		inline Vector3 frac(Vector3 x) { return Vector3(std::abs(x.getX()), std::abs(x.getY()), std::abs(x.getZ())); }
 
-		inline Vector3 fresnel_schlick(float NdotL, Vector3 f0, float f90) { return f0 + (f90 - f0) * std::powf(1.0f - NdotL, 5.0f); }
-
 		inline float lerp(float a, float b, float f) { return (a * (1.0f - f)) + (b * f); }
 		//inline Vector2 lerp(Vector2 a, Vector2 b, float f) { return (a * (1.0f - f)) + (b * f); }
 		inline Vector3 lerp(Vector3 a, Vector3 b, float f) { return (a * (1.0f - f)) + (b * f); }
+		inline Colour lerp(Colour a, Colour b, float f) { return a * (1.0f - f) + (b * f); }
 
 		inline float length(Vector3 x) { return Vector3::length(x); }
 
@@ -92,6 +91,7 @@ namespace Shaders
 		inline float pow(float x, float y) { return std::powf(x, y); }
 		inline Vector2 pow(Vector2 x, Vector2 y) { return Vector2(std::powf(x.getX(), y.getX()), std::powf(x.getY(), y.getY())); }
 		inline Vector3 pow(Vector3 x, Vector3 y) { return Vector3(std::powf(x.getX(), y.getX()), std::powf(x.getY(), y.getY()), std::powf(x.getZ(), y.getZ())); }
+		inline Colour pow(Colour x, float y) { return Colour(std::powf(x.getRed(), y), std::powf(x.getGreen(), y), std::powf(x.getBlue(), y)); }
 
 		// Returns the reflection vector using an incident ray and a surface normal
 		inline Vector3 reflect(Vector3 i, Vector3 n) { return i - 2.0f * Vector3::dot(i, n) * n; }
@@ -104,6 +104,8 @@ namespace Shaders
 			float k = 1.0f - ior * ior * (1.0f - NdotI * NdotI);
 			return k < 0.1f ? Vector3(0.0f, 0.0f, 0.0f) : ior * i - (ior * NdotI + std::sqrtf(k)) * n;
 		}
+
+		inline float saturate(float x) { return max(0.0f, min(1.0f, x)); }
 
 		// Returns the square root of x or per component
 		inline float sqrt(float x) { return std::sqrtf(x); }

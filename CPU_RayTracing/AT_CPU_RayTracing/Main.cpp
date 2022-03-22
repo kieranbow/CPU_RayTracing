@@ -56,14 +56,6 @@ int main()
 	//Logger::PrintMsg("Input Anti-aliasing amount");
 	//std::cin >> amount;
 
-	Shaders::PBR pbr;
-	Shaders::Unlit unlit;
-
-	Vector3 test;
-	Colour test2;
-
-	unlit.computeShader(test, test, test2, test);
-
 	const auto processor_count = std::thread::hardware_concurrency();
 	Logger::PrintDebug("Using: " + std::to_string(processor_count) + " Threads");
 
@@ -71,8 +63,8 @@ int main()
 	//options.width = width;
 	//options.height = height;
 	//options.aaAmount = amount;
-	options.width = 640;
-	options.height = 480;
+	options.width = 1280;
+	options.height = 720;
 	options.aaAmount = 4;
 
 	Vector2 image_size = { options.width, options.height };
@@ -85,14 +77,13 @@ int main()
 
 	// Create the scenes lights
 	std::vector<std::unique_ptr<Light::Light>> sceneLights;
-	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(2.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.5f, 1.0f))));
-	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 0.0f))));
+	// sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(2.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.5f, 1.0f))));
+	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f))));
 	//sceneLights.push_back(std::unique_ptr<Light::PointLight>(new Light::PointLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 2.0f, -8.0f))));
 
 	// Create the scene's primitives and their materials
 	Primitive cube;
 	cube.setPosition({ 1.0f, 0.0f, -10.0f });
-	// cube.colour = Colour(1.0f, 0.0f, 0.0f);
 
 	Material::Data cube_material;
 	cube_material.type		= Material::Types::Reflective;
@@ -103,44 +94,40 @@ int main()
 
 	Primitive sphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
 	sphere.setPosition({-1.0f, 1.0f, -15.0f });
-	// sphere.colour = Colour(0.0f, 1.0f, 0.0f);
 
 	Material::Data sphere_material;
 	sphere_material.type		= Material::Types::Dielectic;
 	sphere_material.albedo		= Colour(0.0f, 1.0f, 0.0f);
-	sphere_material.roughness	= 1.0f;
-	sphere_material.metallic	= 0.0f;
+	sphere_material.roughness	= 0.0f;
+	sphere_material.metallic	= 1.0f;
 	sphere.setMaterial(sphere_material);
 
 	Primitive triangle("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
 	triangle.setPosition({ 0.0f, 1.0f, -5.0f });
-	// triangle.colour = Colour(0.0f, 0.0f, 1.0f);
 
 	Material::Data triangle_material;
-	triangle_material.type = Material::Types::Dielectic;
-	triangle_material.albedo = Colour(0.0f, 0.0f, 1.0f);
-	triangle_material.roughness = 1.0f;
-	triangle_material.metallic = 0.0f;
+	triangle_material.type = Material::Types::Reflective;
+	triangle_material.albedo = Colour(0.5f, 0.5f, 0.5f);
+	triangle_material.roughness = 0.0f;
+	triangle_material.metallic = 0.5f;
 	triangle.setMaterial(triangle_material);
 
 	Primitive cone("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
 	cone.setPosition({ -0.5f, -1.0f, -8.0f });
-	// cone.colour = Colour(0.5f, 1.0f, 0.5f);
 
 	Material::Data cone_material;
-	cone_material.type = Material::Types::None;
-	cone_material.albedo = Colour(0.5f, 1.0f, 0.5f);
+	cone_material.type = Material::Types::Dielectic;
+	cone_material.albedo = Colour(1.0f, 1.0f, 0.0f);
 	cone_material.roughness = 1.0f;
 	cone_material.metallic = 0.0f;
 	cone.setMaterial(cone_material);
 
 	Primitive plane("Assets\\plane.obj", { 0.0f, 0.0f, 0.0f });
 	plane.setPosition({ 0.0f, -1.0f, -10.0f });
-	//plane.colour = Colour(1.0f, 0.5f, 0.0f);
 
 	Material::Data plane_material;
 	plane_material.type = Material::Types::Reflective;
-	plane_material.albedo = Colour(0.0f, 1.0f, 0.0f);
+	plane_material.albedo = Colour(0.5f, 0.5f, 0.5f);
 	plane_material.roughness = 1.0f;
 	plane_material.metallic = 0.0f;
 	plane.setMaterial(plane_material);
