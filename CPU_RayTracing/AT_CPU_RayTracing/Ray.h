@@ -3,8 +3,9 @@
 #include "Vector2.h"
 #include "Colour.h"
 #include "MeshData.h"
+#include "Material.h"
 
-namespace RayTrace
+namespace Raycast
 {
 	// Generic data for when a ray hits a primitive
 	struct hitData
@@ -14,6 +15,8 @@ namespace RayTrace
 		Vector3 normal		= { 0.0f, 0.0f, 0.0f }; // Primitive vertex normal
 		Vector2 uv			= { 0.0f, 0.0f };		// -------
 		float tnear = Maths::special::infinity;
+		
+		Material::Data material; // Primitives material
 	};
 
 	class Ray
@@ -29,7 +32,6 @@ namespace RayTrace
 
 			// Sets the hitpoint using origin + direction * t
 			void setHitpoint(Ray& ray) { ray.m_origin = ray.m_origin + ray.m_direction * m_t; }
-			void setHitData(Vector3 hitpoint, Colour colour, Vector3 normal, Vector2 uv) { m_propertices.hitPoint = hitpoint; m_propertices.colour = colour; m_propertices.normal = normal; m_propertices.uv = uv; }
 
 			Vector3 getHitPoint() { return m_origin + m_direction * m_t; }
 			Vector3& getOrigin() { return m_origin; }

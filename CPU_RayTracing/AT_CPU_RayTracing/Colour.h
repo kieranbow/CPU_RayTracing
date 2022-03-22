@@ -35,11 +35,10 @@ class Colour
 		Colour operator-(const Colour& _rhs);
 		Colour operator/(const Colour& _rhs);
 		Colour operator*(const Colour& _rhs);
-
-		Colour operator+(const Vector3& _rhs);
-		Colour operator-(const Vector3& _rhs);
-		Colour operator/(const Vector3& _rhs);
-		Colour operator*(const Vector3& _rhs);
+		Colour operator+(const float& _rhs);
+		Colour operator-(const float& _rhs);
+		Colour operator/(const float& _rhs);
+		Colour operator*(const float& _rhs);
 
 		// Relational Operators
 		bool operator>(const Colour& _rhs);

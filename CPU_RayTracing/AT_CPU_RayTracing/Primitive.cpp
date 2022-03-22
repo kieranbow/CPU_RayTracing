@@ -55,7 +55,7 @@ Primitive::~Primitive()
 	m_indexBuffer.clear();
 }
 
-bool Primitive::triangleIntersected(RayTrace::Ray& ray)
+bool Primitive::triangleIntersected(Raycast::Ray& ray)
 {
 	float tn = -Maths::special::infinity;
 	float tf = Maths::special::infinity;
@@ -123,7 +123,7 @@ bool Primitive::triangleIntersected(RayTrace::Ray& ray)
 	// }
 }
 
-bool Primitive::intersectedBoundingBoxDebug(RayTrace::Ray& ray)
+bool Primitive::intersectedBoundingBoxDebug(Raycast::Ray& ray)
 {
 	float tn = -Maths::special::infinity;
 	float tf = Maths::special::infinity;

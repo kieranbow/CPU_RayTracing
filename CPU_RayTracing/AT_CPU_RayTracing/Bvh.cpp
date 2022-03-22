@@ -87,7 +87,7 @@ void BVH::Scene::Accelerator::buildRecursiveScene(const std::vector<Primitive>& 
 	}
 }
 
-bool BVH::Scene::Accelerator::hit(RayTrace::Ray& ray)
+bool BVH::Scene::Accelerator::hit(Raycast::Ray& ray)
 {
 	// If a ray hits the root node's bounding box, begin the recusion and step through
 	// the bvh tree until a primitive is hit
@@ -101,7 +101,7 @@ bool BVH::Scene::Accelerator::hit(RayTrace::Ray& ray)
 	return false;
 }
 
-bool BVH::Scene::Accelerator::hitRecursive(RayTrace::Ray& ray, std::shared_ptr<BVH::Scene::Node> parentNode)
+bool BVH::Scene::Accelerator::hitRecursive(Raycast::Ray& ray, std::shared_ptr<BVH::Scene::Node> parentNode)
 {
 	// If the node is a leaf, loop through all its primitives and test if the ray has hit
 	// both the bounding box and triangles.
@@ -148,7 +148,7 @@ bool BVH::Scene::Accelerator::hitRecursive(RayTrace::Ray& ray, std::shared_ptr<B
 	return false;
 }
 
-void BVH::Object::Accelerator::buildBVHPrimitive(const std::vector<Vertex>& vertex_buffer, const std::vector<Indices>& index_buffer, Colour& colour)
+void BVH::Object::Accelerator::buildBVHPrimitive(const std::vector<Vertex>& vertex_buffer, const std::vector<Indices>& index_buffer, const Material::Data & material)
 {
 	if (index_buffer.empty() || vertex_buffer.empty())
 	{
@@ -180,23 +180,21 @@ void BVH::Object::Accelerator::buildBVHPrimitive(const std::vector<Vertex>& vert
 		m_triangles.push_back(triangle);
 	}
 
-	m_colour = colour;
-
 	// Make the root node of the bvh
 	sp_root = std::make_shared<Node>();
 
 	// Pass the vector of triangles and root node to recusive function.
-	buildRecursivePrimitive(m_triangles, m_colour, sp_root, 0, m_max_depth);
+	buildRecursivePrimitive(m_triangles, material, sp_root, 0, m_max_depth);
 }
 
-void BVH::Object::Accelerator::buildRecursivePrimitive(const std::vector<Triangle>& triangles, Colour& colour, const std::shared_ptr<BVH::Object::Node> node, int depth, const int& maxDepth)
+void BVH::Object::Accelerator::buildRecursivePrimitive(const std::vector<Triangle>& triangles, const Material::Data & material, const std::shared_ptr<BVH::Object::Node> node, int depth, const int& maxDepth)
 {
 	// Make a leaf node if the number of triangles is less than an arbitrary number
 	if (triangles.size() <= m_numOfTris || depth >= maxDepth)
 	{
 		node->m_leaf = true;
 		node->m_triangles = triangles;
-		node->m_colour = colour;
+		node->m_material = material;
 	}
 	else
 	{
@@ -249,8 +247,8 @@ void BVH::Object::Accelerator::buildRecursivePrimitive(const std::vector<Triangl
 		}
 
 		// Continue making nodes and splitting primitives until a condition is met 
-		buildRecursivePrimitive(left_list, colour, node->sp_leftNode, depth + 1, m_max_depth);
-		buildRecursivePrimitive(right_list, colour, node->sp_rightNode, depth + 1, m_max_depth);
+		buildRecursivePrimitive(left_list, material, node->sp_leftNode, depth + 1, m_max_depth);
+		buildRecursivePrimitive(right_list, material, node->sp_rightNode, depth + 1, m_max_depth);
 
 		// Clear both list since they won't be used again.
 		left_list.clear();
@@ -258,7 +256,7 @@ void BVH::Object::Accelerator::buildRecursivePrimitive(const std::vector<Triangl
 	}
 }
 
-bool BVH::Object::Accelerator::hitPrimitive(RayTrace::Ray& ray, float& tnear)
+bool BVH::Object::Accelerator::hitPrimitive(Raycast::Ray& ray, float& tnear)
 {
 	// If a ray hits the root node's bounding box, begin the recusion and step through
 	// the bvh tree until a primitive is hit
@@ -272,7 +270,7 @@ bool BVH::Object::Accelerator::hitPrimitive(RayTrace::Ray& ray, float& tnear)
 	return false;
 }
 
-bool BVH::Object::Accelerator::hitRecursivePrimitive(RayTrace::Ray& ray, std::shared_ptr<BVH::Object::Node> parentNode, float& tnear)
+bool BVH::Object::Accelerator::hitRecursivePrimitive(Raycast::Ray& ray, std::shared_ptr<BVH::Object::Node> parentNode, float& tnear)
 {
 	// If the node is a leaf, loop through all its primitives and test if the ray has hit
 	// both the bounding box and triangles.
@@ -284,9 +282,13 @@ bool BVH::Object::Accelerator::hitRecursivePrimitive(RayTrace::Ray& ray, std::sh
 			{
 				tnear = ray.getT();
 
-				ray.getHitData().normal = Shaders::Functions::getSmoothNormalFromTri(tri, ray.getHitData());
+				// ray.getHitData().normal = Shaders::Functions::getSmoothNormalFromTri(tri, ray.getHitData());
+				/*ray.getHitData().hitPoint = (ray.getOrigin() + ray.getDirection() * ray.getT()) + ray.getHitData().normal;*/
+				//ray.getHitData().colour = parentNode->m_material;
+
+				ray.getHitData().material = parentNode->m_material;
+				ray.getHitData().material.normal = Shaders::Functions::getSmoothNormalFromTri(tri, ray.getHitData());
 				ray.getHitData().hitPoint = (ray.getOrigin() + ray.getDirection() * ray.getT()) + ray.getHitData().normal;
-				ray.getHitData().colour = parentNode->m_colour;
 				return true;
 			}
 		}
@@ -321,7 +323,7 @@ void BVH::Builder::build(std::vector<Primitive>& primitives)
 	for (auto& prim : primitives)
 	{
 		BVH::Object::Accelerator objBVH;
-		objBVH.buildBVHPrimitive(prim.getVertices(), prim.getIndices(), prim.colour);
+		objBVH.buildBVHPrimitive(prim.getVertices(), prim.getIndices(), prim.getMaterial());
 		m_objBVH.push_back(objBVH);
 	}
 
@@ -329,7 +331,7 @@ void BVH::Builder::build(std::vector<Primitive>& primitives)
 	// m_sceneBVH.buildBVHScene(primitives);
 }
 
-bool BVH::Builder::hit(RayTrace::Ray& ray)
+bool BVH::Builder::hit(Raycast::Ray& ray)
 {
 	// Check if ray hits any bb in scene
 	//if (m_sceneBVH.hit(ray))

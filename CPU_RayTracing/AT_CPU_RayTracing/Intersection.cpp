@@ -2,7 +2,7 @@
 #include "Vector3.h"
 #include "MeshData.h"
 
-bool Intersection::MollerTrumbore(RayTrace::Ray& ray, Triangle& triangle)
+bool Intersection::MollerTrumbore(Raycast::Ray& ray, Triangle& triangle)
 {
 	// https://cadxfem.org/inf/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
 	// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
@@ -41,7 +41,7 @@ bool Intersection::MollerTrumbore(RayTrace::Ray& ray, Triangle& triangle)
 	return (ray.getT() > 0.0f) ? true : false;
 }
 
-bool Intersection::slab(RayTrace::Ray& ray, const BoundingBox::AABB& aabb, float& tnear, float& tfar)
+bool Intersection::slab(Raycast::Ray& ray, const BoundingBox::AABB& aabb, float& tnear, float& tfar)
 {
 	// https://www.scratchapixel.com/lessons/advanced-rendering/introduction-acceleration-structure/bounding-volume-hierarchy-BVH-part1
 
@@ -63,7 +63,7 @@ bool Intersection::slab(RayTrace::Ray& ray, const BoundingBox::AABB& aabb, float
 	return true;
 }
 
-bool Intersection::minMaxBounds(RayTrace::Ray& ray, BoundingBox::AABB& bounds)
+bool Intersection::minMaxBounds(Raycast::Ray& ray, BoundingBox::AABB& bounds)
 {
 	// https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
 	
@@ -93,7 +93,7 @@ bool Intersection::minMaxBounds(RayTrace::Ray& ray, BoundingBox::AABB& bounds)
 	return true;
 }
 
-bool Intersection::inplicitSphere(RayTrace::Ray& ray, Vector3 center, float radius)
+bool Intersection::inplicitSphere(Raycast::Ray& ray, Vector3 center, float radius)
 {
 	Vector3 oc = ray.getOrigin() - center;
 	float a = Vector3::dot(ray.getDirection(), ray.getDirection());

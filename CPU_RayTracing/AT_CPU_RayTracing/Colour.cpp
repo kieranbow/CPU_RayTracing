@@ -135,40 +135,24 @@ Colour Colour::operator*(const Colour& _rhs)
 	return colour;
 }
 
-Colour Colour::operator+(const Vector3& _rhs)
+Colour Colour::operator+(const float& _rhs)
 {
-	Colour colour;
-	colour.colour.at(0) = this->colour.at(0) + _rhs.getX();
-	colour.colour.at(1) = this->colour.at(1) + _rhs.getY();
-	colour.colour.at(2) = this->colour.at(2) + _rhs.getZ();
-	return colour;
+	return Colour(this->colour.at(0) + _rhs, this->colour.at(1) + _rhs, this->colour.at(2) + _rhs);
 }
 
-Colour Colour::operator-(const Vector3& _rhs)
+Colour Colour::operator-(const float& _rhs)
 {
-	Colour colour;
-	colour.colour.at(0) = this->colour.at(0) - _rhs.getX();
-	colour.colour.at(1) = this->colour.at(1) - _rhs.getY();
-	colour.colour.at(2) = this->colour.at(2) - _rhs.getZ();
-	return colour;
+	return Colour(this->colour.at(0) - _rhs, this->colour.at(1) - _rhs, this->colour.at(2) - _rhs);
 }
 
-Colour Colour::operator/(const Vector3& _rhs)
+Colour Colour::operator/(const float& _rhs)
 {
-	Colour colour;
-	colour.colour.at(0) = this->colour.at(0) / _rhs.getX();
-	colour.colour.at(1) = this->colour.at(1) / _rhs.getY();
-	colour.colour.at(2) = this->colour.at(2) / _rhs.getZ();
-	return colour;
+	return Colour(this->colour.at(0) / _rhs, this->colour.at(1) / _rhs, this->colour.at(2) / _rhs);
 }
 
-Colour Colour::operator*(const Vector3& _rhs)
+Colour Colour::operator*(const float& _rhs)
 {
-	Colour colour;
-	colour.colour.at(0) = this->colour.at(0) * _rhs.getX();
-	colour.colour.at(1) = this->colour.at(1) * _rhs.getY();
-	colour.colour.at(2) = this->colour.at(2) * _rhs.getZ();
-	return colour;
+	return Colour(this->colour.at(0) * _rhs, this->colour.at(1) * _rhs, this->colour.at(2) * _rhs);
 }
 
 bool Colour::operator>(const Colour& _rhs)

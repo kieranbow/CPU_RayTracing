@@ -8,9 +8,9 @@
 
 namespace Shaders 
 {
-	// Namespace which contain a list of functions which emulate functions within hlsl.
+	// Namespace which contain a list of functions that emulate functions within hlsl or cg.
 	// Each function acts as a wrapper around standard c++ maths function.
-	// Hlsl function can be found here: 
+	// Function can be found here: 
 	// https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-intrinsic-functions
 	// https://developer.download.nvidia.com/cg/index_stdlib.html
 	namespace Maths

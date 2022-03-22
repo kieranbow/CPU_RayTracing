@@ -40,5 +40,5 @@ class Camera
 
 		static constexpr int max_depth = 3;
 
-		Colour castRay(RayTrace::Ray& ray, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth);
+		Colour castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth);
 };

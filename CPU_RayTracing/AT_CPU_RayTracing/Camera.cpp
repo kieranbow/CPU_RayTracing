@@ -1,8 +1,12 @@
+#include <thread>
+
 #include "Camera.h"
 #include "Primitive.h"
 #include "Intersection.h"
 #include "ShaderMaths.h"
+#include "ShaderFunc.h"
 #include "Random.h"
+#include "Logger.h"
 
 Camera::Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov)
 {
@@ -72,7 +76,7 @@ void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<s
 				Vector3::normalize(pixelPosWS);
 
 				// Create ray that's origin is the camera and it's direction is towards the pixel
-				RayTrace::Ray primary_ray;
+				Raycast::Ray primary_ray;
 				primary_ray.setOrigin(m_position);
 				primary_ray.setDirection(Vector3::normalize(pixelPosWS/* - primary_ray.getOrigin()*/));
 
@@ -97,7 +101,7 @@ void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<s
 	}
 }
 
-Colour Camera::castRay(RayTrace::Ray& ray, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth)
+Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth)
 {
 	Colour hitColour;
 	if (depth > max_depth) return Colour(0.5f, 0.5f, 1.0f);
@@ -105,34 +109,82 @@ Colour Camera::castRay(RayTrace::Ray& ray, BVH::Builder& bvh, std::vector<std::u
 	if (bvh.hit(ray))
 	{
 		Vector3 hitpoint = ray.getOrigin() + ray.getDirection() * ray.getHitData().tnear;
+		Vector3 N = ray.getHitData().material.normal;
 
-		// Loop through all the lights in the scene and add them linearly 
-		for (auto& light : sceneLights)
+		// Rendering of multiple materials is based off Whitted Light-Transport Algorithm 
+		switch (ray.getHitData().material.type)
 		{
-			Vector3 lightDirection;
-			Colour lightColour;
+			// Render the pixel based off the type of material that the ray hits.
 
-			light->illuminate(hitpoint, lightDirection, lightColour, ray.getHitData().tnear);
+			default:
+			{
+				// If the hit data doesn't contain a valid type of material, return the colour pink
+				hitColour = Colour(1.0f, 0.0f, 1.0f);
+				return hitColour;
+			}
+			break;
 
-			Vector3 N = ray.getHitData().normal;
-			Vector3 L = Vector3::normalize(lightDirection - hitpoint);
+			case Material::Types::Reflective:
+			{
+				//Vector3 R = Shaders::Maths::reflect(ray.getDirection(), N);
 
-			RayTrace::Ray shadowRay;
-			shadowRay.setOrigin(hitpoint + N * 0.1f); /* + N * 0.1f*/
-			shadowRay.setDirection(lightDirection); /*L - shadowRay.getOrigin()*/
-			shadowRay.m_tNear = ray.getHitData().tnear;
+				//RayTrace::Ray reflectionRay;
+				//reflectionRay.setOrigin(hitpoint + N * 0.1f);
+				//reflectionRay.setDirection(R);
 
-			bool shadow = !bvh.hit(shadowRay);
+				//hitColour += 0.8f * castRay(reflectionRay, bvh, sceneLights, depth + 1);
 
-			Colour albedo = ray.getHitData().colour;
-			Colour diffuse = albedo / Maths::special::pi * lightColour * std::max(0.0f, Vector3::dot(lightDirection, N));
 
-			hitColour += diffuse * shadow;
+				float kr = 0.0f;
+				Shaders::Functions::fresnel(ray.getDirection(), N, 1.5, kr);
+				Vector3 reflectionDir = Shaders::Maths::reflect(ray.getDirection(), N);
+				Vector3 reflectionOrigin = (Vector3::dot(reflectionDir, N) < 0.0f) ? hitpoint + N * 0.1f : hitpoint - N * 0.1f;
+
+				Raycast::Ray reflectionRay;
+				reflectionRay.setOrigin(reflectionOrigin);
+				reflectionRay.setDirection(reflectionDir);
+
+				hitColour = castRay(reflectionRay, bvh, sceneLights, depth + 1) * kr;
+			}
+			break;
+
+			case Material::Types::Refractive:
+				break;
+
+			case Material::Types::Conductive:
+				break;
+
+			case Material::Types::Dielectic:
+			{
+				// Loop through all the lights in the scene and add them linearly 
+				for (auto& light : sceneLights)
+				{
+					Vector3 lightDirection;
+					Colour lightColour;
+
+					light->illuminate(hitpoint, lightDirection, lightColour, ray.getHitData().tnear);
+					Vector3 L = Vector3::normalize(lightDirection - hitpoint);
+
+					// Shoot shadow rays into scene
+					Raycast::Ray shadowRay;
+					shadowRay.setOrigin(hitpoint + N * 0.1f);
+					shadowRay.setDirection(lightDirection); /*L - shadowRay.getOrigin()*/
+					shadowRay.m_tNear = ray.getHitData().tnear;
+
+					bool shadow = !bvh.hit(shadowRay);
+
+					Colour albedo = ray.getHitData().material.albedo;
+					Colour diffuse = albedo / Maths::special::pi * lightColour * std::max(0.0f, Vector3::dot(lightDirection, N));
+					hitColour += diffuse * shadow;
+				}
+				return hitColour;
+			}
+			break;
 		}
 	}
 	else
 	{
-		hitColour = Colour(0.5f, 0.5f, 1.0f);
+		hitColour = Colour(0.235294f, 0.67451f, 0.843137f);
 	}
 	return hitColour;
 }
