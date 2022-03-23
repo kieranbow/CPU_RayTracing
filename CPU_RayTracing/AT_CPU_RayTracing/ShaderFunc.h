@@ -4,6 +4,7 @@
 #include "MeshData.h"
 #include "Ray.h"
 #include "Maths.h"
+#include "ShaderMaths.h"
 
 namespace Shaders
 {
@@ -25,7 +26,10 @@ namespace Shaders
 		// Returns a gamma correct colour
 		inline Colour gammaCorrect(Colour colour)
 		{
-			return Colour(std::sqrtf(colour.getRed()), std::sqrtf(colour.getGreen()), std::sqrtf(colour.getBlue()));
+			Colour gammaCorrectColour = colour / (colour + 1.0f);
+			gammaCorrectColour = Shaders::Math::pow(gammaCorrectColour, 1.0f / 2.2f);
+			return gammaCorrectColour;
+			//return Colour(std::sqrtf(colour.getRed()), std::sqrtf(colour.getGreen()), std::sqrtf(colour.getBlue()));
 		}
 
 		inline void fresnel(const Vector3& viewDir, const Vector3 normal, const float ior, float& kr)

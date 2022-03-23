@@ -136,3 +136,43 @@ Vector2 Vector2::findMidPoint(Vector2 vec1, Vector2 vec2)
 	float mid_y = (vec1.getY() + vec2.getY()) / 2.0f;
 	return Vector2(mid_x, mid_y);
 }
+
+Vector2 operator+(const float& _lhs, const Vector2& _rhs)
+{
+	return Vector2(_lhs + _rhs.getX(), _lhs + _rhs.getY());
+}
+
+Vector2 operator+(const Vector2& _lhs, const float& _rhs)
+{
+	return Vector2(_lhs.getX() + _rhs, _lhs.getX() + _rhs);
+}
+
+Vector2 operator-(const float& _lhs, const Vector2& _rhs)
+{
+	return Vector2(_lhs - _rhs.getX(), _lhs - _rhs.getY());
+}
+
+Vector2 operator-(const Vector2& _lhs, const float& _rhs)
+{
+	return Vector2(_lhs.getX() - _rhs, _lhs.getY() - _rhs);
+}
+
+Vector2 operator*(const float& _lhs, const Vector2& _rhs)
+{
+	return Vector2(_lhs * _rhs.getX(), _lhs * _rhs.getY());
+}
+
+Vector2 operator*(const Vector2& _lhs, const float& _rhs)
+{
+	return Vector2(_lhs.getX() * _rhs, _lhs.getY() * _rhs);
+}
+
+Vector2 operator/(const float& _lhs, const Vector2& _rhs)
+{
+	return Vector2(_lhs / _rhs.getX(), _lhs / _rhs.getY());
+}
+
+Vector2 operator/(const Vector2& _lhs, const float& _rhs)
+{
+	return Vector2(_lhs.getX() / _rhs, _lhs.getY() / _rhs);
+}

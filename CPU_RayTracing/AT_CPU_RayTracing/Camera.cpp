@@ -207,12 +207,12 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 
 					bool shadow = !bvh.hit(shadowRay);
 
-					Colour diffuse = Shaders::Functions::lambertCosineLaw(NdotL, lightColour, albedo);
+					Colour diffuse = albedo;// Shaders::Functions::lambertCosineLaw(NdotL, lightColour, albedo);
 
 
 					// Colour albedo = ray.getHitData().material.albedo;
 					// Colour diffuse = albedo / Maths::special::pi * lightColour * std::max(0.0f, Vector3::dot(lightDirection, N));
-					hitColour += diffuse * shadow; //outgoing_radiance * shadow;
+					hitColour += diffuse * shadow;
 				}
 				return hitColour;
 			}

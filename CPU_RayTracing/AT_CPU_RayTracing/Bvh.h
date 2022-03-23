@@ -5,6 +5,7 @@
 #include "BoundingBox.h"
 #include "Ray.h"
 #include "Material.h"
+#include "Texture.h"
 
 class Primitive;
 
@@ -66,6 +67,8 @@ namespace BVH
 
 			Material::Data m_material;
 
+			Texture m_texture;
+
 		};
 
 		// Handles all the bvh buidling and collision testing
@@ -73,7 +76,7 @@ namespace BVH
 		{
 			public:
 				// Builds a bvh from the triangles of a primitives. This tree is top down
-				void buildBVHPrimitive(const std::vector<Vertex>& vertex_buffer, const std::vector<Indices>& index_buffer, const Material::Data & material);
+				void buildBVHPrimitive(const std::vector<Vertex>& vertex_buffer, const std::vector<Indices>& index_buffer, const Material::Data & material, const Texture&  texture);
 
 				// Checks if a ray has hit any of the bvh bounding boxes
 				bool hitPrimitive(Raycast::Ray& ray, float& tnear);
@@ -83,6 +86,7 @@ namespace BVH
 				static constexpr int m_max_depth = 6;
 				std::shared_ptr<BVH::Object::Node> sp_root;
 				std::vector<Triangle> m_triangles;
+				Texture m_textures;
 
 				// A recursive function that continues building the tree until a condition is met
 				void buildRecursivePrimitive(const std::vector<Triangle>& triangles, const Material::Data & material, const std::shared_ptr<BVH::Object::Node> node, int depth, const int& maxDepth);

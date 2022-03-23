@@ -36,6 +36,16 @@ class Vector2
 		bool operator==(const Vector2& _rhs);
 		bool operator!=(const Vector2& _rhs);
 
+		// Friend Operators
+		friend Vector2 operator+(const float& _lhs, const Vector2& _rhs);
+		friend Vector2 operator+(const Vector2& _lhs, const float& _rhs);
+		friend Vector2 operator-(const float& _lhs, const Vector2& _rhs);
+		friend Vector2 operator-(const Vector2& _lhs, const float& _rhs);
+		friend Vector2 operator*(const float& _lhs, const Vector2& _rhs);
+		friend Vector2 operator*(const Vector2& _lhs, const float& _rhs);
+		friend Vector2 operator/(const float& _lhs, const Vector2& _rhs);
+		friend Vector2 operator/(const Vector2& _lhs, const float& _rhs);
+
 		// Mainly used for debugging 
 		friend std::ostream& operator<<(std::ostream& _lhs, const Vector2& _rhs)
 		{

@@ -8,6 +8,7 @@
 #include "Bvh.h"
 #include "Material.h"
 #include "Shader.h"
+#include "Texture.h"
 
 class Colour;
 
@@ -33,6 +34,7 @@ class Primitive
 
 		void setMaterial(const Material::Data& material) { m_material = material; }
 		void setShader(std::shared_ptr<Shaders::Shader> shader) { sp_shader = shader; }
+		void setAlbedoTexture(const char* filepath) { m_albedo.load(filepath); }
 
 		const Vector3& getPosition() const { return m_position; }
 		const Vector3& getRotation() const { return m_rotation; }
@@ -41,6 +43,7 @@ class Primitive
 		const std::vector<Indices>& getIndices() const { return m_indexBuffer; }
 		const BoundingBox::AABB& getBoundingBox() const { return m_boundingBox; }
 		const Material::Data& getMaterial() const { return m_material; }
+		const Texture& getTexture() const { return m_albedo; }
 
 	private:
 		// Mesh data
@@ -52,6 +55,8 @@ class Primitive
 
 		// Primitives material
 		Material::Data m_material;
+
+		Texture m_albedo;
 
 		std::shared_ptr<Shaders::Shader> sp_shader;
 

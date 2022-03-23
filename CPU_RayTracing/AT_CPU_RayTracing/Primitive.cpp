@@ -149,11 +149,11 @@ bool Primitive::generateBoundingBox()
 void Primitive::setPosition(Vector3 position)
 {
 	Matrix4x4 matrix;
-	m_position += matrix.translation(position);
+	// m_position += matrix.translation(position);
 
 	for (auto& vert : m_vertexBuffer)
 	{
-		vert.position += m_position;
+		vert.position += matrix.translation(position);;
 	}
 
 	// boundingBox.generateBoundingBox(vertex_buffer);

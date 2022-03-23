@@ -13,6 +13,8 @@
 // Graphics
 #include "Colour.h"
 #include "Pixel.h"
+#include "Material.h"
+#include "Texture.h"
 
 // Scene stuff
 #include "Primitive.h"
@@ -23,12 +25,6 @@
 // Utility
 #include "Timer.h"
 #include "Logger.h"
-#include "ShaderFunc.h"
-
-#include "Shader.h"
-#include "Material.h"
-
-#include "Texture.h"
 
 struct Options
 {
@@ -90,11 +86,12 @@ int main()
 	cube.setPosition({ 1.0f, 0.0f, -10.0f });
 
 	Material::Data cube_material;
-	cube_material.type		= Material::Types::Reflective;
+	cube_material.type		= Material::Types::Dielectic; // Reflective
 	cube_material.albedo	= Colour(1.0f, 0.0f, 0.0f);
 	cube_material.roughness	= 1.0f;
 	cube_material.metallic	= 0.0f;
 	cube.setMaterial(cube_material);
+	cube.setAlbedoTexture("Assets\\test.png");
 
 	Primitive sphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
 	sphere.setPosition({-1.0f, 1.0f, -15.0f });
@@ -110,7 +107,7 @@ int main()
 	triangle.setPosition({ 0.0f, 1.0f, -5.0f });
 
 	Material::Data triangle_material;
-	triangle_material.type = Material::Types::Reflective;
+	triangle_material.type = Material::Types::Dielectic;  // Reflective
 	triangle_material.albedo = Colour(0.5f, 0.5f, 0.5f);
 	triangle_material.roughness = 0.0f;
 	triangle_material.metallic = 0.5f;
@@ -120,11 +117,12 @@ int main()
 	cone.setPosition({ -0.5f, -1.0f, -8.0f });
 
 	Material::Data cone_material;
-	cone_material.type = Material::Types::Refractive;
+	cone_material.type = Material::Types::Dielectic;  // Refractive
 	cone_material.albedo = Colour(1.0f, 1.0f, 0.0f);
 	cone_material.roughness = 1.0f;
 	cone_material.metallic = 0.0f;
 	cone.setMaterial(cone_material);
+	cone.setAlbedoTexture("Assets\\uv.png");
 
 	Primitive plane("Assets\\plane.obj", { 0.0f, 0.0f, 0.0f });
 	plane.setPosition({ 0.0f, -1.0f, -10.0f });
@@ -168,29 +166,9 @@ int main()
 	render_timer.EndTimer();
 	Logger::PrintDebug("Render time: " + std::to_string(render_timer.ShowResult()) + " seconds");
 
-	// Create a file and write the contents of the framebuffer to the file
-	std::ofstream file("Image.ppm", std::ios::out | std::ios::binary);
-
-	if (file.is_open())
-	{
-		file << "P3\n" << image_size.getX() << ' ' << image_size.getY() << "\n255\n";
-
-		for(auto& pixel : framebuffer)
-		{
-			// Gamma correction
-			Colour colour = Shaders::Functions::gammaCorrect(pixel.colour);
-
-			int ir = static_cast<int>(256 * std::clamp(colour.getRed(), 0.0f, 0.999f));
-			int ig = static_cast<int>(256 * std::clamp(colour.getGreen(), 0.0f, 0.999f));
-			int ib = static_cast<int>(256 * std::clamp(colour.getBlue(), 0.0f, 0.999f));
-
-			file << ir << ' ' << ig << ' ' << ib << '\n';
-		}
-		file.close();
-	}
-
+	// Output render frame
 	Texture outputFrame;
-	outputFrame.save("Image.png", framebuffer, static_cast<int>(options.width), static_cast<int>(options.height), 3);
+	outputFrame.savePNG("Image.png", framebuffer, static_cast<int>(options.width), static_cast<int>(options.height), 3);
 	framebuffer.clear();
 
 	return 1;
