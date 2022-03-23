@@ -30,7 +30,7 @@ namespace Shaders
 
 		inline void fresnel(const Vector3& viewDir, const Vector3 normal, const float ior, float& kr)
 		{
-			float cosi = std::clamp(-1.0f, 1.0f, Vector3::dot(viewDir, normal));
+			float cosi = std::clamp(Vector3::dot(viewDir, normal), -1.0f, 1.0f);
 			float etai = 1.0f;
 			float etat = ior;
 			if (cosi > 0.0f) std::swap(etai, etat);

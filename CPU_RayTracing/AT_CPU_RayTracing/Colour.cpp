@@ -185,14 +185,6 @@ bool Colour::operator!=(const Colour& _rhs)
 	return (this->colour.at(0) != _rhs.colour.at(0) || this->colour.at(1) != _rhs.colour.at(1) || this->colour.at(2) != _rhs.colour.at(2));
 }
 
-Colour Colour::toColour(const Vector3& _rhs)
-{
-	float r = _rhs.getX();
-	float g = _rhs.getY();
-	float b = _rhs.getZ();
-	return Colour(r, g, b);
-}
-
 Colour Colour::operator*=(const Colour& _rhs)
 {
 	Colour colour;

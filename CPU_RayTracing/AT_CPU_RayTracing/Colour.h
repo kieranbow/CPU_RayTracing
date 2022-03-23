@@ -59,8 +59,6 @@ class Colour
 
 		friend Colour operator/=(Colour& _lhs, const float& _rhs);
 
-		static Colour toColour(const Vector3& _rhs);
-
 		// Getters
 		const float& getRed() const { return this->colour.at(0); }
 		const float& getGreen() const { return this->colour.at(1); }

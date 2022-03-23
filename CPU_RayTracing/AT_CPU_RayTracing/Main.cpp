@@ -28,6 +28,8 @@
 #include "Shader.h"
 #include "Material.h"
 
+#include "Texture.h"
+
 struct Options
 {
 	float width = 0.0f;
@@ -55,6 +57,8 @@ int main()
 
 	//Logger::PrintMsg("Input Anti-aliasing amount");
 	//std::cin >> amount;
+	//Texture texture("Assets\\test.png");
+	//texture.at(0.5f, 1.0f);
 
 	const auto processor_count = std::thread::hardware_concurrency();
 	Logger::PrintDebug("Using: " + std::to_string(processor_count) + " Threads");
@@ -116,7 +120,7 @@ int main()
 	cone.setPosition({ -0.5f, -1.0f, -8.0f });
 
 	Material::Data cone_material;
-	cone_material.type = Material::Types::Dielectic;
+	cone_material.type = Material::Types::Refractive;
 	cone_material.albedo = Colour(1.0f, 1.0f, 0.0f);
 	cone_material.roughness = 1.0f;
 	cone_material.metallic = 0.0f;
@@ -184,6 +188,9 @@ int main()
 		}
 		file.close();
 	}
+
+	Texture outputFrame;
+	outputFrame.save("Image.png", framebuffer, static_cast<int>(options.width), static_cast<int>(options.height), 3);
 	framebuffer.clear();
 
 	return 1;
