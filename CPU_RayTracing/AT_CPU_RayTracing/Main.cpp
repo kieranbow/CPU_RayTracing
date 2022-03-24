@@ -78,8 +78,8 @@ int main()
 	// Create the scenes lights
 	std::vector<std::unique_ptr<Light::Light>> sceneLights;
 	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.5f, 1.0f))));
-	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f))));
-	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(0.0f, 0.0f, 1.0f), Vector3(1.0f, 0.5f, 0.0f))));
+	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f))));
+	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(0.0f, 0.0f, 1.0f), Vector3(1.0f, 0.5f, 0.0f))));
 	//sceneLights.push_back(std::unique_ptr<Light::PointLight>(new Light::PointLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 2.0f, -8.0f))));
 
 	// Create the scene's primitives and their materials
@@ -92,7 +92,7 @@ int main()
 	cube_material.roughness	= 1.0f;
 	cube_material.metallic	= 0.0f;
 	cube.setMaterial(cube_material);
-	cube.setAlbedoTexture("Assets\\test.png");
+	cube.setAlbedoTexture("Assets\\49ea62ba-3dca-4029-8bfa-89af9646b4ec.jpg");
 
 	Primitive sphere("Assets\\helmet.obj", { 0.0f, 0.0f, 0.0f });
 	sphere.setPosition({-3.0f, 1.0f, -9.0f });
@@ -108,40 +108,42 @@ int main()
 	triangle.setPosition({ 5.0f, 1.0f, -12.0f });
 
 	Material::Data triangle_material;
-	triangle_material.type = Material::Types::Reflective;  // Reflective
+	triangle_material.type = Material::Types::Dielectic;  // Reflective
 	triangle_material.albedo = Colour(0.5f, 0.5f, 0.5f);
 	triangle_material.roughness = 0.0f;
 	triangle_material.metallic = 0.5f;
 	triangle.setMaterial(triangle_material);
 
-	Primitive cone("Assets\\big_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	Primitive cone("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
 	cone.setPosition({ 0.0f, 1.0f, -10.0f });
 
 	Material::Data cone_material;
-	cone_material.type = Material::Types::Refractive;  // Refractive
+	cone_material.type = Material::Types::Dielectic;  // Refractive
 	cone_material.albedo = Colour(1.0f, 1.0f, 0.0f);
 	cone_material.roughness = 1.0f;
 	cone_material.metallic = 0.0f;
 	cone.setMaterial(cone_material);
-	cone.setAlbedoTexture("Assets\\uv.png");
+	cone.setAlbedoTexture("Assets\\49ea62ba-3dca-4029-8bfa-89af9646b4ec.jpg");
 
 	Primitive plane("Assets\\plane.obj", { 0.0f, 0.0f, 0.0f });
 	plane.setPosition({ 0.0f, -1.0f, -10.0f });
 
 	Material::Data plane_material;
-	plane_material.type = Material::Types::Dielectic; // Reflective
+	plane_material.type = Material::Types::Reflective; // Reflective
 	plane_material.albedo = Colour(0.5f, 0.5f, 0.5f);
 	plane_material.roughness = 1.0f;
 	plane_material.metallic = 0.0f;
 	plane.setMaterial(plane_material);
+	plane.setAlbedoTexture("Assets\\49ea62ba-3dca-4029-8bfa-89af9646b4ec.jpg");
 
 	// Push primitives into vector to be processed by the bvh
-	std::vector<Primitive> primitives;
+	std::vector<Primitive> primitives{};
 	primitives.push_back(triangle);
 	primitives.push_back(cone);
+	primitives.push_back(plane);
 	primitives.push_back(cube);
 	primitives.push_back(sphere);
-	primitives.push_back(plane);
+
 
 	// Build a bvh for all the primitives
 	BVH::Builder bvh;

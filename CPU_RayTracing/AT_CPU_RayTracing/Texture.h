@@ -14,12 +14,14 @@ class Texture
 {
 	public:
 		Texture() = default;
-		~Texture() = default;
+		~Texture();
+
+		Texture(const Texture& texture);
 
 		// Returns a pixel value from a given uv coordinate
 		Colour at(Vector2 uv);
 
-		bool empty() { return m_data.empty(); }
+		bool empty() { return /*m_data.empty()*/ (m_data == nullptr); }
 
 		// Loads the texture using stb from filepath
 		bool load(const char* filepath);
@@ -35,5 +37,7 @@ class Texture
 		int m_height		= 0; // Height of the image
 		int m_numChannel	= 0; // Number of colour channels given by stb.
 		int m_reqChannel	= 3; // Number of colour channels requested.
-		std::vector<Pixel> m_data; // All the texture pixels are stored here.
+		// std::vector<Pixel> m_data; // All the texture pixels are stored here.
+		unsigned char* m_data;
+		int bytesPerScanline = 0;
 };

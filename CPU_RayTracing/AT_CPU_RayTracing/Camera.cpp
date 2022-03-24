@@ -221,7 +221,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 
 					// Colour albedo = ray.getHitData().material.albedo;
 					// Colour diffuse = albedo / Maths::special::pi * lightColour * std::max(0.0f, Vector3::dot(lightDirection, N));
-					hitColour += diffuse * shadow;
+					hitColour += albedo * shadow;
 				}
 				return hitColour;
 			}
