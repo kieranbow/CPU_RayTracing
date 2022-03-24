@@ -146,19 +146,28 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 
 			case Material::Types::Refractive:
 			{
-				Vector3 refractiveDir = normalize(refract(ray.getDirection(), N, 1.3f));
+				Vector3 reflectionDir = normalize(reflect(ray.getDirection(), N));
+				Vector3 reflectionOrigin = (dot(reflectionDir, N) < 0.0f) ? hitpoint + N * 0.1f : hitpoint - N * 0.1f;
+
+				Raycast::Ray reflectionRay;
+				reflectionRay.setOrigin(reflectionOrigin);
+				reflectionRay.setDirection(reflectionDir);
+
+
+				Vector3 refractiveDir = normalize(refract(ray.getDirection(), N, 1.52f));
 				Vector3 refractiveOrigin = (dot(refractiveDir, N) < 0.0f) ? hitpoint - N * 0.1f : hitpoint + N * 0.1f;
 				
 				float kr = 0.0f;
-				Shaders::Functions::fresnel(ray.getDirection(), N, 1.3f, kr);
+				Shaders::Functions::fresnel(ray.getDirection(), N, 1.52f, kr);
 
 				Raycast::Ray refractiveRay;
 				refractiveRay.setOrigin(refractiveOrigin);
 				refractiveRay.setDirection(refractiveDir);
 
 				Colour refractColour = castRay(refractiveRay, bvh, sceneLights, depth + 1);
-
-				hitColour = refractColour * (1.0f - kr);
+				Colour reflectColour = castRay(reflectionRay, bvh, sceneLights, depth + 1);
+				hitColour = reflectColour * kr + refractColour * (1.0f - kr);
+				//hitColour = refractColour * (1.0f - kr);
 			}
 			break;
 
@@ -207,7 +216,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 
 					bool shadow = !bvh.hit(shadowRay);
 
-					Colour diffuse = albedo;// Shaders::Functions::lambertCosineLaw(NdotL, lightColour, albedo);
+					Colour diffuse = Shaders::Functions::lambertCosineLaw(NdotL, lightColour, albedo);
 
 
 					// Colour albedo = ray.getHitData().material.albedo;

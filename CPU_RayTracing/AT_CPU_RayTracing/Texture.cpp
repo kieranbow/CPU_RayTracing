@@ -76,3 +76,4 @@ void Texture::savePNG(const char* filename, const std::vector<Pixel> data, const
 	// Clear output data
 	stbi_image_free(output);
 }
+

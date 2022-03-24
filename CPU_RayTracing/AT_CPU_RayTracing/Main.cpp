@@ -72,18 +72,19 @@ int main()
 
 	// https://stackoverflow.com/questions/13078243/how-to-move-a-camera-using-in-a-ray-tracer
 	// Define the scene camera
-	Camera camera(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), image_size, 45.0f);
+	Camera camera(Vector3(0.0f, 0.0f, -2.0f), Vector3(0.0f, 0.0f, -1.0f), image_size, 45.0f);
 	Matrix4x4::multVecByMatrix4x4(camera.getMatrix(), camera.getPosition());
 
 	// Create the scenes lights
 	std::vector<std::unique_ptr<Light::Light>> sceneLights;
-	// sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(2.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.5f, 1.0f))));
+	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.5f, 1.0f))));
 	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f))));
+	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(0.0f, 0.0f, 1.0f), Vector3(1.0f, 0.5f, 0.0f))));
 	//sceneLights.push_back(std::unique_ptr<Light::PointLight>(new Light::PointLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 2.0f, -8.0f))));
 
 	// Create the scene's primitives and their materials
 	Primitive cube;
-	cube.setPosition({ 1.0f, 0.0f, -10.0f });
+	cube.setPosition({ 3.0f, 0.0f, -15.0f });
 
 	Material::Data cube_material;
 	cube_material.type		= Material::Types::Dielectic; // Reflective
@@ -93,8 +94,8 @@ int main()
 	cube.setMaterial(cube_material);
 	cube.setAlbedoTexture("Assets\\test.png");
 
-	Primitive sphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
-	sphere.setPosition({-1.0f, 1.0f, -15.0f });
+	Primitive sphere("Assets\\helmet.obj", { 0.0f, 0.0f, 0.0f });
+	sphere.setPosition({-3.0f, 1.0f, -9.0f });
 
 	Material::Data sphere_material;
 	sphere_material.type		= Material::Types::Dielectic;
@@ -104,20 +105,20 @@ int main()
 	sphere.setMaterial(sphere_material);
 
 	Primitive triangle("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
-	triangle.setPosition({ 0.0f, 1.0f, -5.0f });
+	triangle.setPosition({ 5.0f, 1.0f, -12.0f });
 
 	Material::Data triangle_material;
-	triangle_material.type = Material::Types::Dielectic;  // Reflective
+	triangle_material.type = Material::Types::Reflective;  // Reflective
 	triangle_material.albedo = Colour(0.5f, 0.5f, 0.5f);
 	triangle_material.roughness = 0.0f;
 	triangle_material.metallic = 0.5f;
 	triangle.setMaterial(triangle_material);
 
-	Primitive cone("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
-	cone.setPosition({ -0.5f, -1.0f, -8.0f });
+	Primitive cone("Assets\\big_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	cone.setPosition({ 0.0f, 1.0f, -10.0f });
 
 	Material::Data cone_material;
-	cone_material.type = Material::Types::Dielectic;  // Refractive
+	cone_material.type = Material::Types::Refractive;  // Refractive
 	cone_material.albedo = Colour(1.0f, 1.0f, 0.0f);
 	cone_material.roughness = 1.0f;
 	cone_material.metallic = 0.0f;
@@ -128,7 +129,7 @@ int main()
 	plane.setPosition({ 0.0f, -1.0f, -10.0f });
 
 	Material::Data plane_material;
-	plane_material.type = Material::Types::Reflective;
+	plane_material.type = Material::Types::Dielectic; // Reflective
 	plane_material.albedo = Colour(0.5f, 0.5f, 0.5f);
 	plane_material.roughness = 1.0f;
 	plane_material.metallic = 0.0f;

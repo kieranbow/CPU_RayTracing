@@ -100,9 +100,17 @@ namespace Shaders
 		inline Vector3 refract(Vector3 i, Vector3 n, float ior)
 		{
 			// https://asawicki.info/news_1301_reflect_and_refract_functions.html
-			float NdotI = Vector3::dot(n, i);
-			float k = 1.0f - ior * ior * (1.0f - NdotI * NdotI);
-			return k < 0.1f ? Vector3(0.0f, 0.0f, 0.0f) : ior * i - (ior * NdotI + std::sqrtf(k)) * n;
+			//float NdotI = Vector3::dot(n, i);
+			//float k = 1.0f - ior * ior * (1.0f - NdotI * NdotI);
+			//return k < 0.1f ? Vector3(0.0f, 0.0f, 0.0f) : ior * i - (ior * NdotI + std::sqrtf(k)) * n;
+
+			float cosi = std::clamp(Vector3::dot(i, n), -1.0f, 1.0f);
+			float etai = 1.0f, etat = ior;
+			Vector3 N = n;
+			if (cosi < 0.0f) { cosi = -cosi; }
+			float eta = etai / etat;
+			float k = 1.0f - eta * eta * (1.0f - cosi * cosi);
+			return k < 0.0f ? Vector3() : eta * i + (eta * cosi - std::sqrtf(k) * N);
 		}
 
 		inline float saturate(float x) { return max(0.0f, min(1.0f, x)); }
