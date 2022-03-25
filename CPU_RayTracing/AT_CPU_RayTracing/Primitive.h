@@ -22,11 +22,6 @@ class Primitive
 
 		// Checks a ray primitive's bounding box before checking if that ray hits the primitive's triangles
 		bool triangleIntersected(Raycast::Ray&ray);
-		
-		// Debug function to see where the bounding box is.
-		bool intersectedBoundingBoxDebug(Raycast::Ray& ray);
-
-		bool generateBoundingBox();
 
 		void setPosition(Vector3 position);
 		//void setRotation(Vector3 rotation);

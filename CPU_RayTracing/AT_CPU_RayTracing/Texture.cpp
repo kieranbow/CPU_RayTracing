@@ -6,32 +6,6 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "Includes\stb\stb_image_write.h"
 
-Texture::~Texture()
-{
-	stbi_image_free(m_data);
-	delete m_data;
-}
-
-Texture::Texture(const Texture& texture) 
-	: m_width(texture.m_width), m_height(texture.m_height), m_numChannel(texture.m_numChannel), m_reqChannel(texture.m_reqChannel)
-{
-	if (texture.m_data != nullptr)
-	{
-		delete[] m_data;
-
-		m_data = new unsigned char[m_width * m_height * m_numChannel];
-
-		for (int i = 0; i < m_width * m_height * m_numChannel; i++)
-		{
-			m_data[i] = texture.m_data[i];
-		}
-	}
-	else
-	{
-		m_data = nullptr;
-	}
-}
-
 Colour Texture::at(Vector2 uv)
 {
 	//uv.setX(std::clamp(uv.getX(), 0.0f, 1.0f));
@@ -56,7 +30,7 @@ Colour Texture::at(Vector2 uv)
 	if (i >= m_width) i = m_width - 1;
 	if (j >= m_height) j = m_height - 1;
 
-	auto pixel = m_data + j * bytesPerScanline + i * 3;
+	auto pixel = m_data + j * m_bytesPerScanline + i * 3;
 
 	float colour_remap = 1.0f / 255.0f;
 
@@ -69,7 +43,7 @@ bool Texture::load(const char* filepath)
 
 	m_data = stbi_load(filepath, &m_width, &m_height, &m_numChannel, m_reqChannel);
 
-	bytesPerScanline = 3 * m_width;
+	m_bytesPerScanline = 3 * m_width;
 
 	if (!m_data) return false;
 	return true;
@@ -117,7 +91,7 @@ bool Texture::load(const char* filepath)
 	//return true;
 }
 
-void Texture::savePNG(const char* filename, const std::vector<Pixel> data, const int width, const int height, const int numChannels)
+void Texture::savePNG(const char* filename, const std::vector<Pixel>& data, const int width, const int height, const int numChannels)
 {
 	// https://stackoverflow.com/questions/61153680/how-to-use-stbi-write-png-to-write-image-pixel-data-to-a-png-file
 	unsigned char* output = new unsigned char[width * height * numChannels];

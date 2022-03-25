@@ -72,6 +72,51 @@ Colour Colour::operator*=(const Vector3& _rhs)
 	return *this;
 }
 
+Colour& Colour::operator=(const float& _rhs)
+{
+	Colour colour;
+	colour.colour.at(0) = _rhs;
+	colour.colour.at(1) = _rhs;
+	colour.colour.at(2) = _rhs;
+	return colour;
+}
+
+Colour Colour::operator+=(const float& _rhs)
+{
+	Colour colour;
+	colour.colour.at(0) += _rhs;
+	colour.colour.at(1) += _rhs;
+	colour.colour.at(2) += _rhs;
+	return colour;
+}
+
+Colour Colour::operator-=(const float& _rhs)
+{
+	Colour colour;
+	colour.colour.at(0) -= _rhs;
+	colour.colour.at(1) -= _rhs;
+	colour.colour.at(2) -= _rhs;
+	return colour;
+}
+
+Colour Colour::operator/=(const float& _rhs)
+{
+	Colour colour;
+	colour.colour.at(0) /= _rhs;
+	colour.colour.at(1) /= _rhs;
+	colour.colour.at(2) /= _rhs;
+	return colour;
+}
+
+Colour Colour::operator*=(const float& _rhs)
+{
+	Colour colour;
+	colour.colour.at(0) *= _rhs;
+	colour.colour.at(1) *= _rhs;
+	colour.colour.at(2) *= _rhs;
+	return colour;
+}
+
 Colour Colour::operator+(const Colour& _rhs)
 {
 	Colour colour;

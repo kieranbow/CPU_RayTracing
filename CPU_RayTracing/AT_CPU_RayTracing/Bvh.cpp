@@ -148,7 +148,7 @@ bool BVH::Scene::Accelerator::hitRecursive(Raycast::Ray& ray, std::shared_ptr<BV
 	return false;
 }
 
-void BVH::Object::Accelerator::buildBVHPrimitive(const std::vector<Vertex>& vertex_buffer, const std::vector<Indices>& index_buffer, const Material::Data & material, const Texture&  texture)
+void BVH::Object::Accelerator::buildBVHPrimitive(const std::vector<Vertex>& vertex_buffer, const std::vector<Indices>& index_buffer, const Material::Data& material, const Texture& texture)
 {
 	if (index_buffer.empty() || vertex_buffer.empty())
 	{
@@ -295,14 +295,14 @@ bool BVH::Object::Accelerator::hitRecursivePrimitive(Raycast::Ray& ray, std::sha
 
 				ray.getHitData().material = parentNode->m_material;
 
-				if (!parentNode->m_texture.empty())
-				{
-					ray.getHitData().material.albedo = parentNode->m_texture.at((1.0f - u - v) * vert0_uv + u * vert1_uv + v * vert2_uv); //Colour(u, v, 1.0f - u - v);
-				}
-				else
-				{
-					ray.getHitData().material.albedo = Colour(u, v, 1.0f - u - v);
-				}
+				//if (!parentNode->m_texture.empty())
+				//{
+				//	ray.getHitData().material.albedo = parentNode->m_texture.at((1.0f - u - v) * vert0_uv + u * vert1_uv + v * vert2_uv);
+				//}
+				//else
+				//{
+				//	ray.getHitData().material.albedo = Colour(u, v, 1.0f - u - v);
+				//}
 
 				ray.getHitData().material.normal = Shaders::Functions::getSmoothNormalFromTri(tri, ray.getHitData());
 				ray.getHitData().hitPoint = (ray.getOrigin() + ray.getDirection() * ray.getT()) + ray.getHitData().normal;

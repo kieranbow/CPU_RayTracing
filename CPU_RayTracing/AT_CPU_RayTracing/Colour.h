@@ -30,6 +30,13 @@ class Colour
 		Colour operator/=(const Vector3& _rhs);
 		Colour operator*=(const Vector3& _rhs);
 
+		// Float assigment Operator
+		Colour& operator=(const float& _rhs);
+		Colour operator+=(const float& _rhs);
+		Colour operator-=(const float& _rhs);
+		Colour operator/=(const float& _rhs);
+		Colour operator*=(const float& _rhs);
+
 		// Arithmetic Operators
 		Colour operator+(const Colour& _rhs);
 		Colour operator-(const Colour& _rhs);

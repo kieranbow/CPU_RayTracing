@@ -77,8 +77,8 @@ int main()
 
 	// Create the scenes lights
 	std::vector<std::unique_ptr<Light::Light>> sceneLights;
-	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.5f, 1.0f))));
-	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f))));
+	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.5f, 1.0f))));
+	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f))));
 	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(0.0f, 0.0f, 1.0f), Vector3(1.0f, 0.5f, 0.0f))));
 	//sceneLights.push_back(std::unique_ptr<Light::PointLight>(new Light::PointLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 2.0f, -8.0f))));
 
@@ -92,7 +92,7 @@ int main()
 	cube_material.roughness	= 1.0f;
 	cube_material.metallic	= 0.0f;
 	cube.setMaterial(cube_material);
-	cube.setAlbedoTexture("Assets\\49ea62ba-3dca-4029-8bfa-89af9646b4ec.jpg");
+	cube.setAlbedoTexture("Assets\\uv.png");
 
 	Primitive sphere("Assets\\helmet.obj", { 0.0f, 0.0f, 0.0f });
 	sphere.setPosition({-3.0f, 1.0f, -9.0f });
@@ -123,18 +123,18 @@ int main()
 	cone_material.roughness = 1.0f;
 	cone_material.metallic = 0.0f;
 	cone.setMaterial(cone_material);
-	cone.setAlbedoTexture("Assets\\49ea62ba-3dca-4029-8bfa-89af9646b4ec.jpg");
+	cone.setAlbedoTexture("Assets\\test.png");
 
 	Primitive plane("Assets\\plane.obj", { 0.0f, 0.0f, 0.0f });
 	plane.setPosition({ 0.0f, -1.0f, -10.0f });
 
 	Material::Data plane_material;
-	plane_material.type = Material::Types::Reflective; // Reflective
+	plane_material.type = Material::Types::Dielectic; // Reflective
 	plane_material.albedo = Colour(0.5f, 0.5f, 0.5f);
 	plane_material.roughness = 1.0f;
 	plane_material.metallic = 0.0f;
 	plane.setMaterial(plane_material);
-	plane.setAlbedoTexture("Assets\\49ea62ba-3dca-4029-8bfa-89af9646b4ec.jpg");
+	plane.setAlbedoTexture("Assets\\uv.png");
 
 	// Push primitives into vector to be processed by the bvh
 	std::vector<Primitive> primitives{};

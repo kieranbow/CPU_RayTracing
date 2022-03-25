@@ -27,7 +27,7 @@ namespace Shaders
 		inline Colour gammaCorrect(Colour colour)
 		{
 			Colour gammaCorrectColour = colour / (colour + 1.0f);
-			gammaCorrectColour = Shaders::Math::pow(gammaCorrectColour, 1.0f / 2.2f);
+			gammaCorrectColour = Shaders::Math::power(gammaCorrectColour, 1.0f / 2.2f);
 			return gammaCorrectColour;
 			//return Colour(std::sqrtf(colour.getRed()), std::sqrtf(colour.getGreen()), std::sqrtf(colour.getBlue()));
 		}
@@ -53,9 +53,9 @@ namespace Shaders
 			}
 		}
 
-		inline Colour lambertCosineLaw(const float NdotL, const Colour lightColour, const Colour albedo)
+		inline Colour lambertCosineLaw(const float NdotL, Colour lightColour, Colour albedo)
 		{
-			return albedo / Maths::special::pi * lightColour * NdotL;
+			return albedo * lightColour * NdotL;
 		}
 	}
 

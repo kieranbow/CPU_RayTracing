@@ -88,10 +88,10 @@ namespace Shaders
 		inline Vector3 min(Vector3 x, Vector3 y) { return Vector3(std::min(x.getX(), y.getX()), std::min(x.getY(), y.getY()), std::min(x.getZ(), y.getZ())); }
 
 		// Returns the specified value raised to the specified power
-		inline float pow(float x, float y) { return std::powf(x, y); }
-		inline Vector2 pow(Vector2 x, Vector2 y) { return Vector2(std::powf(x.getX(), y.getX()), std::powf(x.getY(), y.getY())); }
-		inline Vector3 pow(Vector3 x, Vector3 y) { return Vector3(std::powf(x.getX(), y.getX()), std::powf(x.getY(), y.getY()), std::powf(x.getZ(), y.getZ())); }
-		inline Colour pow(Colour x, float y) { return Colour(std::powf(x.getRed(), y), std::powf(x.getGreen(), y), std::powf(x.getBlue(), y)); }
+		inline float power(float x, float y) { return std::powf(x, y); }
+		inline Vector2 power(Vector2 x, Vector2 y) { return Vector2(std::powf(x.getX(), y.getX()), std::powf(x.getY(), y.getY())); }
+		inline Vector3 power(Vector3 x, Vector3 y) { return Vector3(std::powf(x.getX(), y.getX()), std::powf(x.getY(), y.getY()), std::powf(x.getZ(), y.getZ())); }
+		inline Colour power(Colour x, float y) { return Colour(std::powf(x.getRed(), y), std::powf(x.getGreen(), y), std::powf(x.getBlue(), y)); }
 
 		// Returns the reflection vector using an incident ray and a surface normal
 		inline Vector3 reflect(Vector3 i, Vector3 n) { return i - 2.0f * Vector3::dot(i, n) * n; }

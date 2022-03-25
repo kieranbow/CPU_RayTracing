@@ -111,11 +111,13 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 
 	if (bvh.hit(ray))
 	{
-		Vector3 hitpoint	= ray.getOrigin() + ray.getDirection() * ray.getHitData().tnear;
-		Vector3 N			= ray.getHitData().material.normal;
-		Colour albedo		= ray.getHitData().material.albedo;
-		float roughness		= ray.getHitData().material.roughness;
-		float metallic		= ray.getHitData().material.metallic;
+		Vector3 hitpoint = ray.getOrigin() + ray.getDirection() * ray.getHitData().tnear;
+		
+		Colour albedo	= ray.getHitData().material.albedo;
+		float roughness	= ray.getHitData().material.roughness;
+		float metallic	= ray.getHitData().material.metallic;
+		Vector3 normal  = normalize(ray.getHitData().material.normal);
+		Vector3 viewDir = normalize(ray.getDirection());
 
 		// Rendering of multiple materials is based off Whitted Light-Transport Algorithm 
 		switch (ray.getHitData().material.type)
@@ -132,9 +134,9 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 			case Material::Types::Reflective:
 			{
 				float kr = 0.0f;
-				Shaders::Functions::fresnel(ray.getDirection(), N, 1.5, kr);
-				Vector3 reflectionDir = reflect(ray.getDirection(), N);
-				Vector3 reflectionOrigin = (dot(reflectionDir, N) < 0.0f) ? hitpoint + N * 0.1f : hitpoint - N * 0.1f;
+				Shaders::Functions::fresnel(ray.getDirection(), normal, 1.5, kr);
+				Vector3 reflectionDir = reflect(ray.getDirection(), normal);
+				Vector3 reflectionOrigin = (dot(reflectionDir, normal) < 0.0f) ? hitpoint + normal * 0.1f : hitpoint - normal * 0.1f;
 
 				Raycast::Ray reflectionRay;
 				reflectionRay.setOrigin(reflectionOrigin);
@@ -146,19 +148,19 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 
 			case Material::Types::Refractive:
 			{
-				Vector3 reflectionDir = normalize(reflect(ray.getDirection(), N));
-				Vector3 reflectionOrigin = (dot(reflectionDir, N) < 0.0f) ? hitpoint + N * 0.1f : hitpoint - N * 0.1f;
+				Vector3 reflectionDir = normalize(reflect(ray.getDirection(), normal));
+				Vector3 reflectionOrigin = (dot(reflectionDir, normal) < 0.0f) ? hitpoint + normal * 0.1f : hitpoint - normal * 0.1f;
 
 				Raycast::Ray reflectionRay;
 				reflectionRay.setOrigin(reflectionOrigin);
 				reflectionRay.setDirection(reflectionDir);
 
 
-				Vector3 refractiveDir = normalize(refract(ray.getDirection(), N, 1.52f));
-				Vector3 refractiveOrigin = (dot(refractiveDir, N) < 0.0f) ? hitpoint - N * 0.1f : hitpoint + N * 0.1f;
+				Vector3 refractiveDir = normalize(refract(ray.getDirection(), normal, 1.52f));
+				Vector3 refractiveOrigin = (dot(refractiveDir, normal) < 0.0f) ? hitpoint - normal * 0.1f : hitpoint + normal * 0.1f;
 				
 				float kr = 0.0f;
-				Shaders::Functions::fresnel(ray.getDirection(), N, 1.52f, kr);
+				Shaders::Functions::fresnel(ray.getDirection(), normal, 1.52f, kr);
 
 				Raycast::Ray refractiveRay;
 				refractiveRay.setOrigin(refractiveOrigin);
@@ -185,10 +187,10 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 					// Get lighting information
 					light->illuminate(hitpoint, lightDirection, lightColour, ray.getHitData().tnear);
 					
-					Vector3 V = normalize(ray.getDirection());
+
 					//Vector3 halfVector = normalize(-V + lightDirection);
 
-					float NdotL = saturate(dot(N, lightDirection));
+					float NdotL = saturate(dot(normal, lightDirection));
 					//float NdotH = saturate(dot(N, halfVector));
 					//float NdotV = saturate(dot(N, -V));
 					//float LdotH = saturate(dot(lightDirection, halfVector));
@@ -210,18 +212,16 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 
 					// Shoot shadow rays into scene
 					Raycast::Ray shadowRay;
-					shadowRay.setOrigin(hitpoint + N * 0.1f);
+					shadowRay.setOrigin(hitpoint + normal * 0.1f);
 					shadowRay.setDirection(lightDirection);
 					shadowRay.m_tNear = ray.getHitData().tnear;
 
 					bool shadow = !bvh.hit(shadowRay);
 
-					Colour diffuse = Shaders::Functions::lambertCosineLaw(NdotL, lightColour, albedo);
-
-
-					// Colour albedo = ray.getHitData().material.albedo;
-					// Colour diffuse = albedo / Maths::special::pi * lightColour * std::max(0.0f, Vector3::dot(lightDirection, N));
-					hitColour += albedo * shadow;
+					Colour diffuse = Shaders::Functions::lambertCosineLaw(NdotL, lightColour, albedo) * shadow;
+					Vector3 R = reflect(lightDirection, normal);
+					float specular = light->m_intensity * power(max(0.0f, dot(R, viewDir)), 10.0f) * shadow;
+					hitColour = diffuse * 0.8f + specular * 0.2f;
 				}
 				return hitColour;
 			}

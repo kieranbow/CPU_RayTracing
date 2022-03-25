@@ -14,6 +14,7 @@ BoundingBox::AABB::AABB()
 
 void BoundingBox::AABB::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 {
+
 	// Generates a bounding box using the slab method as mention by Kay and Kajiya (1986)
 	m_planes.at(Maths::coord::x).normal = { 1.0f, 0.0f, 0.0f };
 	m_planes.at(Maths::coord::y).normal = { 0.0f, 1.0f, 0.0f };
