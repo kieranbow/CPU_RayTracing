@@ -284,27 +284,26 @@ bool BVH::Object::Accelerator::hitRecursivePrimitive(Raycast::Ray& ray, std::sha
 		{
 			if (Intersection::MollerTrumbore(ray, tri) && ray.getT() < tnear)
 			{
+				// Assign tnear to be the rays t value
 				tnear = ray.getT();
 
-				Vector2 vert0_uv = tri.vert0.texcoord;
-				Vector2 vert1_uv = tri.vert1.texcoord;
-				Vector2 vert2_uv = tri.vert2.texcoord;
-
-				float u = ray.getHitData().uv.getX();
-				float v = ray.getHitData().uv.getY();
-
+				// Get the material from the object
 				ray.getHitData().material = parentNode->m_material;
 
-				//if (!parentNode->m_texture.empty())
-				//{
-				//	ray.getHitData().material.albedo = parentNode->m_texture.at((1.0f - u - v) * vert0_uv + u * vert1_uv + v * vert2_uv);
-				//}
-				//else
-				//{
-				//	ray.getHitData().material.albedo = Colour(u, v, 1.0f - u - v);
-				//}
+				// Override the materials albedo with a texture if one exists
+				if (!parentNode->m_texture.empty())
+				{
+					ray.getHitData().material.albedo = parentNode->m_texture.at(Shaders::Functions::getUVCoords(ray.getHitData().uv, tri));
+				}
+				else
+				{
+					ray.getHitData().material.albedo = parentNode->m_material.albedo; //Colour(u, v, 1.0f - u - v);
+				}
 
+				// Override the materials normal with the smooth normals from the object
 				ray.getHitData().material.normal = Shaders::Functions::getSmoothNormalFromTri(tri, ray.getHitData());
+
+				// Set the hitpoint of the ray. This is important for the lighting and shading of the scene
 				ray.getHitData().hitPoint = (ray.getOrigin() + ray.getDirection() * ray.getT()) + ray.getHitData().normal;
 				return true;
 			}

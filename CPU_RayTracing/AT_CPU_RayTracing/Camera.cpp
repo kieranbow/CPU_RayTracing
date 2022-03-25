@@ -1,4 +1,6 @@
-#include <thread>
+
+#include <mutex>
+#include <queue>
 
 #include "Camera.h"
 #include "Primitive.h"
@@ -31,7 +33,7 @@ Camera::Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov)
 void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth, int antiAliasingSamples)
 {
 	// https://www.iquilezles.org/www/articles/cputiles/cputiles.htm
-	const int tilesize = 32;
+	const int tilesize = 16;
 	const int numXtile = static_cast<int>(m_size.getX()) / tilesize;
 	const int numYtile = static_cast<int>(m_size.getY()) / tilesize;
 	const int numTiles = numXtile * numYtile;
@@ -104,7 +106,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 	using namespace Shaders::Math;
 
 	Colour hitColour;
-	if (depth > max_depth) return Colour(0.5f, 0.5f, 1.0f);
+	if (depth > max_depth) return Colour(0.235294f, 0.67451f, 0.843137f);
 
 	if (bvh.hit(ray))
 	{
@@ -134,7 +136,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 			case Material::Types::Reflective:
 			{
 				float kr = 0.0f;
-				Shaders::Functions::fresnel(ray.getDirection(), normal, 1.5, kr);
+				Shaders::Functions::fresnel(ray.getDirection(), normal, 1.5f, kr);
 				Vector3 reflectionDir = reflect(ray.getDirection(), normal);
 				Vector3 reflectionOrigin = (dot(reflectionDir, normal) < 0.0f) ? hitpoint + normal * 0.1f : hitpoint - normal * 0.1f;
 
@@ -142,7 +144,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 				reflectionRay.setOrigin(reflectionOrigin);
 				reflectionRay.setDirection(reflectionDir);
 
-				hitColour = albedo * castRay(reflectionRay, bvh, sceneLights, depth + 1);// * kr;
+				hitColour = albedo * castRay(reflectionRay, bvh, sceneLights, depth + 1);// *kr;
 			}
 			break;
 
@@ -171,8 +173,33 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 			}
 			break;
 
-			case Material::Types::Conductive:
-				break;
+			case Material::Types::Phong:
+			{
+				for (auto& light : sceneLights)
+				{
+					Vector3 lightDirection;
+					Colour lightColour;
+
+					// Get lighting information
+					light->illuminate(hitpoint, lightDirection, lightColour, ray.getHitData().tnear);
+
+					const float NdotL = saturate(dot(normal, lightDirection));
+
+					// Shoot shadow rays into scene
+					Raycast::Ray shadowRay;
+					shadowRay.setOrigin(hitpoint + normal * 0.1f);
+					shadowRay.setDirection(lightDirection);
+					shadowRay.m_tNear = ray.getHitData().tnear;
+					bool shadow = !bvh.hit(shadowRay);
+
+					Colour diffuse = Shaders::Functions::lambertCosineLaw(NdotL, lightColour, albedo) * shadow;
+					Vector3 R = reflect(lightDirection, normal);
+					float specular = light->m_intensity * power(max(0.0f, dot(R, viewDir)), 10.0f) * shadow;
+					hitColour += diffuse * 0.8f + specular * 0.2f;
+				}
+				return hitColour;
+			}
+			break;
 
 			case Material::Types::Dielectic:
 			{
@@ -217,11 +244,6 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 					Colour diffuse = Shaders::Functions::lambertCosineLaw(NdotL, lightColour, albedo);
 
 					lo += ((kd * diffuse + specular) * NdotL) * shadow;
-
-					//Colour diffuse = Shaders::Functions::lambertCosineLaw(NdotL, lightColour, albedo) * shadow;
-					//Vector3 R = reflect(lightDirection, normal);
-					//float specular = light->m_intensity * power(max(0.0f, dot(R, viewDir)), 10.0f) * shadow;
-					//hitColour = diffuse * 0.8f + specular * 0.2f;
 				}
 				Colour ambient = Colour(0.03f, 0.03f, 0.03f) * albedo;
 				hitColour = ambient + lo;

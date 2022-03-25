@@ -1,5 +1,6 @@
 #pragma once
 #include "Vector3.h"
+#include "Vector2.h"
 #include "Colour.h"
 #include "MeshData.h"
 #include "Ray.h"
@@ -11,7 +12,7 @@ namespace Shaders
 	// This namespace contains a list of helper function for generating image effects
 	namespace Functions
 	{
-		// Returns a smoothed normal from the triangle of a surface
+		// Returns a smoothed normal from the triangle of a surface using Gouraud shading
 		inline Vector3 getSmoothNormalFromTri(const Triangle triangle, const Raycast::hitData data)
 		{
 			return Vector3::normalize((1.0f - data.uv.getX() - data.uv.getY()) * triangle.vert0.normal + data.uv.getX() * triangle.vert1.normal + data.uv.getY() * triangle.vert2.normal);
@@ -23,13 +24,18 @@ namespace Shaders
 			return Vector3::normalize(Vector3::cross(triangle.vert1.position - triangle.vert0.position, triangle.vert2.position - triangle.vert0.position));
 		}
 
+		// Returns a uv coordinate using the uvs generatered from Moller Trumbore and the meshes vertices texcoord
+		inline Vector2 getUVCoords(const Vector2& uv, const Triangle& triangle)
+		{
+			return (1.0f - uv.getX() - uv.getY()) * triangle.vert0.texcoord + uv.getX() * triangle.vert1.texcoord + uv.getY() * triangle.vert2.texcoord;
+		}
+
 		// Returns a gamma correct colour
 		inline Colour gammaCorrect(Colour colour)
 		{
 			Colour gammaCorrectColour = colour / (colour + 1.0f);
 			gammaCorrectColour = Shaders::Math::power(gammaCorrectColour, 1.0f / 2.2f);
 			return gammaCorrectColour;
-			//return Colour(std::sqrtf(colour.getRed()), std::sqrtf(colour.getGreen()), std::sqrtf(colour.getBlue()));
 		}
 
 		inline void fresnel(const Vector3& viewDir, const Vector3 normal, const float ior, float& kr)
@@ -94,6 +100,7 @@ namespace Shaders
 			return (roughness + 1.0f);
 		}
 
+		// A normal distribution function that distributes microfacets based of the surface's roughness
 		inline float trowbridge_reitz_ggx(const float NdotH, const float roughness)
 		{
 			const float a = roughness * roughness;
@@ -128,10 +135,7 @@ namespace Shaders
 
 		inline Colour fresnel_schlick(float NdotL, Colour f0, float f90) { return f0 + (f90 - f0) * std::powf(1.0f - NdotL, 5.0f); }
 
-		inline Colour cookTorranceBRDF(const Colour f, const float d, const float g, const float NdotV, const float NdotL)
-		{
-			return (f * d * g) / (4.0f * NdotV * NdotL + 0.0001f);
-		}
-
+		// Evaluates the cook torrance BRDF to create the specular component of am objects surface
+		inline Colour cookTorranceBRDF(const Colour f, const float d, const float g, const float NdotV, const float NdotL) { return (f * d * g) / (4.0f * NdotV * NdotL + 0.0001f); }
 	}
 }

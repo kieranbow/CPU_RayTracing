@@ -7,10 +7,14 @@
 #include "Vector2.h"
 #include "Matrix4x4.h"
 
+// Accelerator
+#include "Bvh.h"
 
+// Graphics
 #include "Ray.h"
 #include "Pixel.h"
-#include "Bvh.h"
+
+// Scene
 #include "Light.h"
 
 class Primitive;
@@ -21,9 +25,6 @@ class Camera
 		Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov);
 
 		void Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth, int antiAliasingSamples);
-
-		void setPositionWS(Vector3 positionWS);
-		void setDirectionWS(Vector3 directionWS);
 
 		Vector3& getPosition() { return m_position; }
 		const Matrix4x4& getMatrix() const { return m_camToWorld; }

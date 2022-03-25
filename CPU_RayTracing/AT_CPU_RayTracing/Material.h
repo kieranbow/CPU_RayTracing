@@ -7,7 +7,7 @@ namespace Material
 	enum class Types
 	{
 		Dielectic, // Rough surfaces
-		Conductive, // Metals
+		Phong,
 		Reflective, // Mirrors
 		Refractive, // Glass
 		Reflective_and_refractive, // Mirros and Glass

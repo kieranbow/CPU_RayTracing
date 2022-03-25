@@ -63,12 +63,15 @@ int main()
 	//options.width = width;
 	//options.height = height;
 	//options.aaAmount = amount;
-	options.width = 1280;
-	options.height = 720;
+	options.width = 1920;
+	options.height = 1080;
 	options.aaAmount = 4;
 
 	Vector2 image_size = { options.width, options.height };
 	int depth = 0;
+
+	Timer sceneTimer;
+	sceneTimer.StartTimer();
 
 	// https://stackoverflow.com/questions/13078243/how-to-move-a-camera-using-in-a-ray-tracer
 	// Define the scene camera
@@ -77,10 +80,10 @@ int main()
 
 	// Create the scenes lights
 	std::vector<std::unique_ptr<Light::Light>> sceneLights;
-	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.5f, 1.0f))));
-	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f))));
-	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(0.0f, 0.0f, 1.0f), Vector3(1.0f, 0.5f, 0.0f))));
-	//sceneLights.push_back(std::unique_ptr<Light::PointLight>(new Light::PointLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, 2.0f, -8.0f))));
+	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(1.0f, 0.5f, 1.0f)))); // Vector3(0.0f, 0.5f, 1.0f)
+	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 0.0f, 0.0f), Vector3(-1.0f, 1.0f, 1.0f)))); // Vector3(-1.0f, 1.0f, 1.0f)
+	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(0.0f, 1.0f, 0.0f), Vector3(-1.0f, 0.5f, -1.0f)))); // Vector3(1.0f, 0.5f, 0.0f)
+	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(0.0f, 0.0f, 1.0f), Vector3(1.0f, 1.0f, -1.0f)))); // Vector3(1.0f, 0.5f, 0.0f)
 
 	// Create the scene's primitives and their materials
 	Primitive cube;
@@ -92,7 +95,7 @@ int main()
 	cube_material.roughness	= 1.0f;
 	cube_material.metallic	= 0.0f;
 	cube.setMaterial(cube_material);
-	cube.setAlbedoTexture("Assets\\uv.png");
+	//cube.setAlbedoTexture("Assets\\Checker.png");
 
 	Primitive helmet("Assets\\helmet.obj", { 0.0f, 0.0f, 0.0f });
 	helmet.setPosition({-3.0f, 1.0f, -9.0f });
@@ -116,29 +119,29 @@ int main()
 	triangle.setMaterial(triangle_material);
 
 	Primitive cone("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
-	cone.setPosition({ 0.0f, 1.0f, -10.0f });
+	cone.setPosition({ 0.0f, 0.0f, -10.0f });
 
 	Material::Data cone_material;
-	cone_material.type = Material::Types::Dielectic;  // Refractive
+	cone_material.type = Material::Types::Reflective;  // Refractive
 	cone_material.albedo = Colour(1.0f, 1.0f, 0.0f);
-	cone_material.roughness = 1.0f;
+	cone_material.roughness = 0.3f;
 	cone_material.metallic = 0.0f;
 	cone.setMaterial(cone_material);
-	cone.setAlbedoTexture("Assets\\test.png");
+	cone.setAlbedoTexture("Assets\\Checker.png");
 
 	Primitive plane("Assets\\plane.obj", { 0.0f, 0.0f, 0.0f });
 	plane.setPosition({ 0.0f, -1.0f, -10.0f });
 
 	Material::Data plane_material;
-	plane_material.type = Material::Types::Reflective; // Reflective
+	plane_material.type = Material::Types::Dielectic; // Reflective
 	plane_material.albedo = Colour(0.5f, 0.5f, 0.5f);
 	plane_material.roughness = 0.3f;
 	plane_material.metallic = 0.0f;
 	plane.setMaterial(plane_material);
-	plane.setAlbedoTexture("Assets\\uv.png");
+	plane.setAlbedoTexture("Assets\\Checker.png");
 
 	// Push primitives into vector to be processed by the bvh
-	std::vector<Primitive> primitives{};
+	std::vector<Primitive> primitives;
 	primitives.push_back(triangle);
 	primitives.push_back(cone);
 	primitives.push_back(cube);
@@ -152,6 +155,9 @@ int main()
 
 	// Once the bvh has finished, clear all primitive data since that data now lives inside the bvh
 	primitives.clear();
+
+	sceneTimer.EndTimer();
+	Logger::PrintDebug("Scene took: " + std::to_string(sceneTimer.ShowResult()) + " seconds to load");
 
 	// Create a framebuffer for rendering into and set it to black
 	std::vector<Pixel> framebuffer;
