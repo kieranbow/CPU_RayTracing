@@ -15,6 +15,9 @@ namespace Shaders
 	// https://developer.download.nvidia.com/cg/index_stdlib.html
 	namespace Math
 	{
+		const float pi = Maths::special::pi;
+
+
 		// Returns the absolute value from input
 		inline float abs(float x) { return std::abs(x); }
 		inline Vector2 abs(Vector2 x) { return Vector2(std::abs(x.getX()), std::abs(x.getY())); }
