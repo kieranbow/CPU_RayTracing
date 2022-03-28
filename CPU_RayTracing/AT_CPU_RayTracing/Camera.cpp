@@ -10,6 +10,7 @@
 #include "Random.h"
 #include "Logger.h"
 #include "Random.h"
+#include "Atmosphere.h"
 
 Camera::Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov)
 {
@@ -30,7 +31,7 @@ Camera::Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov)
 	m_camToWorld.multVecMatrix(Vector3(0.0f, 0.0f, 0.0f), position);
 }
 
-void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth, int antiAliasingSamples)
+void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples)
 {
 	// https://www.iquilezles.org/www/articles/cputiles/cputiles.htm
 	const int tilesize = 16;
@@ -81,7 +82,7 @@ void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<s
 				primary_ray.setDirection(Vector3::normalize(pixelPosWS/* - primary_ray.getOrigin()*/));
 
 				// Cast the ray and return a colour to the buffer
-				buffer.at(iter).colour += castRay(primary_ray, bvh, sceneLights, depth);
+				buffer.at(iter).colour += castRay(primary_ray, bvh, sceneLights, atmosphere, depth);
 
 
 				//for (int aaX = 0; aaX < antiAliasingSamples; ++aaX)
@@ -101,7 +102,7 @@ void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<s
 	}
 }
 
-Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, int depth)
+Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth)
 {
 	using namespace Shaders::Math;
 
@@ -144,7 +145,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 				reflectionRay.setOrigin(reflectionOrigin);
 				reflectionRay.setDirection(reflectionDir);
 
-				hitColour = albedo * castRay(reflectionRay, bvh, sceneLights, depth + 1);// *kr;
+				hitColour = albedo * castRay(reflectionRay, bvh, sceneLights, atmosphere, depth + 1) * kr;
 			}
 			break;
 
@@ -167,8 +168,8 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 				refractiveRay.setOrigin(refractiveOrigin);
 				refractiveRay.setDirection(refractiveDir);
 
-				Colour refractColour = castRay(refractiveRay, bvh, sceneLights, depth + 1);
-				Colour reflectColour = castRay(reflectionRay, bvh, sceneLights, depth + 1);
+				Colour refractColour = castRay(refractiveRay, bvh, sceneLights, atmosphere, depth + 1);
+				Colour reflectColour = castRay(reflectionRay, bvh, sceneLights, atmosphere, depth + 1);
 				hitColour = reflectColour * kr + refractColour * (1.0f - kr);
 			}
 			break;
@@ -216,7 +217,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 
 					// Get lighting information
 					light->illuminate(hitpoint, lightDirection, lightColour, ray.getHitData().tnear);
-				
+		
 					Vector3 halfVector = normalize(-viewDir + lightDirection);
 
 					float NdotL = saturate(dot(normal, lightDirection));
@@ -247,7 +248,6 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 				}
 				Colour ambient = Colour(0.03f, 0.03f, 0.03f) * albedo;
 				hitColour = ambient + lo;
-
 				return hitColour;
 			}
 			break;
@@ -255,8 +255,17 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 	}
 	else
 	{
+		for (int i = 0; i < 4; i++)
+		{
+			float t0, t1, tmax = Maths::special::infinity;
+
+			if (Intersection::inplicitSphere(ray, Vector3(0.0f, 0.0f, 0.0f), atmosphere.m_earthRadius, t0, t1) && t1 > 0.0f) tmax = std::max(0.0f, t0);
+
+			hitColour += atmosphere.computeIncidentLight(ray, 0.0f, tmax);
+		}
+
 		// Background colour
-		hitColour = Colour(0.235294f, 0.67451f, 0.843137f);
+		//hitColour = Colour(0.235294f, 0.67451f, 0.843137f);
 	}
 	return hitColour;
 }

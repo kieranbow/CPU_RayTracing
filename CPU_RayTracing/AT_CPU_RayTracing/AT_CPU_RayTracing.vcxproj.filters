@@ -93,6 +93,9 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files\Utilities\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Atmosphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ray.h">
@@ -163,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Header Files\Utilities\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Atmosphere.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

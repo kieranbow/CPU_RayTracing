@@ -93,12 +93,42 @@ bool Intersection::minMaxBounds(Raycast::Ray& ray, BoundingBox::AABB& bounds)
 	return true;
 }
 
-bool Intersection::inplicitSphere(Raycast::Ray& ray, Vector3 center, float radius)
+bool Intersection::inplicitSphere(Raycast::Ray& ray, Vector3 center, float radius, float& t0, float& t1)
 {
-	Vector3 oc = ray.getOrigin() - center;
+	//Vector3 oc = ray.getOrigin() - center;
+	//float a = Vector3::dot(ray.getDirection(), ray.getDirection());
+	//float b = 2.0f * Vector3::dot(oc, ray.getDirection());
+	//float c = Vector3::dot(oc, oc) - radius * radius;
+	//float distriminant = b * b - 4 * a * c;
+
 	float a = Vector3::dot(ray.getDirection(), ray.getDirection());
-	float b = 2.0f * Vector3::dot(oc, ray.getDirection());
-	float c = Vector3::dot(oc, oc) - Maths::sqr(radius);
-	float distriminant = b * b - 4 * a * c;
-	return (distriminant > 0.0f);
+	float b = 2.0f * Vector3::dot(ray.getOrigin(), ray.getDirection());
+	float c = Vector3::dot(ray.getOrigin(), ray.getOrigin()) - radius * radius;
+
+	// https://www.scratchapixel.com/code.php?id=52&origin=/lessons/procedural-generation-virtual-worlds/simulating-sky
+	auto solveQuadratic = [](const float a, const float b, const float c, float& x1, float& x2)
+	{
+		if (b == 0)
+		{
+			if (a == 0) return false;
+			x1 = 0;
+			x2 = std::sqrtf(-c / a);
+		}
+		float distriminant = b * b - 4.0f * a * c;
+
+		if (distriminant < 0.0f) return false;
+
+		float q = (b < 0.0f) ? -0.5f * (b - std::sqrtf(distriminant)) : -0.5f * (b + std::sqrtf(distriminant));
+
+		x1 = q / a;
+		x2 = c / q;
+		return true;
+	};
+
+	if (!solveQuadratic(a, b, c, t0, t1)) return false;
+	if (t0 > t1) std::swap(t0, t1);
+	
+	return true;
+
+	//return (distriminant > 0.0f);
 }

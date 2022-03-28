@@ -1,10 +1,10 @@
 #include "Atmosphere.h"
 #include "Intersection.h"
 
-Vector3 Atmosphere::computeIncidentLight(RayTrace::Ray& ray, float tmin, float tmax)
+Vector3 Atmosphere::computeIncidentLight(Raycast::Ray& ray, float tmin, float tmax)
 {
 	float t0 = 0.0f, t1 = 0.0f;
-	if (!Intersection::raySphere(ray, m_atmosphereRadius, t0, t1) || t1 < 0.0f) return Vector3();
+	if (!Intersection::inplicitSphere(ray, Vector3(0.0f, 0.0f, 0.0f), m_atmosphereRadius, t0, t1) || t1 < 0.0f) return Vector3();
 
 	if (t0 > tmin && t0 > 0.0f) tmin = t0;
 	if (t1 < tmax) tmax = t1;
@@ -25,7 +25,7 @@ Vector3 Atmosphere::computeIncidentLight(RayTrace::Ray& ray, float tmin, float t
 	float g = 0.76f;
 	float phaseM = 3.0f / (8.0f * Maths::special::pi) * ((1.0f - g * g) * (1.0f + mu * mu)) / ((2.0f + g * g) * std::powf(1.0f + g * g - 2.0f * g * mu, 1.5f));
 
-	for (int i = 0; i < numSamples; i++)
+	for (int i = 0; i < numSamples; ++i)
 	{
 		Vector3 samplePosition = ray.getOrigin() + (tCurrent + segmentLength * 0.5f) * ray.getDirection();
 		float height = Vector3::length(samplePosition) - m_earthRadius;
@@ -38,16 +38,16 @@ Vector3 Atmosphere::computeIncidentLight(RayTrace::Ray& ray, float tmin, float t
 
 		float t0Light = 0.0f, t1Light = 0.0f;
 
-		RayTrace::Ray raySomthing;
-		raySomthing.setOrigin(samplePosition);
-		raySomthing.setDirection(m_sunDirection);
+		Raycast::Ray raySky;
+		raySky.setOrigin(samplePosition);
+		raySky.setDirection(m_sunDirection);
 
-		Intersection::raySphere(raySomthing, m_atmosphereRadius, t0Light, t1Light);
+		Intersection::inplicitSphere(raySky, Vector3(0.0f, 0.0f, 0.0f), m_atmosphereRadius, t0Light, t1Light);
 		float segmentLengthLight = t1Light / numSamplesLight;
 		float tCurrentLight = 0.0f;
 		float opticalDepthLightR = 0.0f, opticalDepthLightM = 0.0f;
-		int j = 0.0f;
-		for (j = 0.0f; j < numSamplesLight; j++)
+		int j = 0;
+		for (j = 0; j < numSamplesLight; ++j)
 		{
 			Vector3 samplePositionLight = samplePosition + (tCurrentLight + segmentLengthLight * 0.5f) * m_sunDirection;
 			float heightLight = Vector3::length(samplePositionLight) - m_earthRadius;

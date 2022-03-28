@@ -82,6 +82,10 @@ class Vector3
 
 		static Vector3 randomUnitSphere();
 
+		static void createCoordinateSystem(const Vector3& n, Vector3& nt, Vector3& nb);
+
+		static Vector3 uniformSampleHemisphere(const float& r1, const float& r2);
+
 		// Finds the biggest axis from a Vector3
 		static int getGreatestAxis(Vector3 vec);
 

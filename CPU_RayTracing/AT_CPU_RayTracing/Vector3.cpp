@@ -239,6 +239,28 @@ Vector3 Vector3::randomUnitSphere()
 	}
 }
 
+void Vector3::createCoordinateSystem(const Vector3& n, Vector3& nt, Vector3& nb)
+{
+	if (std::fabs(n.getX()) > std::fabs(n.getY()))
+	{
+		nt = Vector3(n.getZ(), 0.0f, -n.getX()) / std::sqrtf(n.getX() * n.getX() + n.getZ() * n.getZ());
+	}
+	else
+	{
+		nt = Vector3(0.0f, -n.getZ(), n.getY()) / std::sqrtf(n.getY() * n.getY() + n.getZ() * n.getZ());
+	}
+	nb = Vector3::cross(n, nt);
+}
+
+Vector3 Vector3::uniformSampleHemisphere(const float& r1, const float& r2)
+{
+	float sinTheta = std::sqrtf(1.0f - r1 * r1);
+	float phi = 2.0f * Maths::special::pi * r2;
+	float x = sinTheta * std::cosf(phi);
+	float z = sinTheta * std::sinf(phi);
+	return Vector3(x, r1, z);
+}
+
 int Vector3::getGreatestAxis(Vector3 vec)
 {
 	if (vec.getX() > vec.getY() && vec.getX() > vec.getZ()) return Maths::coord::x;
