@@ -77,9 +77,10 @@ int main()
 
 	// Create and define an atmosphere
 	Atmosphere atmosphere;
-	float angle = Maths::deg2rad(-25.0f);
+	float angle = Maths::deg2rad(-89.0f);
 	Vector3 sunDir = Vector3(0.0f, std::cos(angle), -std::sin(angle));
 	atmosphere.setSunDirection(sunDir);
+	atmosphere.setBrightness(1.0f);
 	//atmosphere.setPlanetRadius(10000.0f);
 	//atmosphere.setAtmosphereRadius(11000.0f);
 	//atmosphere.setRayleighThickness(1000.0f);
@@ -87,7 +88,7 @@ int main()
 
 	// https://stackoverflow.com/questions/13078243/how-to-move-a-camera-using-in-a-ray-tracer
 	// Define the scene camera
-	Camera camera(Vector3(0.0f, 1.0f, -2.0f)/*Vector3(0.0f, 0.0f, -2.0f)*/, Vector3(0.0f, 0.0f, -1.0f), image_size, 45.0f);
+	Camera camera(Vector3(0.0f, 0.0f, -2.0f)/*Vector3(0.0f, 0.0f, -2.0f)*/, Vector3(0.0f, 0.0f, -1.0f), image_size, 45.0f);
 	Matrix4x4::multVecByMatrix4x4(camera.getMatrix(), camera.getPosition());
 
 	// Create the scenes lights
@@ -109,7 +110,7 @@ int main()
 	cube.setMaterial(cube_material);
 
 	Primitive helmet("Assets\\helmet.obj", { 0.0f, 0.0f, 0.0f });
-	helmet.setPosition({-3.0f, 1.0f, -9.0f });
+	helmet.setPosition({-3.0f, 0.2f, -9.0f });
 
 	Material::Data helmet_material;
 	helmet_material.type				= Material::Types::Dielectic;
@@ -133,7 +134,7 @@ int main()
 	cone.setPosition({ 0.0f, 0.0f, -10.0f });
 
 	Material::Data cone_material;
-	cone_material.type		= Material::Types::Dielectic;  // Reflective
+	cone_material.type		= Material::Types::Reflective;  // Reflective
 	cone_material.albedo	= Colour(1.0f, 1.0f, 0.0f);
 	cone_material.roughness = 0.5f;
 	cone_material.metallic	= 1.0f;
@@ -181,7 +182,8 @@ int main()
 	render_timer.StartTimer();
 
 	// Render what the camera sees into the frame buffer
-	camera.Render(framebuffer, bvh, sceneLights, atmosphere, depth, options.aaAmount);
+	//camera.Render(framebuffer, bvh, sceneLights, atmosphere, depth, options.aaAmount);
+	camera.newRender(framebuffer, bvh, sceneLights, atmosphere, depth, options.aaAmount);
 
 	// End render timer
 	render_timer.EndTimer();

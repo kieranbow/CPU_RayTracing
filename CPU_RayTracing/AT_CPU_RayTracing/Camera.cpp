@@ -1,6 +1,7 @@
 
 #include <mutex>
-#include <queue>
+#include <atomic>
+#include <future>
 
 #include "Camera.h"
 #include "Primitive.h"
@@ -29,6 +30,7 @@ Camera::Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov)
 	m_cameraScale = std::tan(Maths::deg2rad(m_fov) * 0.5f);
 
 	m_camToWorld.multVecMatrix(Vector3(0.0f, 0.0f, 0.0f), position);
+
 }
 
 void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples)
@@ -99,6 +101,79 @@ void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<s
 				//buffer.at(iter).colour /= Colour(scale, scale, scale);
 			}
 		}
+	}
+}
+
+void Camera::newRender(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples)
+{
+	// https://medium.com/@phostershop/solving-multithreaded-raytracing-issues-with-c-11-7f018ecd76fa
+
+	size_t max = m_size.getX() * m_size.getY();
+	size_t cores = std::thread::hardware_concurrency();
+	volatile std::atomic<size_t> count = 0;
+	std::vector<std::future<void>> future;
+
+	float width = m_size.getX();
+	float height = m_size.getY();
+	while (cores--)
+	{
+		future.emplace_back(
+			std::async(
+				[=,&count, &width, &height, &buffer, &bvh, &sceneLights, &atmosphere, &depth, &antiAliasingSamples]()
+				{
+					while (true)
+					{
+						size_t idx = count++;
+						if (idx >= max) break;
+
+						const int tilesize = 64;
+						const int numXtile = static_cast<int>(width) / tilesize;
+						const int numYtile = static_cast<int>(height) / tilesize;
+						const int numTiles = numXtile * numYtile;
+
+						const float offset_x = static_cast<float>(tilesize * (idx % numXtile));
+						const float offset_y = static_cast<float>(tilesize * (idx / numXtile));
+
+						for (int y = 0; y < tilesize; y++)
+						{
+							for (int x = 0; x < tilesize; x++)
+							{
+								const float x_iter = offset_x + static_cast<float>(x);
+								const float y_iter = offset_y + static_cast<float>(y);
+								const int iter = static_cast<int>(m_size.getX() * (y_iter)+(x_iter));
+
+								// Loop through all the Anti-aliasing samples.
+								// This is the main render loop where the rays are cast into the scene
+								// returing a colour if it has or has not hit anything
+								float tile_x = x_iter + 0.5f;
+								float tile_y = y_iter + 0.5f;
+
+								// Create a pixel
+								Pixel pixel;
+
+								// Convert pixel from raster space to camera space
+								float Px = (2.0f * (tile_x + 0.5f) / m_size.getX() - 1.0f) * m_aspectRatio * m_cameraScale;
+								float Py = (1.0f - 2.0f * (tile_y + 0.5f) / m_size.getY()) * m_cameraScale;
+
+								pixel.position.setX(Px);
+								pixel.position.setY(Py);
+
+								// Convert pixel camera space to world space
+								Vector3 pixelPosWS;
+								m_camToWorld.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), m_direction.getZ()), pixelPosWS);
+								Vector3::normalize(pixelPosWS);
+
+								// Create the primiary ray that's origin is the camera position and it's direction is towards the pixel
+								Raycast::Ray primary_ray;
+								primary_ray.setOrigin(m_position);
+								primary_ray.setDirection(Vector3::normalize(pixelPosWS/* - primary_ray.getOrigin()*/));
+
+								// Cast the ray and return a colour to the buffer
+								buffer.at(iter).colour += castRay(primary_ray, bvh, sceneLights, atmosphere, depth);
+							}
+						}
+					}
+				}));
 	}
 }
 
@@ -260,23 +335,12 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 		skyray.setOrigin(Vector3(0.0f, atmosphere.getPlanetRadius() + 1.0f, 0.0f));
 		skyray.setDirection(ray.getDirection());
 
-		//for (int i = 0; i < 4; i++)
-		//{
-		//	float t0, t1, tmax = Maths::special::infinity;
-
-		//	if (Intersection::inplicitSphere(skyray, atmosphere.m_earthRadius, t0, t1) && t1 > 0.0f) tmax = std::max(0.0f, t0);
-
-		//	hitColour += atmosphere.computeIncidentLight(skyray, 0.0f, tmax);
-		//}
-
-		for (int i = 0; i < 4; i++)
-		{
-			float t0, t1, tmax = Maths::special::infinity;
-
-			if (Intersection::raySphere(skyray, atmosphere.getPosition(), atmosphere.getPlanetRadius(), t0, t1) && t1 > 0.0f) tmax = std::max(0.0f, t0);
-
-			hitColour += atmosphere.computeIncidentLight(skyray, 0.0f, tmax);
-		}
+		// Here, scratchaPixel uses a for loop with a range of 4 to add brightness to the sky.
+		// However, this causes a loss of performance. So instead, the result from computeIncidentLight() is multiplied by an intensity value
+		// which is set by default to 4.
+		float t0, t1, tmax = Maths::special::infinity;
+		if (Intersection::raySphere(skyray, atmosphere.getPosition(), atmosphere.getPlanetRadius(), t0, t1) && t1 > 0.0f) tmax = std::max(0.0f, t0);
+		hitColour += atmosphere.computeIncidentLight(skyray, 0.0f, tmax) * atmosphere.getBrightness();
 
 		// Background colour
 		//hitColour = Colour(0.235294f, 0.67451f, 0.843137f);

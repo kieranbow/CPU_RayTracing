@@ -1,6 +1,7 @@
 #pragma once
 // C++
 #include <vector>
+#include <thread>
 
 // Maths
 #include "Vector3.h"
@@ -20,12 +21,20 @@
 class Primitive;
 class Atmosphere;
 
+struct Tile
+{
+	int size = 16;
+	int idx = 0;
+};
+
 class Camera
 {
 	public:
 		Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov);
 
 		void Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples);
+
+		void newRender(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples);
 
 		Vector3& getPosition() { return m_position; }
 		const Matrix4x4& getMatrix() const { return m_camToWorld; }
@@ -41,6 +50,9 @@ class Camera
 		float m_cameraScale	= 0.0f;
 
 		static constexpr int max_depth = 3;
+
+		std::vector<std::thread> threadPool;
+		std::vector<Tile> tiles;
 
 		Colour castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere,int depth);
 };
