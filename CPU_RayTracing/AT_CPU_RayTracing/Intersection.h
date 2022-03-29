@@ -18,5 +18,8 @@ namespace Intersection
 	// Checks if a ray has intersected the two min and max points of a bounding box
 	bool minMaxBounds(Raycast::Ray& ray, BoundingBox::AABB& bounds);
 
-	bool inplicitSphere(Raycast::Ray& ray, Vector3 center, float radius, float& t0, float& t1);
+	// Checks if the ray has hit an implicit sphere
+	bool inplicitSphere(Raycast::Ray& ray, float radius, float& t0, float& t1);
+
+	bool raySphere(Raycast::Ray& ray, Vector3 origin, const float radius, float& t0, float& t2);
 }

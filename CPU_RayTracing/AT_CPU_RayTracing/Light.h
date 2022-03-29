@@ -31,13 +31,24 @@ namespace Light
 
 			void illuminate(Vector3& point, Vector3& direction, Colour& colour, float& distance)
 			{
+				// a * (1.0f - f)) + (b * f);
 				direction = m_direction;
-				colour = m_colour * m_intensity;
+
+				auto lerp = [](Colour a, Colour b, float f)
+				{
+					float red	= a.getRed()	* (1.0f - f) + (b.getRed()	* f);
+					float green = a.getGreen()	* (1.0f - f) + (b.getGreen() * f);
+					float blue	= a.getBlue()	* (1.0f - f) + (b.getBlue()	* f);
+					return Colour(red, green, blue);
+				};
+
+				colour = m_colour * m_intensity;  //lerp(m_sunset, m_colour, m_direction.getY());
 				distance = Maths::special::infinity;
 			}
 
 		private:
 			Vector3 m_direction;
+			const Colour m_sunset = Colour(1.0f, 0.5f, 0.0f);
 	};
 
 	// A point light that emits light in all directions

@@ -255,13 +255,27 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 	}
 	else
 	{
+		// Create ray to intersect with the atmosphere
+		Raycast::Ray skyray;
+		skyray.setOrigin(Vector3(0.0f, atmosphere.getPlanetRadius() + 1.0f, 0.0f));
+		skyray.setDirection(ray.getDirection());
+
+		//for (int i = 0; i < 4; i++)
+		//{
+		//	float t0, t1, tmax = Maths::special::infinity;
+
+		//	if (Intersection::inplicitSphere(skyray, atmosphere.m_earthRadius, t0, t1) && t1 > 0.0f) tmax = std::max(0.0f, t0);
+
+		//	hitColour += atmosphere.computeIncidentLight(skyray, 0.0f, tmax);
+		//}
+
 		for (int i = 0; i < 4; i++)
 		{
 			float t0, t1, tmax = Maths::special::infinity;
 
-			if (Intersection::inplicitSphere(ray, Vector3(0.0f, 0.0f, 0.0f), atmosphere.m_earthRadius, t0, t1) && t1 > 0.0f) tmax = std::max(0.0f, t0);
+			if (Intersection::raySphere(skyray, atmosphere.getPosition(), atmosphere.getPlanetRadius(), t0, t1) && t1 > 0.0f) tmax = std::max(0.0f, t0);
 
-			hitColour += atmosphere.computeIncidentLight(ray, 0.0f, tmax);
+			hitColour += atmosphere.computeIncidentLight(skyray, 0.0f, tmax);
 		}
 
 		// Background colour

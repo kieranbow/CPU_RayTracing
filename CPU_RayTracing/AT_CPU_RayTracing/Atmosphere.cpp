@@ -4,15 +4,13 @@
 Vector3 Atmosphere::computeIncidentLight(Raycast::Ray& ray, float tmin, float tmax)
 {
 	float t0 = 0.0f, t1 = 0.0f;
-	if (!Intersection::inplicitSphere(ray, Vector3(0.0f, 0.0f, 0.0f), m_atmosphereRadius, t0, t1) || t1 < 0.0f) return Vector3();
+	//if (!Intersection::inplicitSphere(ray, m_atmosphereRadius, t0, t1) || t1 < 0.0f) return Vector3();
+	if (!Intersection::raySphere(ray, m_position, m_atmosphereRadius, t0, t1) || t1 < 0.0f) return Vector3();
 
 	if (t0 > tmin && t0 > 0.0f) tmin = t0;
 	if (t1 < tmax) tmax = t1;
 
-	const int numSamples = 16;
-	const int numSamplesLight = 8;
-
-	float segmentLength = (tmax - tmin) / numSamples;
+	float segmentLength = (tmax - tmin) / m_numSamples;
 	float tCurrent = tmin;
 
 	// Mie and rayleigh contribution
@@ -21,17 +19,19 @@ Vector3 Atmosphere::computeIncidentLight(Raycast::Ray& ray, float tmin, float tm
 	float opticalDepthR = 0.0f, opticalDepthM = 0.0f;
 	float mu = Vector3::dot(ray.getDirection(), m_sunDirection);
 
-	float phaseR = 3.0f / (16.0f * Maths::special::pi) * (1.0f + mu * mu);
-	float g = 0.76f;
-	float phaseM = 3.0f / (8.0f * Maths::special::pi) * ((1.0f - g * g) * (1.0f + mu * mu)) / ((2.0f + g * g) * std::powf(1.0f + g * g - 2.0f * g * mu, 1.5f));
+	// Rayleigh phase function
+	float phaseR = 3.0f / (static_cast<float>(m_numSamples) * Maths::special::pi) * (1.0f + mu * mu);
 
-	for (int i = 0; i < numSamples; ++i)
+	// Mie phase function
+	float phaseM = 3.0f / (static_cast<float>(m_numSampleLight) * Maths::special::pi) * ((1.0f - m_g * m_g) * (1.0f + mu * mu)) / ((2.0f + m_g * m_g) * std::powf(1.0f + m_g * m_g - 2.0f * m_g * mu, 1.5f));
+
+	for (int i = 0; i < m_numSamples; ++i)
 	{
 		Vector3 samplePosition = ray.getOrigin() + (tCurrent + segmentLength * 0.5f) * ray.getDirection();
-		float height = Vector3::length(samplePosition) - m_earthRadius;
+		float height = Vector3::length(samplePosition) - m_planetRadius;
 
-		float hr = std::exp(-height / m_hr) * segmentLength;
-		float hm = std::exp(-height / m_hm) * segmentLength;
+		const float hr = std::exp(-height / m_hr) * segmentLength;
+		const float hm = std::exp(-height / m_hm) * segmentLength;
 
 		opticalDepthR += hr;
 		opticalDepthM += hm;
@@ -42,21 +42,23 @@ Vector3 Atmosphere::computeIncidentLight(Raycast::Ray& ray, float tmin, float tm
 		raySky.setOrigin(samplePosition);
 		raySky.setDirection(m_sunDirection);
 
-		Intersection::inplicitSphere(raySky, Vector3(0.0f, 0.0f, 0.0f), m_atmosphereRadius, t0Light, t1Light);
-		float segmentLengthLight = t1Light / numSamplesLight;
+		//Intersection::inplicitSphere(raySky, m_atmosphereRadius, t0Light, t1Light);
+		Intersection::raySphere(raySky, m_position, m_atmosphereRadius, t0Light, t1Light);
+
+		float segmentLengthLight = t1Light / m_numSampleLight;
 		float tCurrentLight = 0.0f;
 		float opticalDepthLightR = 0.0f, opticalDepthLightM = 0.0f;
 		int j = 0;
-		for (j = 0; j < numSamplesLight; ++j)
+		for (j = 0; j < m_numSampleLight; ++j)
 		{
 			Vector3 samplePositionLight = samplePosition + (tCurrentLight + segmentLengthLight * 0.5f) * m_sunDirection;
-			float heightLight = Vector3::length(samplePositionLight) - m_earthRadius;
+			float heightLight = Vector3::length(samplePositionLight) - m_planetRadius;
 			if (heightLight < 0.0f) break;
 			opticalDepthLightR += std::exp(-heightLight / m_hr) * segmentLengthLight;
 			opticalDepthLightM += std::exp(-heightLight / m_hm) * segmentLengthLight;
 			tCurrentLight += segmentLengthLight;
 		}
-		if (j == numSamplesLight)
+		if (j == m_numSampleLight)
 		{
 			Vector3 tau = m_betaR * (opticalDepthR + opticalDepthLightR) + m_betaM * 1.1f * (opticalDepthM + opticalDepthLightM);
 			Vector3 attenuation = { std::exp(-tau.getX()), std::exp(-tau.getY()), std::exp(-tau.getZ()) };

@@ -75,32 +75,37 @@ int main()
 	sceneTimer.StartTimer();
 
 
-
+	// Create and define an atmosphere
 	Atmosphere atmosphere;
-	float angle = Maths::special::pi * -0.2f; // 0.5f for sunset
+	float angle = Maths::deg2rad(-45.0f);
 	Vector3 sunDir = Vector3(0.0f, std::cos(angle), -std::sin(angle));
-	atmosphere.m_sunDirection = sunDir;
+	atmosphere.setSunDirection(sunDir);
+	//atmosphere.setPlanetRadius(10000.0f);
+	//atmosphere.setAtmosphereRadius(11000.0f);
+	//atmosphere.setRayleighThickness(1000.0f);
+	//atmosphere.setMieThickness(100.0f);
 
-	atmosphere.m_earthRadius = 10000.0f;
-	atmosphere.m_atmosphereRadius = 11000.0f;
-	atmosphere.m_hr = 1000.0f;
-	atmosphere.m_hm = 100.0f;
+
+	//atmosphere.m_earthRadius = 10000.0f;
+	//atmosphere.m_atmosphereRadius = 11000.0f;
+	//atmosphere.m_hr = 1000.0f;
+	//atmosphere.m_hm = 100.0f;
 
 	// https://stackoverflow.com/questions/13078243/how-to-move-a-camera-using-in-a-ray-tracer
 	// Define the scene camera
-	Camera camera(Vector3(0.0f, atmosphere.m_earthRadius + 1.0f, 0)/*Vector3(0.0f, 0.0f, -2.0f)*/, Vector3(0.0f, 0.0f, -1.0f), image_size, 45.0f);
+	Camera camera(Vector3(0.0f, 1.0f, -2.0f)/*Vector3(0.0f, 0.0f, -2.0f)*/, Vector3(0.0f, 0.0f, -1.0f), image_size, 45.0f);
 	Matrix4x4::multVecByMatrix4x4(camera.getMatrix(), camera.getPosition());
 
 	// Create the scenes lights
 	std::vector<std::unique_ptr<Light::Light>> sceneLights;
-	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 1.0f), Vector3(0.0f, std::cos(angle), -std::sin(angle))))); // Vector3(0.0f, 0.5f, 1.0f) /*Vector3(1.0f, 0.5f, 1.0f)*/
+	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 1.0f), sunDir))); // Vector3(0.0f, 0.5f, 1.0f) /*Vector3(1.0f, 0.5f, 1.0f)*/
 	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 0.0f, 0.0f), Vector3(-1.0f, 1.0f, 1.0f)))); // Vector3(-1.0f, 1.0f, 1.0f)
 	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(0.0f, 1.0f, 0.0f), Vector3(-1.0f, 0.5f, -1.0f)))); // Vector3(1.0f, 0.5f, 0.0f)
 	//sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(0.0f, 0.0f, 1.0f), Vector3(1.0f, 1.0f, -1.0f)))); // Vector3(1.0f, 0.5f, 0.0f)
 
 	// Create the scene's primitives and their materials
 	Primitive cube;
-	cube.setPosition({ 3.0f, atmosphere.m_earthRadius + 0.0f, -15.0f });
+	cube.setPosition({ 3.0f, 0.0f, -15.0f });
 
 	Material::Data cube_material;
 	cube_material.type		= Material::Types::Dielectic; // Reflective
@@ -110,7 +115,7 @@ int main()
 	cube.setMaterial(cube_material);
 
 	Primitive helmet("Assets\\helmet.obj", { 0.0f, 0.0f, 0.0f });
-	helmet.setPosition({-3.0f, atmosphere.m_earthRadius + 1.0f, -9.0f });
+	helmet.setPosition({-3.0f, 1.0f, -9.0f });
 
 	Material::Data helmet_material;
 	helmet_material.type				= Material::Types::Dielectic;
@@ -121,34 +126,34 @@ int main()
 	helmet.setMaterial(helmet_material);
 
 	Primitive triangle("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
-	triangle.setPosition({ 5.0f, atmosphere.m_earthRadius + 1.0f, -12.0f });
+	triangle.setPosition({ 5.0f, 1.0f, -12.0f });
 
 	Material::Data triangle_material;
-	triangle_material.type = Material::Types::Dielectic;  // Reflective
-	triangle_material.albedo = Colour(0.5f, 0.5f, 0.5f);
+	triangle_material.type		= Material::Types::Dielectic;  // Reflective
+	triangle_material.albedo	= Colour(0.5f, 0.5f, 0.5f);
 	triangle_material.roughness = 0.3f;
-	triangle_material.metallic = 0.0f;
+	triangle_material.metallic	= 0.0f;
 	triangle.setMaterial(triangle_material);
 
 	Primitive cone("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
-	cone.setPosition({ 0.0f, atmosphere.m_earthRadius + 0.0f, -10.0f });
+	cone.setPosition({ 0.0f, 0.0f, -10.0f });
 
 	Material::Data cone_material;
-	cone_material.type = Material::Types::Reflective;  // Reflective
-	cone_material.albedo = Colour(1.0f, 1.0f, 0.0f);
+	cone_material.type		= Material::Types::Reflective;  // Reflective
+	cone_material.albedo	= Colour(1.0f, 1.0f, 0.0f);
 	cone_material.roughness = 0.3f;
-	cone_material.metallic = 0.0f;
+	cone_material.metallic	= 0.0f;
 	cone.setMaterial(cone_material);
 	cone.setAlbedoTexture("Assets\\Checker.png");
 
 	Primitive plane("Assets\\plane.obj", { 0.0f, 0.0f, 0.0f });
-	plane.setPosition({ 0.0f, atmosphere.m_earthRadius + -1.0f, -10.0f });
+	plane.setPosition({ 0.0f, -1.0f, -10.0f });
 
 	Material::Data plane_material;
-	plane_material.type = Material::Types::Dielectic; // Reflective
-	plane_material.albedo = Colour(0.5f, 0.5f, 0.5f);
-	plane_material.roughness = 0.3f;
-	plane_material.metallic = 0.0f;
+	plane_material.type			= Material::Types::Dielectic; // Reflective
+	plane_material.albedo		= Colour(0.5f, 0.5f, 0.5f);
+	plane_material.roughness	= 0.3f;
+	plane_material.metallic		= 0.0f;
 	plane.setMaterial(plane_material);
 	plane.setAlbedoTexture("Assets\\Checker.png");
 

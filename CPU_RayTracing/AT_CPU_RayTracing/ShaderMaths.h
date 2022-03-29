@@ -15,7 +15,7 @@ namespace Shaders
 	// https://developer.download.nvidia.com/cg/index_stdlib.html
 	namespace Math
 	{
-		const float pi = Maths::special::pi;
+		constexpr float pi = Maths::special::pi;
 
 
 		// Returns the absolute value from input
@@ -36,6 +36,7 @@ namespace Shaders
 
 		// Clamps x between min and max
 		inline float clamp(float x, float min, float max) { return std::clamp(x, min, max); }
+		inline Vector2 clamp(Vector2 x, float min, float max) { return Vector2(std::clamp(x.getX(), min, max), std::clamp(x.getY(), min, max)); }
 
 		// Returns the cosine of x
 		inline float cos(float x) { return std::cosf(x); }
@@ -44,34 +45,36 @@ namespace Shaders
 
 		// Returns the distance between two points
 		inline float distance(Vector3 a, Vector3 b) { return Vector3::distance(a, b); }
-		// inline float distance(Vector2 a, Vector2 b);
 
 		// Returns the dot product of two vectors
 		inline float dot(Vector3 a, Vector3 b) { return Vector3::dot(a, b); }
 		inline float dot(Vector2 a, Vector2 b) { return Vector2::dot(a, b); }
 
 		// Returns the base-e exponent
-		inline float exp(float x) { return std::expf(x); }
-		inline Vector2 exp(Vector2 x) { return Vector2(std::expf(x.getX()), std::expf(x.getY())); }
-		inline Vector3 exp(Vector3 x) { return Vector3(std::expf(x.getX()), std::expf(x.getY()), std::expf(x.getZ())); }
+		inline float exp(float x)		{ return std::expf(x); }
+		inline Vector2 exp(Vector2 x)	{ return Vector2(std::expf(x.getX()), std::expf(x.getY())); }
+		inline Vector3 exp(Vector3 x)	{ return Vector3(std::expf(x.getX()), std::expf(x.getY()), std::expf(x.getZ())); }
 
 		// Base 2 exponent (per component)
-		inline float exp2(float x) {return std::exp2f(x); }
-		inline Vector2 exp2(Vector2 x) { return Vector2(std::exp2f(x.getX()), std::exp2f(x.getY())); }
-		inline Vector3 exp2(Vector3 x) { return Vector3(std::exp2f(x.getX()), std::exp2f(x.getY()), std::expf(x.getZ())); }
+		inline float exp2(float x)		{return std::exp2f(x); }
+		inline Vector2 exp2(Vector2 x)	{ return Vector2(std::exp2f(x.getX()), std::exp2f(x.getY())); }
+		inline Vector3 exp2(Vector3 x)	{ return Vector3(std::exp2f(x.getX()), std::exp2f(x.getY()), std::expf(x.getZ())); }
+		inline Colour exp2(Colour x)	{ return Colour(std::exp2f(x.getRed()), std::exp2f(x.getGreen()), std::expf(x.getBlue())); }
 
 		// Returns the greatest float which is less than or equal to x
-		inline float floor(float x) { return std::floorf(x); }
+		inline float floor(float x)		{ return std::floorf(x); }
 		inline Vector2 floor(Vector2 x) { return Vector2(std::floorf(x.getX()), std::floorf(x.getY())); }
 		inline Vector3 floor(Vector3 x) { return Vector3(std::floorf(x.getX()), std::floorf(x.getY()), std::floorf(x.getZ())); }
+		inline Colour floor(Colour x)	{ return Colour(std::floorf(x.getRed()), std::floorf(x.getGreen()), std::floorf(x.getBlue())); }
 
 		// Returns the fractional portion of a scalar or each vector component.
 		inline float frac(float x) { return x - std::floorf(x); }
 		inline Vector2 frac(Vector2 x) { return Vector2(x.getX() - std::floorf(x.getX()), x.getY() - std::floorf(x.getY())); }
 		inline Vector3 frac(Vector3 x) { return Vector3(std::abs(x.getX()), std::abs(x.getY()), std::abs(x.getZ())); }
+		inline Colour frac(Colour x) { return Colour(std::abs(x.getRed()), std::abs(x.getGreen()), std::abs(x.getBlue())); }
 
 		inline float lerp(float a, float b, float f) { return (a * (1.0f - f)) + (b * f); }
-		//inline Vector2 lerp(Vector2 a, Vector2 b, float f) { return (a * (1.0f - f)) + (b * f); }
+		inline Vector2 lerp(Vector2 a, Vector2 b, float f) { return (a * (1.0f - f)) + (b * f); }
 		inline Vector3 lerp(Vector3 a, Vector3 b, float f) { return (a * (1.0f - f)) + (b * f); }
 		inline Colour lerp(Colour a, Colour b, float f) { return a * (1.0f - f) + (b * f); }
 
@@ -122,15 +125,18 @@ namespace Shaders
 		inline float sqrt(float x) { return std::sqrtf(x); }
 		inline Vector2 sqrt(Vector2 x) { return Vector2(std::sqrt(x.getX()), std::sqrt(x.getY())); }
 		inline Vector3 sqrt(Vector3 x) { return Vector3(std::sqrt(x.getX()), std::sqrt(x.getY()), std::sqrt(x.getZ())); }
+		inline Colour sqrt(Colour x) { return Colour(std::sqrt(x.getRed()), std::sqrt(x.getGreen()), std::sqrt(x.getBlue())); }
 
 		// Returns the sin of x
 		inline float sin(float x) { return std::sinf(x); }
 		inline Vector2 sin(Vector2 x) { return Vector2(std::sinf(x.getX()), std::sinf(x.getY())); }
 		inline Vector3 sin(Vector3 x) { return Vector3(std::sinf(x.getX()), std::sinf(x.getY()), std::sinf(x.getZ())); }
+		inline Colour sin(Colour x) { return Colour(std::sinf(x.getRed()), std::sinf(x.getGreen()), std::sinf(x.getBlue())); }
 
 		// Returns the tangent of x
 		inline float tan(float x) { return std::tanf(x); }
 		inline Vector2 tan(Vector2 x) { return Vector2(std::tanf(x.getX()), std::tanf(x.getY())); }
 		inline Vector3 tan(Vector3 x) { return Vector3(std::tanf(x.getX()), std::tanf(x.getY()), std::tanf(x.getZ())); }
+		inline Colour tan(Colour x) { return Colour(std::tanf(x.getRed()), std::tanf(x.getGreen()), std::tanf(x.getBlue())); }
 	}
 }
