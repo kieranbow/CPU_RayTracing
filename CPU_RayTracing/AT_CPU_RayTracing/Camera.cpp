@@ -158,19 +158,19 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 				reflectionRay.setOrigin(reflectionOrigin);
 				reflectionRay.setDirection(reflectionDir);
 
-				Vector3 refractiveDir = normalize(refract(ray.getDirection(), normal, 1.52f));
+				Vector3 refractiveDir = normalize(refract(ray.getDirection(), normal, 1.33f));
 				Vector3 refractiveOrigin = (dot(refractiveDir, normal) < 0.0f) ? hitpoint - normal * 0.1f : hitpoint + normal * 0.1f;
-				
-				float kr = 0.0f;
-				Shaders::Functions::fresnel(ray.getDirection(), normal, 1.52f, kr);
 
 				Raycast::Ray refractiveRay;
 				refractiveRay.setOrigin(refractiveOrigin);
 				refractiveRay.setDirection(refractiveDir);
 
+				float kr = 0.0f;
+				Shaders::Functions::fresnel(ray.getDirection(), normal, 1.33f, kr);
+
 				Colour refractColour = castRay(refractiveRay, bvh, sceneLights, atmosphere, depth + 1);
 				Colour reflectColour = castRay(reflectionRay, bvh, sceneLights, atmosphere, depth + 1);
-				hitColour = reflectColour * kr + refractColour * (1.0f - kr);
+				hitColour = /*reflectColour * kr + */refractColour /** (1.0f - kr)*/;
 			}
 			break;
 

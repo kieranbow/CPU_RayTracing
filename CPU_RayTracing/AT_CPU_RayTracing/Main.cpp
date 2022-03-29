@@ -77,19 +77,13 @@ int main()
 
 	// Create and define an atmosphere
 	Atmosphere atmosphere;
-	float angle = Maths::deg2rad(-45.0f);
+	float angle = Maths::deg2rad(-25.0f);
 	Vector3 sunDir = Vector3(0.0f, std::cos(angle), -std::sin(angle));
 	atmosphere.setSunDirection(sunDir);
 	//atmosphere.setPlanetRadius(10000.0f);
 	//atmosphere.setAtmosphereRadius(11000.0f);
 	//atmosphere.setRayleighThickness(1000.0f);
 	//atmosphere.setMieThickness(100.0f);
-
-
-	//atmosphere.m_earthRadius = 10000.0f;
-	//atmosphere.m_atmosphereRadius = 11000.0f;
-	//atmosphere.m_hr = 1000.0f;
-	//atmosphere.m_hm = 100.0f;
 
 	// https://stackoverflow.com/questions/13078243/how-to-move-a-camera-using-in-a-ray-tracer
 	// Define the scene camera
@@ -139,18 +133,18 @@ int main()
 	cone.setPosition({ 0.0f, 0.0f, -10.0f });
 
 	Material::Data cone_material;
-	cone_material.type		= Material::Types::Reflective;  // Reflective
+	cone_material.type		= Material::Types::Dielectic;  // Reflective
 	cone_material.albedo	= Colour(1.0f, 1.0f, 0.0f);
-	cone_material.roughness = 0.3f;
-	cone_material.metallic	= 0.0f;
+	cone_material.roughness = 0.5f;
+	cone_material.metallic	= 1.0f;
 	cone.setMaterial(cone_material);
-	cone.setAlbedoTexture("Assets\\Checker.png");
+	//cone.setAlbedoTexture("Assets\\Checker.png");
 
 	Primitive plane("Assets\\plane.obj", { 0.0f, 0.0f, 0.0f });
 	plane.setPosition({ 0.0f, -1.0f, -10.0f });
 
 	Material::Data plane_material;
-	plane_material.type			= Material::Types::Dielectic; // Reflective
+	plane_material.type			= Material::Types::Reflective; // Reflective
 	plane_material.albedo		= Colour(0.5f, 0.5f, 0.5f);
 	plane_material.roughness	= 0.3f;
 	plane_material.metallic		= 0.0f;
