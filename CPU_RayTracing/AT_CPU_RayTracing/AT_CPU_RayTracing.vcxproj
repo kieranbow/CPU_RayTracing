@@ -177,6 +177,7 @@
     <ClInclude Include="Matrix4x4.h" />
     <ClInclude Include="MeshLoader.h" />
     <ClInclude Include="Maths.h" />
+    <ClInclude Include="Option.h" />
     <ClInclude Include="Pixel.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Random.h" />

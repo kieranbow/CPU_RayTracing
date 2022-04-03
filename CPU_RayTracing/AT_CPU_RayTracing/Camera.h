@@ -18,25 +18,22 @@
 // Scene
 #include "Light.h"
 
+#include "Option.h"
+
 class Primitive;
 class Atmosphere;
-
-struct Tile
-{
-	int size = 16;
-	int idx = 0;
-};
 
 class Camera
 {
 	public:
-		Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov);
+		Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov, Options option);
 
 		void Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples);
 
 		void newRender(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples);
 
 		Vector3& getPosition() { return m_position; }
+		const Vector3& getDirection() const { return m_direction; }
 		const Matrix4x4& getMatrix() const { return m_camToWorld; }
 
 	private:
@@ -49,10 +46,9 @@ class Camera
 		float m_aspectRatio	= 0.0f;
 		float m_cameraScale	= 0.0f;
 
+		Options m_option;
+
 		static constexpr int max_depth = 3;
 
-		std::vector<std::thread> threadPool;
-		std::vector<Tile> tiles;
-
-		Colour castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere,int depth);
+		Colour castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth);
 };

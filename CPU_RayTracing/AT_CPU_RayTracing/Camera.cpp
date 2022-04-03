@@ -13,7 +13,7 @@
 #include "Random.h"
 #include "Atmosphere.h"
 
-Camera::Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov)
+Camera::Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov, Options option)
 {
 	// Set world space position and direction
 	m_position = m_camToWorld.multVecByMatrix4x4(position);
@@ -31,6 +31,7 @@ Camera::Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov)
 
 	m_camToWorld.multVecMatrix(Vector3(0.0f, 0.0f, 0.0f), position);
 
+	m_option = option;
 }
 
 void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples)
@@ -42,73 +43,104 @@ void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<s
 	const int numTiles = numXtile * numYtile;
 	const int maxDepth = 5;
 
-	// Loop through each tile
-	for (int tile = 0; tile < numTiles; tile++)
+	for (int y = 0; y < m_size.getY(); y++)
 	{
-		const float offset_x = static_cast<float>(tilesize * (tile % numXtile));
-		const float offset_y = static_cast<float>(tilesize * (tile / numXtile));
-
-		// Loop through the tiles width and height in pixels
-		for (int y = 0; y < tilesize; y++)
+		for (int x = 0; x < m_size.getX(); x++)
 		{
-			for (int x = 0; x < tilesize; x++)
-			{
-				const float x_iter = offset_x + static_cast<float>(x);
-				const float y_iter = offset_y + static_cast<float>(y);
-				const int iter = static_cast<int>(m_size.getX() * (y_iter)+(x_iter));
+			const int iter = static_cast<int>(m_size.getX() * (y)+(x));
 
-				// Loop through all the Anti-aliasing samples.
-				// This is the main render loop where the rays are cast into the scene
-				// returing a colour if it has or has not hit anything
-				float tile_x = x_iter + 0.5f;
-				float tile_y = y_iter + 0.5f;
+			// Create a pixel
+			Pixel pixel;
 
-				// Create a pixel
-				Pixel pixel;
+			// Convert pixel from raster space to camera space
+			float Px = (2.0f * (x + 0.5f) / m_size.getX() - 1.0f) * m_aspectRatio * m_cameraScale;
+			float Py = (1.0f - 2.0f * (y + 0.5f) / m_size.getY()) * m_cameraScale;
 
-				// Convert pixel from raster space to camera space
-				float Px = (2.0f * (tile_x + 0.5f) / m_size.getX() - 1.0f) * m_aspectRatio * m_cameraScale;
-				float Py = (1.0f - 2.0f * (tile_y + 0.5f) / m_size.getY()) * m_cameraScale;
+			pixel.position.setX(Px);
+			pixel.position.setY(Py);
 
-				pixel.position.setX(Px);
-				pixel.position.setY(Py);
+			// Convert pixel camera space to world space
+			Vector3 pixelPosWS;
+			m_camToWorld.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), m_direction.getZ()), pixelPosWS);
+			Vector3::normalize(pixelPosWS);
 
-				// Convert pixel camera space to world space
-				Vector3 pixelPosWS;
-				m_camToWorld.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), m_direction.getZ()), pixelPosWS);
-				Vector3::normalize(pixelPosWS);
+			// Create ray that's origin is the camera and it's direction is towards the pixel
+			Raycast::Ray primary_ray;
+			primary_ray.setOrigin(m_position);
+			primary_ray.setDirection(Vector3::normalize(pixelPosWS/* - primary_ray.getOrigin()*/));
 
-				// Create ray that's origin is the camera and it's direction is towards the pixel
-				Raycast::Ray primary_ray;
-				primary_ray.setOrigin(m_position);
-				primary_ray.setDirection(Vector3::normalize(pixelPosWS/* - primary_ray.getOrigin()*/));
-
-				// Cast the ray and return a colour to the buffer
-				buffer.at(iter).colour += castRay(primary_ray, bvh, sceneLights, atmosphere, depth);
-
-
-				//for (int aaX = 0; aaX < antiAliasingSamples; ++aaX)
-				//{
-				//	for (int aaY = 0; aaY < antiAliasingSamples; aaY++)
-				//	{
-
-				//	}
-				//	
-				//}
-				//// Once render loop is complete. Take the current pixel and apply anti-aliasing
-				//float scale = 1.0f / antiAliasingSamples;
-
-				//buffer.at(iter).colour /= Colour(scale, scale, scale);
-			}
+			// Cast the ray and return a colour to the buffer
+			buffer.at(iter).colour += castRay(primary_ray, bvh, sceneLights, atmosphere, depth);
 		}
 	}
+
+	//// Loop through each tile
+	//for (int tile = 0; tile < numTiles; tile++)
+	//{
+	//	const float offset_x = static_cast<float>(tilesize * (tile % numXtile));
+	//	const float offset_y = static_cast<float>(tilesize * (tile / numXtile));
+
+	//	// Loop through the tiles width and height in pixels
+	//	for (int y = 0; y < tilesize; y++)
+	//	{
+	//		for (int x = 0; x < tilesize; x++)
+	//		{
+	//			const float x_iter = offset_x + static_cast<float>(x);
+	//			const float y_iter = offset_y + static_cast<float>(y);
+	//			const int iter = static_cast<int>(m_size.getX() * (y_iter)+(x_iter));
+
+	//			// Loop through all the Anti-aliasing samples.
+	//			// This is the main render loop where the rays are cast into the scene
+	//			// returing a colour if it has or has not hit anything
+	//			float tile_x = x_iter + 0.5f;
+	//			float tile_y = y_iter + 0.5f;
+
+	//			// Create a pixel
+	//			Pixel pixel;
+
+	//			// Convert pixel from raster space to camera space
+	//			float Px = (2.0f * (tile_x + 0.5f) / m_size.getX() - 1.0f) * m_aspectRatio * m_cameraScale;
+	//			float Py = (1.0f - 2.0f * (tile_y + 0.5f) / m_size.getY()) * m_cameraScale;
+
+	//			pixel.position.setX(Px);
+	//			pixel.position.setY(Py);
+
+	//			// Convert pixel camera space to world space
+	//			Vector3 pixelPosWS;
+	//			m_camToWorld.multDirByMatrix4x4(Vector3(pixel.position.getX(), pixel.position.getY(), m_direction.getZ()), pixelPosWS);
+	//			Vector3::normalize(pixelPosWS);
+
+	//			// Create ray that's origin is the camera and it's direction is towards the pixel
+	//			Raycast::Ray primary_ray;
+	//			primary_ray.setOrigin(m_position);
+	//			primary_ray.setDirection(Vector3::normalize(pixelPosWS/* - primary_ray.getOrigin()*/));
+
+	//			// Cast the ray and return a colour to the buffer
+	//			buffer.at(iter).colour += castRay(primary_ray, bvh, sceneLights, atmosphere, depth);
+
+
+	//			//for (int aaX = 0; aaX < antiAliasingSamples; ++aaX)
+	//			//{
+	//			//	for (int aaY = 0; aaY < antiAliasingSamples; aaY++)
+	//			//	{
+
+	//			//	}
+	//			//	
+	//			//}
+	//			//// Once render loop is complete. Take the current pixel and apply anti-aliasing
+	//			//float scale = 1.0f / antiAliasingSamples;
+
+	//			//buffer.at(iter).colour /= Colour(scale, scale, scale);
+	//		}
+	//	}
+	//}
 }
 
 void Camera::newRender(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples)
 {
 	// https://medium.com/@phostershop/solving-multithreaded-raytracing-issues-with-c-11-7f018ecd76fa
 
-	size_t max = m_size.getX() * m_size.getY();
+	size_t max = static_cast<size_t>(m_size.getX() * m_size.getY());
 	size_t cores = std::thread::hardware_concurrency();
 	volatile std::atomic<size_t> count = 0;
 	std::vector<std::future<void>> future;
@@ -214,7 +246,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 				float kr = 0.0f;
 				Shaders::Functions::fresnel(ray.getDirection(), normal, 1.5f, kr);
 				Vector3 reflectionDir = reflect(ray.getDirection(), normal);
-				Vector3 reflectionOrigin = (dot(reflectionDir, normal) < 0.0f) ? hitpoint + normal * 0.1f : hitpoint - normal * 0.1f;
+				Vector3 reflectionOrigin = (dot(reflectionDir, normal) < 0.0f) ? hitpoint + normal * m_option.shadowBias : hitpoint - normal * m_option.shadowBias;
 
 				Raycast::Ray reflectionRay;
 				reflectionRay.setOrigin(reflectionOrigin);
@@ -227,14 +259,14 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 			case Material::Types::Refractive:
 			{
 				Vector3 reflectionDir = normalize(reflect(ray.getDirection(), normal));
-				Vector3 reflectionOrigin = (dot(reflectionDir, normal) < 0.0f) ? hitpoint + normal * 0.1f : hitpoint - normal * 0.1f;
+				Vector3 reflectionOrigin = (dot(reflectionDir, normal) < 0.0f) ? hitpoint + normal * m_option.shadowBias : hitpoint - normal * m_option.shadowBias;
 
 				Raycast::Ray reflectionRay;
 				reflectionRay.setOrigin(reflectionOrigin);
 				reflectionRay.setDirection(reflectionDir);
 
 				Vector3 refractiveDir = normalize(refract(ray.getDirection(), normal, 1.33f));
-				Vector3 refractiveOrigin = (dot(refractiveDir, normal) < 0.0f) ? hitpoint - normal * 0.1f : hitpoint + normal * 0.1f;
+				Vector3 refractiveOrigin = (dot(refractiveDir, normal) < 0.0f) ? hitpoint - normal * m_option.shadowBias : hitpoint + normal * m_option.shadowBias;
 
 				Raycast::Ray refractiveRay;
 				refractiveRay.setOrigin(refractiveOrigin);
@@ -263,7 +295,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 
 					// Shoot shadow rays into scene
 					Raycast::Ray shadowRay;
-					shadowRay.setOrigin(hitpoint + normal * 0.1f);
+					shadowRay.setOrigin(hitpoint + normal * m_option.shadowBias);
 					shadowRay.setDirection(lightDirection);
 					shadowRay.m_tNear = ray.getHitData().tnear;
 					bool shadow = !bvh.hit(shadowRay);
@@ -292,7 +324,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 
 					// Get lighting information
 					light->illuminate(hitpoint, lightDirection, lightColour, ray.getHitData().tnear);
-		
+
 					Vector3 halfVector = normalize(-viewDir + lightDirection);
 
 					float NdotL = saturate(dot(normal, lightDirection));
@@ -312,7 +344,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 
 					// Shoot shadow rays into scene
 					Raycast::Ray shadowRay;
-					shadowRay.setOrigin(hitpoint + normal * 0.1f);
+					shadowRay.setOrigin(hitpoint + normal * m_option.shadowBias);
 					shadowRay.setDirection(lightDirection);
 					shadowRay.m_tNear = ray.getHitData().tnear;
 					bool shadow = !bvh.hit(shadowRay);
@@ -343,7 +375,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 		hitColour += atmosphere.computeIncidentLight(skyray, 0.0f, tmax) * atmosphere.getBrightness();
 
 		// Background colour
-		//hitColour = Colour(0.235294f, 0.67451f, 0.843137f);
+		//hitColour = Colour(0.235294f, 0.67451f, 0.843137f);s
 	}
 	return hitColour;
 }

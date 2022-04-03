@@ -46,6 +46,8 @@ namespace Light
 				distance = Maths::special::infinity;
 			}
 
+			const Vector3& getDirection() const { return m_direction; }
+
 		private:
 			Vector3 m_direction;
 			const Colour m_sunset = Colour(1.0f, 0.5f, 0.0f);

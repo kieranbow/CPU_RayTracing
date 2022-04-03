@@ -72,11 +72,37 @@ bool Primitive::triangleIntersected(Raycast::Ray& ray)
 		triangle.vert2.position = m_vertexBuffer.at(vertex_idx_3).position;
 		triangle.vert2.normal = m_vertexBuffer.at(vertex_idx_3).normal;
 
-		// Construct a triangle and test if ray hits that triangle
-		if (Intersection::MollerTrumbore(ray, triangle))
+		float tnear = Maths::special::infinity;
+		float tfar = -Maths::special::infinity;
+
+		if (Intersection::slab(ray, m_boundingBox, tnear, tfar))
 		{
-			ray.getHitData().normal = Shaders::Functions::getSmoothNormalFromTri(triangle, ray.getHitData());
-			return true;
+			// Construct a triangle and test if ray hits that triangle
+			if (Intersection::MollerTrumbore(ray, triangle) && ray.getT() < tnear)
+			{
+				// Assign tnear to be the rays t value
+				tnear = ray.getT();
+
+				// Get the material from the object
+				ray.getHitData().material = m_material;
+
+				// Override the materials albedo with a texture if one exists
+				if (!m_albedo.empty())
+				{
+					ray.getHitData().material.albedo = m_albedo.at(Shaders::Functions::getUVCoords(ray.getHitData().uv, triangle));
+				}
+				else
+				{
+					ray.getHitData().material.albedo = m_material.albedo; //Colour(u, v, 1.0f - u - v);
+				}
+
+				// Override the materials normal with the smooth normals from the object
+				ray.getHitData().material.normal = Shaders::Functions::getSmoothNormalFromTri(triangle, ray.getHitData());
+
+				// Set the hitpoint of the ray. This is important for the lighting and shading of the scene
+				ray.getHitData().hitPoint = (ray.getOrigin() + ray.getDirection() * ray.getT()) + ray.getHitData().normal;
+				return true;
+			}
 		}
 	}
 	return false;
@@ -93,7 +119,7 @@ void Primitive::setPosition(Vector3 position)
 	}
 
 	// Create a new bounding box arond the new vertex positions
-	//m_boundingBox.generateBoundingBox(m_vertexBuffer);
+	m_boundingBox.generateBoundingBox(m_vertexBuffer);
 }
 
 void Primitive::setScale(Vector3 scale)
