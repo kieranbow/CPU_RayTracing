@@ -10,7 +10,7 @@ class Vector3
 {
 	public:
 		Vector3();
-		Vector3(float _x, float _y, float _z) : m_value{_x, _y, _z} {}
+		Vector3(float x, float y, float z) : m_value{x, y, z} {}
 		~Vector3() = default;
 		
 		// Assignment Operators
@@ -51,7 +51,7 @@ class Vector3
 		// Mainly used for debugging
 		friend std::ostream& operator<<(std::ostream& _lhs, const Vector3& _rhs)
 		{
-			_lhs << std::to_string(_rhs.m_value.at(Maths::coord::x)) << ", " << std::to_string(_rhs.m_value.at(Maths::coord::y)) << ", " << std::to_string(_rhs.m_value.at(Maths::coord::z));
+			_lhs << std::to_string(_rhs.m_value[Maths::coord::x]) << ", " << std::to_string(_rhs.m_value[Maths::coord::y]) << ", " << std::to_string(_rhs.m_value[Maths::coord::z]);
 			return _lhs;
 		}
 
@@ -76,29 +76,31 @@ class Vector3
 		// Returns the length of the vector3
 		static float length(Vector3 a);
 
+		// Generates a vector3 with random x,y,z at range [0, 1]
 		static Vector3 random();
 
+		// Generates a vector3 with random x,y,z at range min and max
 		static Vector3 randomInRange(const float min, const float max);
 
-		static Vector3 randomUnitSphere();
-
+		// Creates a local coordinate system at the hitpoint of a mesh
 		static void createCoordinateSystem(const Vector3& n, Vector3& nt, Vector3& nb);
 
+		// Samples a point within a hemisphere
 		static Vector3 uniformSampleHemisphere(const float& r1, const float& r2);
 
 		// Finds the biggest axis from a Vector3
 		static int getGreatestAxis(Vector3 vec);
 
 		// Setters
-		void setX(float _x) { m_value.at(Maths::coord::x) = _x; }
-		void setY(float _y) { m_value.at(Maths::coord::y) = _y; }
-		void setZ(float _z) { m_value.at(Maths::coord::z) = _z; }
+		void setX(float x) { m_value[Maths::coord::x] = x; }
+		void setY(float y) { m_value[Maths::coord::y] = y; }
+		void setZ(float z) { m_value[Maths::coord::z] = z; }
 
 		// Getters
-		const float& getX() const { return m_value.at(Maths::coord::x); }
-		const float& getY() const { return m_value.at(Maths::coord::y); }
-		const float& getZ() const { return m_value.at(Maths::coord::z); }
-		const std::array<float, 3>& getValue() const{ return m_value; }
+		const float& getX() const { return m_value[Maths::coord::x]; }
+		const float& getY() const { return m_value[Maths::coord::y]; }
+		const float& getZ() const { return m_value[Maths::coord::z]; }
+		const float& getValue(int idx) const{ return m_value.at(idx); }
 
 	private:
 		std::array<float, 3> m_value = {0.0f, 0.0f, 0.0f};

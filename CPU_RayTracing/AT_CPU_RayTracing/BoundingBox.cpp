@@ -14,11 +14,10 @@ BoundingBox::AABB::AABB()
 
 void BoundingBox::AABB::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 {
-
 	// Generates a bounding box using the slab method as mention by Kay and Kajiya (1986)
-	m_planes.at(Maths::coord::x).normal = { 1.0f, 0.0f, 0.0f };
-	m_planes.at(Maths::coord::y).normal = { 0.0f, 1.0f, 0.0f };
-	m_planes.at(Maths::coord::z).normal = { 0.0f, 0.0f, 1.0f };
+	m_planes[Maths::coord::x].normal = { 1.0f, 0.0f, 0.0f };
+	m_planes[Maths::coord::y].normal = { 0.0f, 1.0f, 0.0f };
+	m_planes[Maths::coord::z].normal = { 0.0f, 0.0f, 1.0f };
 
 	// Loop through each plane and check each vertex to find the planes near and far values
 	for (auto& plane : m_planes)
@@ -31,8 +30,8 @@ void BoundingBox::AABB::generateBoundingBox(std::vector<Vertex>& vertex_buffer)
 		}
 	}
 
-	m_bounds.min = { m_planes.at(Maths::coord::x).near, m_planes.at(Maths::coord::y).near, m_planes.at(Maths::coord::z).near };
-	m_bounds.max = { m_planes.at(Maths::coord::x).far, m_planes.at(Maths::coord::y).far, m_planes.at(Maths::coord::z).far };
+	m_bounds.min = { m_planes[Maths::coord::x].near, m_planes[Maths::coord::y].near, m_planes[Maths::coord::z].near };
+	m_bounds.max = { m_planes[Maths::coord::x].far, m_planes[Maths::coord::y].far, m_planes[Maths::coord::z].far };
 
 	// Create centroid of bounding box
 	m_centroid.setX(0.5f * m_bounds.min.getX() + 0.5f * m_bounds.max.getX());
@@ -52,9 +51,9 @@ void BoundingBox::AABB::generateBoundingBox(const std::vector<Triangle>& triangl
 	for (auto& tri : triangles)
 	{
 		std::array<Vertex, 3> temp;
-		temp.at(0) = tri.vert0;
-		temp.at(1) = tri.vert1;
-		temp.at(2) = tri.vert1;
+		temp[0] = tri.vert0;
+		temp[1] = tri.vert1;
+		temp[2] = tri.vert1;
 
 		for (auto& vert : temp)
 		{

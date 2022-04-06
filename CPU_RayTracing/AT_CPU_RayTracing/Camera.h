@@ -28,9 +28,9 @@ class Camera
 	public:
 		Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov, Options option);
 
-		void Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples);
+		void singleThreadRender(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples);
 
-		void newRender(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples);
+		void multiThreadRender(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples);
 
 		Vector3& getPosition() { return m_position; }
 		const Vector3& getDirection() const { return m_direction; }

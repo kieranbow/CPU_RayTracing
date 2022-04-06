@@ -21,5 +21,19 @@ namespace Maths
 			static std::mt19937 generator;
 			return distribution(generator);
 		}
+
+		inline int randomInt()
+		{
+			static std::uniform_int_distribution<int> distribution(0, 1);
+			static std::mt19937 generator;
+			return distribution(generator);
+		}
+
+		inline int randomIntInRange(const int min, const int max)
+		{
+			static std::uniform_int_distribution<int> distribution(min, max);
+			static std::mt19937 generator;
+			return distribution(generator);
+		}
 	}
 }

@@ -122,15 +122,15 @@ namespace Shaders
 			//return k < 0.0f ? Vector3() : eta * i + (eta * cosi - std::sqrtf(k) * N);
 				
 			// https://stackoverflow.com/questions/42218704/how-to-properly-handle-refraction-in-raytracing
-			//ior = 2.0f - ior;
-			//float cosi = Vector3::dot(n, i);
-			//return (i * ior - n * (-cosi + ior * cosi));
+			ior = 2.0f - ior;
+			float cosi = Vector3::dot(n, i);
+			return (i * ior - n * (-cosi + ior * cosi));
 
 			// https://developer.download.nvidia.com/cg/refract.html
-			float cosi = dot(-i, n);
-			float cost2 = 1.0f - ior * ior * (1.0f - cosi * cosi);
-			Vector3 t = ior * i + ((ior * cosi - std::sqrtf(abs(cost2))) * n);
-			return t * (cost2 > 0.0f);
+			//float cosi = dot(-i, n);
+			//float cost2 = 1.0f - ior * ior * (1.0f - cosi * cosi);
+			//Vector3 t = ior * i + ((ior * cosi - std::sqrtf(abs(cost2))) * n);
+			//return t * (cost2 > 0.0f);
 
 		}
 

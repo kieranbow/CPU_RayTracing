@@ -2,7 +2,6 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
-#include <array>
 #include <vector>
 
 #include "Colour.h"
@@ -19,8 +18,8 @@ class Texture
 		// Returns a pixel value from a given uv coordinate
 		Colour at(Vector2 uv);
 
-		// Checks if the image is valid
-		bool empty() { return (m_data == nullptr); }
+		// Checks if the image is empty
+		bool empty() { return m_texture.empty(); }
 
 		// Loads the texture using stb from filepath
 		bool load(const char* filepath);
@@ -36,6 +35,5 @@ class Texture
 		int m_height			= 0; // Height of the image
 		int m_numChannel		= 0; // Number of colour channels given by stb.
 		int m_reqChannel		= 3; // Number of colour channels requested.
-		unsigned char* m_data	= 0; // All the texture pixels are stored here.
-		int m_bytesPerScanline	= 0; // Number of channels * image width
+		std::vector<Colour> m_texture; // Buffer of pixels
 };

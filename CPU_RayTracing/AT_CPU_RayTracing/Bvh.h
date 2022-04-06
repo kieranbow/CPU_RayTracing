@@ -101,7 +101,7 @@ namespace BVH
 	{
 		public:
 			void build(std::vector<Primitive>& primitives);
-			bool hit(Raycast::Ray& ray /*std::vector<Primitive>& primitives,*/);
+			bool hit(Raycast::Ray& ray, float& tnear /*std::vector<Primitive>& primitives,*/);
 
 		private:
 			BVH::Scene::Accelerator m_sceneBVH;

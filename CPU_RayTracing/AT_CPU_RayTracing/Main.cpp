@@ -111,7 +111,7 @@ int main()
 	cone.setPosition({ 0.0f, 0.0f, -10.0f });
 
 	Material::Data cone_material;
-	cone_material.type		= Material::Types::Reflective;  // Reflective
+	cone_material.type		= Material::Types::Dielectic;  // Reflective
 	cone_material.albedo	= Colour(1.0f, 1.0f, 1.0f);
 	cone_material.roughness = 0.5f;
 	cone_material.metallic	= 1.0f;
@@ -137,6 +137,22 @@ int main()
 	primitives.push_back(helmet);
 	primitives.push_back(plane);
 
+
+	//for (size_t i = 0; i < 1; i++)
+	//{
+	//	Primitive sphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	//	sphere.setPosition({ 0.0f, 0.0f, -10.0f });
+
+	//	Material::Data material;
+	//	material.type = Material::Types::Dielectic;
+	//	material.albedo = Colour(1.0f, 0.0f, 0.0f);
+	//	material.metallic = Maths::Random::randomFloat();
+	//	material.roughness = Maths::Random::randomFloat();
+
+	//	primitives.push_back(sphere);
+	//}
+
+
 	// Build a bvh for all the primitives
 	BVH::Builder bvh;
 	bvh.build(primitives);
@@ -152,14 +168,13 @@ int main()
 	framebuffer.resize(static_cast<size_t>(image_size.getX() * image_size.getY()));
 	std::fill(framebuffer.begin(), framebuffer.end(), Pixel());
 
-	// -------------------------------------------------------
 	// Start render timer
 	Timer render_timer;
 	render_timer.StartTimer();
 
 	// Render what the camera sees into the frame buffer
-	//camera.Render(framebuffer, bvh, sceneLights, atmosphere, depth, options.aaAmount);
-	camera.newRender(framebuffer, bvh, sceneLights, atmosphere, depth, options.aaAmount);
+	//camera.singleThreadRender(framebuffer, bvh, sceneLights, atmosphere, depth, options.aaAmount);
+	camera.multiThreadRender(framebuffer, bvh, sceneLights, atmosphere, depth, options.aaAmount);
 
 	// End render timer
 	render_timer.EndTimer();

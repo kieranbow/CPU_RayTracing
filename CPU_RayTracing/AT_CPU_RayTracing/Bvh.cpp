@@ -67,7 +67,7 @@ void BVH::Scene::Accelerator::buildRecursiveScene(const std::vector<Primitive>& 
 
 		for (auto& prim : primitive)
 		{
-			if (prim.getBoundingBox().getCentroid().getValue().at(axis) < node->m_boundingBox.getCentroid().getValue().at(axis))
+			if (prim.getBoundingBox().getCentroid().getValue(axis) < node->m_boundingBox.getCentroid().getValue(axis))
 			{
 				left_list.push_back(prim);
 			}
@@ -158,24 +158,20 @@ void BVH::Object::Accelerator::buildBVHPrimitive(const std::vector<Vertex>& vert
 
 	// Loop through the primitives indices and re-create the triangles and push them
 	// in the vector of triangles
-	for (int i = 0; i < index_buffer.size()/*prim.getIndices().size()*/; i += 3)
+	for (size_t i = 0; i < index_buffer.size(); i += 3)
 	{
-		//int vertex_idx_1 = ; //prim.getIndices().at(i);
-		//int vertex_idx_2 = index_buffer.at(i + 1); //prim.getIndices().at(i + 1);
-		//int vertex_idx_3 = index_buffer.at(i + 2); //prim.getIndices().at(i + 2);
-
 		Triangle triangle;
-		triangle.vert0.position = vertex_buffer.at(index_buffer.at(i)).position; //prim.getVertices().at(vertex_idx_1).position;
-		triangle.vert0.normal	= vertex_buffer.at(index_buffer.at(i)).normal; //prim.getVertices().at(vertex_idx_1).normal;
-		triangle.vert0.texcoord	= vertex_buffer.at(index_buffer.at(i)).texcoord; //prim.getVertices().at(vertex_idx_1).texcoord;
+		triangle.vert0.position = vertex_buffer[index_buffer[i]].position;
+		triangle.vert0.normal	= vertex_buffer[index_buffer[i]].normal;
+		triangle.vert0.texcoord	= vertex_buffer[index_buffer[i]].texcoord;
 
-		triangle.vert1.position	= vertex_buffer.at(index_buffer.at(i + 1)).position; //prim.getVertices().at(vertex_idx_2).position;
-		triangle.vert1.normal	= vertex_buffer.at(index_buffer.at(i + 1)).normal; //prim.getVertices().at(vertex_idx_2).normal;
-		triangle.vert1.texcoord	= vertex_buffer.at(index_buffer.at(i + 1)).texcoord; //prim.getVertices().at(vertex_idx_2).texcoord;
+		triangle.vert1.position	= vertex_buffer[index_buffer[i + 1]].position;
+		triangle.vert1.normal	= vertex_buffer[index_buffer[i + 1]].normal;
+		triangle.vert1.texcoord	= vertex_buffer[index_buffer[i + 1]].texcoord;
 
-		triangle.vert2.position	= vertex_buffer.at(index_buffer.at(i + 2)).position; //prim.getVertices().at(vertex_idx_3).position;
-		triangle.vert2.normal	= vertex_buffer.at(index_buffer.at(i + 2)).normal; //prim.getVertices().at(vertex_idx_3).normal;
-		triangle.vert2.texcoord	= vertex_buffer.at(index_buffer.at(i + 2)).texcoord; //prim.getVertices().at(vertex_idx_3).texcoord;
+		triangle.vert2.position	= vertex_buffer[index_buffer[i + 2]].position;
+		triangle.vert2.normal	= vertex_buffer[index_buffer[i + 2]].normal;
+		triangle.vert2.texcoord	= vertex_buffer[index_buffer[i + 2]].texcoord;
 		
 		m_triangles.push_back(triangle);
 	}
@@ -240,7 +236,7 @@ void BVH::Object::Accelerator::buildRecursivePrimitive(const std::vector<Triangl
 			tri_centroid.setY((vert0.getY() + vert1.getY() + vert2.getY()) / 3);
 			tri_centroid.setZ((vert0.getZ() + vert1.getZ() + vert2.getZ()) / 3);
 
-			if (tri_centroid.getValue().at(axis) < node->m_boundingBox.getCentroid().getValue().at(axis))
+			if (tri_centroid.getValue(axis) < node->m_boundingBox.getCentroid().getValue(axis))
 			{
 				left_list.push_back(tri);
 			}
@@ -304,7 +300,7 @@ bool BVH::Object::Accelerator::hitRecursivePrimitive(Raycast::Ray& ray, std::sha
 				ray.getHitData().material.normal = Shaders::Functions::getSmoothNormalFromTri(tri, ray.getHitData());
 
 				// Set the hitpoint of the ray. This is important for the lighting and shading of the scene
-				ray.getHitData().hitPoint = (ray.getOrigin() + ray.getDirection() * ray.getT()) + ray.getHitData().normal;
+				ray.getHitData().hitPoint = ray.getOrigin() + ray.getDirection() * tnear;
 				return true;
 			}
 		}
@@ -347,7 +343,7 @@ void BVH::Builder::build(std::vector<Primitive>& primitives)
 	// m_sceneBVH.buildBVHScene(primitives);
 }
 
-bool BVH::Builder::hit(Raycast::Ray& ray)
+bool BVH::Builder::hit(Raycast::Ray& ray, float& tnear)
 {
 	// Check if ray hits any bb in scene
 	//if (m_sceneBVH.hit(ray))
@@ -363,9 +359,11 @@ bool BVH::Builder::hit(Raycast::Ray& ray)
 	//	}
 	//}
 
+
 	for (auto& objBVH : m_objBVH)
 	{
-		if (float tnear = Maths::special::infinity; objBVH.hitPrimitive(ray, tnear) && tnear < ray.getHitData().tnear)
+
+		if (objBVH.hitPrimitive(ray, tnear) && tnear < ray.getHitData().tnear)
 		{
 			ray.getHitData().tnear = tnear;
 			return true;

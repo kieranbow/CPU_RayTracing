@@ -34,7 +34,7 @@ Camera::Camera(Vector3 position, Vector3 direction, Vector2 cam_size, float fov,
 	m_option = option;
 }
 
-void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples)
+void Camera::singleThreadRender(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples)
 {
 	// https://www.iquilezles.org/www/articles/cputiles/cputiles.htm
 	const int tilesize = 16;
@@ -136,32 +136,38 @@ void Camera::Render(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<s
 	//}
 }
 
-void Camera::newRender(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples)
+void Camera::multiThreadRender(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vector<std::unique_ptr<Light::Light>>& sceneLights, Atmosphere& atmosphere, int depth, int antiAliasingSamples)
 {
 	// https://medium.com/@phostershop/solving-multithreaded-raytracing-issues-with-c-11-7f018ecd76fa
 
+	const int tilesize = 64;
+	const int numXtile = static_cast<int>(m_size.getX()) / tilesize;
+	const int numYtile = static_cast<int>(m_size.getY()) / tilesize;
+	const int numTiles = numXtile * numYtile;
+
 	size_t max = static_cast<size_t>(m_size.getX() * m_size.getY());
-	size_t cores = std::thread::hardware_concurrency();
+	size_t max_cores = std::thread::hardware_concurrency();
 	volatile std::atomic<size_t> count = 0;
 	std::vector<std::future<void>> future;
 
 	float width = m_size.getX();
 	float height = m_size.getY();
-	while (cores--)
+
+	for (size_t core = 0; core < max_cores; core++)
 	{
 		future.emplace_back(
 			std::async(
 				[=,&count, &width, &height, &buffer, &bvh, &sceneLights, &atmosphere, &depth, &antiAliasingSamples]()
 				{
-					while (true)
+					for (size_t tile = 0; tile < numTiles; tile++) /*while(true)*/
 					{
-						size_t idx = count++;
-						if (idx >= max) break;
-
-						const int tilesize = 64;
+						const int tilesize = 32;
 						const int numXtile = static_cast<int>(width) / tilesize;
 						const int numYtile = static_cast<int>(height) / tilesize;
 						const int numTiles = numXtile * numYtile;
+
+						size_t idx = count++;
+						if (idx >= numTiles) break;
 
 						const float offset_x = static_cast<float>(tilesize * (idx % numXtile));
 						const float offset_y = static_cast<float>(tilesize * (idx / numXtile));
@@ -201,7 +207,7 @@ void Camera::newRender(std::vector<Pixel>& buffer, BVH::Builder& bvh, std::vecto
 								primary_ray.setDirection(Vector3::normalize(pixelPosWS/* - primary_ray.getOrigin()*/));
 
 								// Cast the ray and return a colour to the buffer
-								buffer.at(iter).colour += castRay(primary_ray, bvh, sceneLights, atmosphere, depth);
+								buffer[iter].colour += castRay(primary_ray, bvh, sceneLights, atmosphere, depth);
 							}
 						}
 					}
@@ -216,10 +222,12 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 	Colour hitColour;
 	if (depth > max_depth) return Colour(0.235294f, 0.67451f, 0.843137f);
 
-	if (bvh.hit(ray))
+	float tnear = Maths::special::infinity;
+
+	if (bvh.hit(ray, tnear))
 	{
 		// Rays hit point
-		Vector3 hitpoint = ray.getOrigin() + ray.getDirection() * ray.getHitData().tnear;
+		Vector3 hitpoint = ray.getHitData().hitPoint;
 		
 		// Material properties from the hit point
 		Colour albedo		= ray.getHitData().material.albedo;
@@ -289,7 +297,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 					Colour lightColour;
 
 					// Get lighting information
-					light->illuminate(hitpoint, lightDirection, lightColour, ray.getHitData().tnear);
+					light->illuminate(hitpoint, lightDirection, lightColour, /*ray.getHitData().tnear*/tnear);
 
 					const float NdotL = saturate(dot(normal, lightDirection));
 
@@ -298,7 +306,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 					shadowRay.setOrigin(hitpoint + normal * m_option.shadowBias);
 					shadowRay.setDirection(lightDirection);
 					shadowRay.m_tNear = ray.getHitData().tnear;
-					bool shadow = !bvh.hit(shadowRay);
+					bool shadow = !bvh.hit(shadowRay, tnear);
 
 					Colour diffuse = Shaders::Functions::lambertCosineLaw(NdotL, lightColour, albedo) * shadow;
 					Vector3 R = reflect(lightDirection, normal);
@@ -323,7 +331,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 					Colour lightColour;
 
 					// Get lighting information
-					light->illuminate(hitpoint, lightDirection, lightColour, ray.getHitData().tnear);
+					light->illuminate(hitpoint, lightDirection, lightColour, tnear /*ray.getHitData().tnear*/);
 
 					Vector3 halfVector = normalize(-viewDir + lightDirection);
 
@@ -346,8 +354,8 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 					Raycast::Ray shadowRay;
 					shadowRay.setOrigin(hitpoint + normal * m_option.shadowBias);
 					shadowRay.setDirection(lightDirection);
-					shadowRay.m_tNear = ray.getHitData().tnear;
-					bool shadow = !bvh.hit(shadowRay);
+					shadowRay.m_tNear = tnear; /*ray.getHitData().tnear*/;
+					bool shadow = !bvh.hit(shadowRay, tnear);
 
 					Colour diffuse = Shaders::Functions::lambertCosineLaw(NdotL, lightColour, albedo);
 
@@ -375,7 +383,7 @@ Colour Camera::castRay(Raycast::Ray& ray, BVH::Builder& bvh, std::vector<std::un
 		hitColour += atmosphere.computeIncidentLight(skyray, 0.0f, tmax) * atmosphere.getBrightness();
 
 		// Background colour
-		//hitColour = Colour(0.235294f, 0.67451f, 0.843137f);s
+		//hitColour = Colour(0.235294f, 0.67451f, 0.843137f);
 	}
 	return hitColour;
 }

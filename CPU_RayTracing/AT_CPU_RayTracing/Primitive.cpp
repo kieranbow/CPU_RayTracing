@@ -58,19 +58,19 @@ bool Primitive::triangleIntersected(Raycast::Ray& ray)
 	// Loop through all indices and vertices inside the buffer
 	for (int i = 0; i < m_indexBuffer.size(); i += 3)
 	{
-		int vertex_idx_1 = m_indexBuffer.at(i);
-		int vertex_idx_2 = m_indexBuffer.at(i + 1);
-		int vertex_idx_3 = m_indexBuffer.at(i + 2);
+		int vertex_idx_1 = m_indexBuffer[i];
+		int vertex_idx_2 = m_indexBuffer[i + 1];
+		int vertex_idx_3 = m_indexBuffer[i + 2];
 
 		Triangle triangle;
-		triangle.vert0.position = m_vertexBuffer.at(vertex_idx_1).position;
-		triangle.vert0.normal = m_vertexBuffer.at(vertex_idx_1).normal;
+		triangle.vert0.position = m_vertexBuffer[vertex_idx_1].position;
+		triangle.vert0.normal = m_vertexBuffer[vertex_idx_1].normal;
 
-		triangle.vert1.position = m_vertexBuffer.at(vertex_idx_2).position;
-		triangle.vert1.normal = m_vertexBuffer.at(vertex_idx_2).normal;
+		triangle.vert1.position = m_vertexBuffer[vertex_idx_2].position;
+		triangle.vert1.normal = m_vertexBuffer[vertex_idx_2].normal;
 
-		triangle.vert2.position = m_vertexBuffer.at(vertex_idx_3).position;
-		triangle.vert2.normal = m_vertexBuffer.at(vertex_idx_3).normal;
+		triangle.vert2.position = m_vertexBuffer[vertex_idx_3].position;
+		triangle.vert2.normal = m_vertexBuffer[vertex_idx_3].normal;
 
 		float tnear = Maths::special::infinity;
 		float tfar = -Maths::special::infinity;

@@ -5,275 +5,275 @@
 
 Colour::Colour()
 {
-	colour.at(0) = 0.0f;
-	colour.at(1) = 0.0f;
-	colour.at(2) = 0.0f;
+	colour[0] = 0.0f;
+	colour[1] = 0.0f;
+	colour[2] = 0.0f;
 }
 
 Colour::Colour(float _red, float _green, float _blue)
 {
-	colour.at(0) = _red;
-	colour.at(1) = _green;
-	colour.at(2) = _blue;
+	colour[0] = _red;
+	colour[1] = _green;
+	colour[2] = _blue;
 }
 
 Colour::Colour(Vector3& _rhs)
 {
-	colour.at(0) = _rhs.getX();
-	colour.at(1) = _rhs.getY();
-	colour.at(2) = _rhs.getZ();
+	colour[0] = _rhs.getX();
+	colour[1] = _rhs.getY();
+	colour[2] = _rhs.getZ();
 }
 
 Colour& Colour::operator=(const Colour& _rhs)
 {
-	this->colour.at(0) = _rhs.colour.at(0);
-	this->colour.at(1) = _rhs.colour.at(1);
-	this->colour.at(2) = _rhs.colour.at(2);
+	this->colour[0] = _rhs.colour[0];
+	this->colour[1] = _rhs.colour[1];
+	this->colour[2] = _rhs.colour[2];
 	return *this;
 }
 
 Colour& Colour::operator=(const Vector3& _rhs)
 {
-	this->colour.at(0) = _rhs.getX();
-	this->colour.at(1) = _rhs.getY();
-	this->colour.at(2) = _rhs.getZ();
+	this->colour[0] = _rhs.getX();
+	this->colour[1] = _rhs.getY();
+	this->colour[2] = _rhs.getZ();
 	return *this;
 }
 
 Colour Colour::operator+=(const Vector3& _rhs)
 {
-	this->colour.at(0) += _rhs.getX();
-	this->colour.at(1) += _rhs.getY();
-	this->colour.at(2) += _rhs.getZ();
+	this->colour[0] += _rhs.getX();
+	this->colour[1] += _rhs.getY();
+	this->colour[2] += _rhs.getZ();
 	return *this;
 }
 
 Colour Colour::operator-=(const Vector3& _rhs)
 {
-	this->colour.at(0) -= _rhs.getX();
-	this->colour.at(1) -= _rhs.getY();
-	this->colour.at(2) -= _rhs.getZ();
+	this->colour[0] -= _rhs.getX();
+	this->colour[1] -= _rhs.getY();
+	this->colour[2] -= _rhs.getZ();
 	return *this;
 }
 
 Colour Colour::operator/=(const Vector3& _rhs)
 {
-	this->colour.at(0) /= _rhs.getX();
-	this->colour.at(1) /= _rhs.getY();
-	this->colour.at(2) /= _rhs.getZ();
+	this->colour[0] /= _rhs.getX();
+	this->colour[1] /= _rhs.getY();
+	this->colour[2] /= _rhs.getZ();
 	return *this;
 }
 
 Colour Colour::operator*=(const Vector3& _rhs)
 {
-	this->colour.at(0) *= _rhs.getX();
-	this->colour.at(1) *= _rhs.getY();
-	this->colour.at(2) *= _rhs.getZ();
+	this->colour[0] *= _rhs.getX();
+	this->colour[1] *= _rhs.getY();
+	this->colour[2] *= _rhs.getZ();
 	return *this;
 }
 
 Colour& Colour::operator=(const float& _rhs)
 {
 	Colour colour;
-	colour.colour.at(0) = _rhs;
-	colour.colour.at(1) = _rhs;
-	colour.colour.at(2) = _rhs;
+	colour.colour[0] = _rhs;
+	colour.colour[1] = _rhs;
+	colour.colour[2] = _rhs;
 	return colour;
 }
 
 Colour Colour::operator+=(const float& _rhs)
 {
 	Colour colour;
-	colour.colour.at(0) += _rhs;
-	colour.colour.at(1) += _rhs;
-	colour.colour.at(2) += _rhs;
+	colour.colour[0] += _rhs;
+	colour.colour[1] += _rhs;
+	colour.colour[2] += _rhs;
 	return colour;
 }
 
 Colour Colour::operator-=(const float& _rhs)
 {
 	Colour colour;
-	colour.colour.at(0) -= _rhs;
-	colour.colour.at(1) -= _rhs;
-	colour.colour.at(2) -= _rhs;
+	colour.colour[0] -= _rhs;
+	colour.colour[1] -= _rhs;
+	colour.colour[2] -= _rhs;
 	return colour;
 }
 
 Colour Colour::operator/=(const float& _rhs)
 {
 	Colour colour;
-	colour.colour.at(0) /= _rhs;
-	colour.colour.at(1) /= _rhs;
-	colour.colour.at(2) /= _rhs;
+	colour.colour[0] /= _rhs;
+	colour.colour[1] /= _rhs;
+	colour.colour[2] /= _rhs;
 	return colour;
 }
 
 Colour Colour::operator*=(const float& _rhs)
 {
 	Colour colour;
-	colour.colour.at(0) *= _rhs;
-	colour.colour.at(1) *= _rhs;
-	colour.colour.at(2) *= _rhs;
+	colour.colour[0] *= _rhs;
+	colour.colour[1] *= _rhs;
+	colour.colour[2] *= _rhs;
 	return colour;
 }
 
 Colour Colour::operator+(const Colour& _rhs)
 {
 	Colour colour;
-	colour.colour.at(0) = this->colour.at(0) + _rhs.colour.at(0);
-	colour.colour.at(1) = this->colour.at(1) + _rhs.colour.at(1);
-	colour.colour.at(2) = this->colour.at(2) + _rhs.colour.at(2);
+	colour.colour[0] = this->colour[0] + _rhs.colour[0];
+	colour.colour[1] = this->colour[1] + _rhs.colour[1];
+	colour.colour[2] = this->colour[2] + _rhs.colour[2];
 	return colour;
 }
 
 Colour Colour::operator+=(const Colour& _rhs)
 {
 	Colour colour;
-	colour.colour.at(0) = this->colour.at(0) += _rhs.colour.at(0);
-	colour.colour.at(1) = this->colour.at(1) += _rhs.colour.at(1);
-	colour.colour.at(2) = this->colour.at(2) += _rhs.colour.at(2);
+	colour.colour[0] = this->colour[0] += _rhs.colour[0];
+	colour.colour[1] = this->colour[1] += _rhs.colour[1];
+	colour.colour[2] = this->colour[2] += _rhs.colour[2];
 	return colour;
 }
 
 Colour Colour::operator-(const Colour& _rhs)
 {
 	Colour colour;
-	colour.colour.at(0) = this->colour.at(0) - _rhs.colour.at(0);
-	colour.colour.at(1) = this->colour.at(1) - _rhs.colour.at(1);
-	colour.colour.at(2) = this->colour.at(2) - _rhs.colour.at(2);
+	colour.colour[0] = this->colour[0] - _rhs.colour[0];
+	colour.colour[1] = this->colour[1] - _rhs.colour[1];
+	colour.colour[2] = this->colour[2] - _rhs.colour[2];
 	return colour;
 }
 
 Colour Colour::operator-=(const Colour& _rhs)
 {
 	Colour colour;
-	colour.colour.at(0) = this->colour.at(0) -= _rhs.colour.at(0);
-	colour.colour.at(1) = this->colour.at(1) -= _rhs.colour.at(1);
-	colour.colour.at(2) = this->colour.at(2) -= _rhs.colour.at(2);
+	colour.colour[0] = this->colour[0] -= _rhs.colour[0];
+	colour.colour[1] = this->colour[1] -= _rhs.colour[1];
+	colour.colour[2] = this->colour[2] -= _rhs.colour[2];
 	return colour;
 }
 
 Colour Colour::operator/(const Colour& _rhs)
 {
 	Colour colour;
-	colour.colour.at(0) = this->colour.at(0) / _rhs.colour.at(0);
-	colour.colour.at(1) = this->colour.at(1) / _rhs.colour.at(1);
-	colour.colour.at(2) = this->colour.at(2) / _rhs.colour.at(2);
+	colour.colour[0] = this->colour[0] / _rhs.colour[0];
+	colour.colour[1] = this->colour[1] / _rhs.colour[1];
+	colour.colour[2] = this->colour[2] / _rhs.colour[2];
 	return colour;
 }
 
 Colour Colour::operator/=(const Colour& _rhs)
 {
 	Colour colour;
-	colour.colour.at(0) = this->colour.at(0) /= _rhs.colour.at(0);
-	colour.colour.at(1) = this->colour.at(1) /= _rhs.colour.at(1);
-	colour.colour.at(2) = this->colour.at(2) /= _rhs.colour.at(2);
+	colour.colour[0] = this->colour[0] /= _rhs.colour[0];
+	colour.colour[1] = this->colour[1] /= _rhs.colour[1];
+	colour.colour[2] = this->colour[2] /= _rhs.colour[2];
 	return colour;
 }
 
 Colour Colour::operator*(const Colour& _rhs)
 {
 	Colour colour;
-	colour.colour.at(0) = this->colour.at(0) * _rhs.colour.at(0);
-	colour.colour.at(1) = this->colour.at(1) * _rhs.colour.at(1);
-	colour.colour.at(2) = this->colour.at(2) * _rhs.colour.at(2);
+	colour.colour[0] = this->colour[0] * _rhs.colour[0];
+	colour.colour[1] = this->colour[1] * _rhs.colour[1];
+	colour.colour[2] = this->colour[2] * _rhs.colour[2];
 	return colour;
 }
 
 Colour Colour::operator+(const float& _rhs)
 {
-	return Colour(this->colour.at(0) + _rhs, this->colour.at(1) + _rhs, this->colour.at(2) + _rhs);
+	return Colour(this->colour[0] + _rhs, this->colour[1] + _rhs, this->colour[2] + _rhs);
 }
 
 Colour Colour::operator-(const float& _rhs)
 {
-	return Colour(this->colour.at(0) - _rhs, this->colour.at(1) - _rhs, this->colour.at(2) - _rhs);
+	return Colour(this->colour[0] - _rhs, this->colour[1] - _rhs, this->colour[2] - _rhs);
 }
 
 Colour Colour::operator/(const float& _rhs)
 {
-	return Colour(this->colour.at(0) / _rhs, this->colour.at(1) / _rhs, this->colour.at(2) / _rhs);
+	return Colour(this->colour[0] / _rhs, this->colour[1] / _rhs, this->colour[2] / _rhs);
 }
 
 Colour Colour::operator*(const float& _rhs)
 {
-	return Colour(this->colour.at(0) * _rhs, this->colour.at(1) * _rhs, this->colour.at(2) * _rhs);
+	return Colour(this->colour[0] * _rhs, this->colour[1] * _rhs, this->colour[2] * _rhs);
 }
 
 bool Colour::operator>(const Colour& _rhs)
 {
-	return (this->colour.at(0) > _rhs.colour.at(0) || this->colour.at(1) > _rhs.colour.at(1) || this->colour.at(2) > _rhs.colour.at(2));
+	return (this->colour[0] > _rhs.colour[0] || this->colour[1] > _rhs.colour[1] || this->colour[2] > _rhs.colour[2]);
 }
 
 bool Colour::operator<(const Colour& _rhs)
 {
-	return (this->colour.at(0) < _rhs.colour.at(0) || this->colour.at(1) < _rhs.colour.at(1) || this->colour.at(2) < _rhs.colour.at(2));
+	return (this->colour[0] < _rhs.colour[0] || this->colour[1] < _rhs.colour[1] || this->colour[2] < _rhs.colour[2]);
 }
 
 bool Colour::operator>=(const Colour& _rhs)
 {
-	return (this->colour.at(0) >= _rhs.colour.at(0) || this->colour.at(1) >= _rhs.colour.at(1) || this->colour.at(2) >= _rhs.colour.at(2));
+	return (this->colour[0] >= _rhs.colour[0] || this->colour[1] >= _rhs.colour[1] || this->colour[2] >= _rhs.colour[2]);
 }
 
 bool Colour::operator<=(const Colour& _rhs)
 {
-	return (this->colour.at(0) <= _rhs.colour.at(0) || this->colour.at(1) <= _rhs.colour.at(1) || this->colour.at(2) <= _rhs.colour.at(2));
+	return (this->colour[0] <= _rhs.colour[0] || this->colour[1] <= _rhs.colour[1] || this->colour[2] <= _rhs.colour[2]);
 }
 
 bool Colour::operator==(const Colour& _rhs)
 {
-	return (this->colour.at(0) == _rhs.colour.at(0) || this->colour.at(1) ==_rhs.colour.at(1) || this->colour.at(2) == _rhs.colour.at(2));
+	return (this->colour[0] == _rhs.colour[0] || this->colour[1] ==_rhs.colour[1] || this->colour[2] == _rhs.colour[2]);
 }
 
 bool Colour::operator!=(const Colour& _rhs)
 {
-	return (this->colour.at(0) != _rhs.colour.at(0) || this->colour.at(1) != _rhs.colour.at(1) || this->colour.at(2) != _rhs.colour.at(2));
+	return (this->colour[0] != _rhs.colour[0] || this->colour[1] != _rhs.colour[1] || this->colour[2] != _rhs.colour[2]);
 }
 
 Colour Colour::operator*=(const Colour& _rhs)
 {
 	Colour colour;
-	colour.colour.at(0) = this->colour.at(0) *= _rhs.colour.at(0);
-	colour.colour.at(1) = this->colour.at(1) *= _rhs.colour.at(1);
-	colour.colour.at(2) = this->colour.at(2) *= _rhs.colour.at(2);
+	colour.colour[0] = this->colour[0] *= _rhs.colour[0];
+	colour.colour[1] = this->colour[1] *= _rhs.colour[1];
+	colour.colour[2] = this->colour[2] *= _rhs.colour[2];
 	return colour;
 }
 
 Colour operator+(const float& _lhs, const Colour& _rhs)
 {
-	return Colour(_rhs.getRed() + _lhs, _rhs.getGreen() + _lhs, _rhs.getBlue() + _lhs);
+	return Colour(_rhs.colour[0] + _lhs, _rhs.colour[1] + _lhs, _rhs.colour[2] + _lhs);
 }
 
 Colour operator-(const float& _lhs, const Colour& _rhs)
 {
-	return Colour(_rhs.getRed() - _lhs, _rhs.getGreen() - _lhs, _rhs.getBlue() - _lhs);
+	return Colour(_rhs.colour[0] - _lhs, _rhs.colour[1] - _lhs, _rhs.colour[2] - _lhs);
 }
 
 Colour operator*(const float& _lhs, const Colour& _rhs)
 {
-	return Colour(_rhs.getRed() * _lhs, _rhs.getGreen() * _lhs, _rhs.getBlue() * _lhs);
+	return Colour(_rhs.colour[0] * _lhs, _rhs.colour[1] * _lhs, _rhs.colour[2] * _lhs);
 }
 
 Colour operator/(const float& _lhs, const Colour& _rhs)
 {
-	return Colour(_rhs.getRed() / _lhs, _rhs.getGreen() / _lhs, _rhs.getBlue() / _lhs);
+	return Colour(_rhs.colour[0] / _lhs, _rhs.colour[1] / _lhs, _rhs.colour[2] / _lhs);
 }
 
 Colour operator/(const Colour& _lhs, const float& _rhs)
 {
-	return Colour(_lhs.getRed() / _rhs, _lhs.getGreen() / _rhs, _lhs.getBlue() / _rhs);
+	return Colour(_lhs.colour[0] / _rhs, _lhs.colour[1] / _rhs, _lhs.colour[2] / _rhs);
 }
 
 Colour operator*(const Colour& _lhs, const float& _rhs)
 {
-	return Colour(_lhs.getRed() * _rhs, _lhs.getGreen() * _rhs, _lhs.getBlue() * _rhs);
+	return Colour(_lhs.colour[0] * _rhs, _lhs.colour[1] * _rhs, _lhs.colour[2] * _rhs);
 }
 
 Colour operator/=(Colour& _lhs, const float& _rhs)
 {
 	Colour colour;
-	colour.colour.at(0) = _lhs.colour.at(0) /= _rhs;
-	colour.colour.at(1) = _lhs.colour.at(1) /= _rhs;
-	colour.colour.at(2) = _lhs.colour.at(2) /= _rhs;
+	colour.colour[0] = _lhs.colour[0] /= _rhs;
+	colour.colour[1] = _lhs.colour[1] /= _rhs;
+	colour.colour[2] = _lhs.colour[2] /= _rhs;
 	return colour;
 }
