@@ -19,7 +19,7 @@ The features that were developed for this project are:
 - Physically Based sky-box
 
 ## Instructions
-In order to build this project for debug or release, assimp-vc142-mtd.dll from CPU_RayTracing\AT_CPU_RayTracing\dll needs to be place inside CPU_RayTracing\x64\Debug or CPU_RayTracing\x64\Release.
+In order to build this project for debug or release, assimp-vc142-mtd.dll from CPU_RayTracing\AT_CPU_RayTracing\dll needs to be place inside CPU_RayTracing\x64\Debug or CPU_RayTracing\x64\Release. As well, the asset folder from CPU_RayTracing\AT_CPU_RayTracing\Assets will need to be copied to CPU_RayTracing\x64\Release to allow the release build to find the assets.
 
 ## Screenshots
 ![Sunset](https://github.com/kieranbow/CPU_RayTracing/blob/main/Images/sunset.png)
