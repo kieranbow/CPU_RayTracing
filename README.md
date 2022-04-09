@@ -18,6 +18,9 @@ The features that were developed for this project are:
 - Multiple Directional Lights
 - Physically Based sky-box
 
+## Instructions
+In order to build this project for debug or release, assimp-vc142-mtd.dll from CPU_RayTracing\AT_CPU_RayTracing\dll needs to be place inside CPU_RayTracing\x64\Debug or CPU_RayTracing\x64\Release.
+
 ## Screenshots
 ![Sunset](https://github.com/kieranbow/CPU_RayTracing/blob/main/Images/sunset.png)
 > A sunset
