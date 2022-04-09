@@ -54,7 +54,7 @@ int main()
 
 	// Create and define an atmosphere
 	Atmosphere atmosphere;
-	float angle = Maths::deg2rad(-50.0f);
+	float angle = Maths::deg2rad(-85.0f);
 	Vector3 sunDir = Vector3(0.0f, std::cos(angle), -std::sin(angle));
 	atmosphere.setSunDirection(sunDir);
 	atmosphere.setBrightness(1.0f);
@@ -73,7 +73,7 @@ int main()
 	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 1.0f, 1.0f), sunDir))); // Vector3(0.0f, 0.5f, 1.0f) /*Vector3(1.0f, 0.5f, 1.0f)*/
 	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(1.0f, 0.0f, 0.0f), Vector3(-1.0f, 1.0f, 1.0f)))); // Vector3(-1.0f, 1.0f, 1.0f)
 	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(0.0f, 1.0f, 0.0f), Vector3(-1.0f, 0.5f, -1.0f)))); // Vector3(1.0f, 0.5f, 0.0f)
-	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(1.0f, Colour(0.0f, 0.0f, 1.0f), Vector3(1.0f, 1.0f, -1.0f)))); // Vector3(1.0f, 0.5f, 0.0f)
+	sceneLights.push_back(std::unique_ptr<Light::DirectionLight>(new Light::DirectionLight(0.5f, Colour(0.0f, 0.0f, 1.0f), Vector3(1.0f, 1.0f, -1.0f)))); // Vector3(1.0f, 0.5f, 0.0f)
 
 	// Create the scene's primitives and their materials
 	Primitive cube;
@@ -97,32 +97,41 @@ int main()
 	helmet_material.specular_intensity	= 1.0f;
 	helmet.setMaterial(helmet_material);
 
-	Primitive triangle("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
-	triangle.setPosition({ 5.0f, 1.0f, -12.0f });
+	Primitive unitSphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	unitSphere.setPosition({ 5.0f, 1.0f, -12.0f });
 
-	Material::Data triangle_material;
-	triangle_material.type		= Material::Types::Dielectic;  // Reflective
-	triangle_material.albedo	= Colour(0.5f, 0.5f, 0.5f);
-	triangle_material.roughness = 0.3f;
-	triangle_material.metallic	= 0.0f;
-	triangle.setMaterial(triangle_material);
+	Material::Data unitSphere_material;
+	unitSphere_material.type		= Material::Types::Dielectic;
+	unitSphere_material.albedo		= Colour(1.0f, 1.0f, 1.0f);
+	unitSphere_material.roughness	= 0.5f;
+	unitSphere_material.metallic	= 1.0f;
+	unitSphere.setMaterial(unitSphere_material);
 
-	Primitive cone("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
-	cone.setPosition({ 0.0f, 0.0f, -10.0f });
+	Primitive metalSphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	metalSphere.setPosition({ 2.0f, -1.0f, -9.0f });
 
-	Material::Data cone_material;
-	cone_material.type		= Material::Types::Dielectic;  // Reflective
-	cone_material.albedo	= Colour(1.0f, 1.0f, 1.0f);
-	cone_material.roughness = 0.5f;
-	cone_material.metallic	= 1.0f;
-	cone.setMaterial(cone_material);
-	//cone.setAlbedoTexture("Assets\\Checker.png");
+	Material::Data metalSphere_material;
+	metalSphere_material.type = Material::Types::Dielectic;
+	metalSphere_material.albedo = Colour(1.0f, 0.5f, 0.0f);
+	metalSphere_material.roughness = 0.3f;
+	metalSphere_material.metallic = 0.0f;
+	metalSphere.setMaterial(metalSphere_material);
+
+	Primitive reflectSphere("Assets\\unit_sphere.obj", { 0.0f, 0.0f, 0.0f });
+	reflectSphere.setPosition({ 0.0f, 0.0f, -10.0f });
+
+	Material::Data reflectSphere_material;
+	reflectSphere_material.type			= Material::Types::Reflective;
+	reflectSphere_material.albedo		= Colour(1.0f, 1.0f, 1.0f);
+	reflectSphere_material.roughness	= 0.5f;
+	reflectSphere_material.metallic		= 1.0f;
+	reflectSphere.setMaterial(reflectSphere_material);
 
 	Primitive plane("Assets\\plane.obj", { 0.0f, 0.0f, 0.0f });
 	plane.setPosition({ 0.0f, -1.0f, -10.0f });
 
 	Material::Data plane_material;
-	plane_material.type			= Material::Types::Dielectic; // Reflective
+	plane_material.type			= Material::Types::Dielectic;
 	plane_material.albedo		= Colour(0.5f, 0.5f, 0.5f);
 	plane_material.roughness	= 0.3f;
 	plane_material.metallic		= 0.0f;
@@ -131,12 +140,12 @@ int main()
 
 	// Push primitives into vector to be processed by the bvh
 	std::vector<Primitive> primitives;
-	primitives.push_back(triangle);
-	primitives.push_back(cone);
+	primitives.push_back(unitSphere);
+	primitives.push_back(metalSphere);
+	primitives.push_back(reflectSphere);
 	primitives.push_back(cube);
 	primitives.push_back(helmet);
 	primitives.push_back(plane);
-
 
 	//for (size_t i = 0; i < 1; i++)
 	//{
