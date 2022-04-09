@@ -348,3 +348,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Do not ignore project assets
+!*/AT_CPU_RayTracing/Assets/*
